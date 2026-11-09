@@ -1,0 +1,23 @@
+<p class="breadcrumb">
+  <%= link_to l(:label_help), help_index_path(lang: params[:lang].presence) %>
+  <% if @section %>&#187; <%= @section.title(@language) %><% end %>
+</p>
+
+<div class="wiki wiki-page">
+  <%= help_to_html(@topic.body, @topic.id) %>
+</div>
+
+<% @support.each do |block| %>
+  <div class="box wiki">
+    <%= help_to_html(block, @topic.id, toc: false) %>
+  </div>
+<% end %>
+
+<% if @topic.language != @language %>
+  <p class="other-formats"><%= l(:text_help_fallback_language, language: ::I18n.t(:general_lang_name, locale: @topic.language, default: @topic.language)) %></p>
+<% end %>
+
+<% content_for :sidebar do %>
+  <%= render partial: 'redmine_help/sidebar' %>
+<% end %>
+<% html_title(help_title(@topic), l(:label_help)) %>

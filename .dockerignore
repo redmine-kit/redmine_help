@@ -1,0 +1,9 @@
+*
+!init.rb
+!Gemfile
+!redmine_help.gemspec
+!LICENSE
+!app/
+!config/
+!lib/
+!test/

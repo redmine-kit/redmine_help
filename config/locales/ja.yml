@@ -1,0 +1,4 @@
+ja:
+  label_help_index: 目次
+  text_help_not_installed: "ヘルプがインストールされていません。ガイド(redmine-guide)をインストールするか、REDMINE_HELP_GUIDE_PATH を設定してください。"
+  text_help_fallback_language: "このページはまだ翻訳されていないため、%{language}で表示しています。"

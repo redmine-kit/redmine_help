@@ -1,0 +1,23 @@
+<h3><%= l(:label_help) %></h3>
+<%= form_tag(help_search_path, method: :get, id: 'help-search') do %>
+  <%= hidden_field_tag 'lang', params[:lang] if params[:lang].present? %>
+  <label for="help-search-q" class="hidden-for-sighted"><%= l(:label_search) %></label>
+  <p><%= text_field_tag 'q', @query, size: 20, id: 'help-search-q', placeholder: l(:label_search) %></p>
+<% end %>
+<ul>
+  <li><%= link_to l(:label_help_index), help_index_path(lang: params[:lang].presence) %></li>
+</ul>
+
+<% RedmineHelp.library.sections(@language).each do |section| %>
+  <h3><%= section.title(@language) %></h3>
+  <ul>
+    <% section.topics.each do |topic| %>
+      <li><%= link_to_unless(@topic&.id == topic.id, help_title(topic), help_topic_path(topic.id, lang: params[:lang].presence)) { |name| content_tag('strong', name) } %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% if RedmineHelp.library.languages.size > 1 %>
+  <h3><%= l(:field_language) %></h3>
+  <p><%= safe_join(help_language_links, ' | ') %></p>
+<% end %>
