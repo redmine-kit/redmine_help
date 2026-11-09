@@ -8,6 +8,8 @@ Issues are the heart of Redmine. See the [issue list](issue-list.md#filters) and
 
 ![An issue](images/issue.png)
 
+![Retina](images/issue@2x.png)
+
 ## Updating an issue
 
 Update an issue from its page.

@@ -12,7 +12,21 @@ class RedmineHelpScreenshotsTest < ScreenshotCase
       # The link opens a new tab; the screenshot follows it in this one.
       visit find('#top-menu a.help')[:href]
       assert_selector 'div.wiki.wiki-page ul.toc'
+      load_images
       shoot 'help', language, selector: '#main'
+    end
+  end
+
+  private
+
+  # Loads every image of the page before the screenshot: the window grows
+  # only when the screenshot is taken, and images below the window may not
+  # have loaded yet.
+  def load_images
+    page.execute_script("document.querySelectorAll('img').forEach(function (img) { img.loading = 'eager'; })")
+    page.driver.browser.manage.window.resize_to(1280, 6000)
+    Timeout.timeout(30) do
+      sleep 0.2 until page.evaluate_script('Array.from(document.images).every(function (img) { return img.complete; })')
     end
   end
 end
