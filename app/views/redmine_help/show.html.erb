@@ -14,7 +14,7 @@
 <% end %>
 
 <% if @topic.language != @language %>
-  <p class="other-formats"><%= l(:text_help_fallback_language, language: ::I18n.t(:general_lang_name, locale: @topic.language, default: @topic.language)) %></p>
+  <p class="other-formats"><%= l(:field_language) %>: <%= ::I18n.t(:general_lang_name, locale: @topic.language, default: @topic.language) %></p>
 <% end %>
 
 <% content_for :sidebar do %>

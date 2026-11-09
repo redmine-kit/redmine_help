@@ -1,4 +1,0 @@
-en:
-  label_help_index: Contents
-  text_help_not_installed: "No help is installed. Install the guide (redmine-guide) or set REDMINE_HELP_GUIDE_PATH."
-  text_help_fallback_language: "This page is not translated yet and is shown in %{language}."

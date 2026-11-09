@@ -5,7 +5,7 @@
   <p><%= text_field_tag 'q', @query, size: 20, id: 'help-search-q', placeholder: l(:label_search) %></p>
 <% end %>
 <ul>
-  <li><%= link_to l(:label_help_index), help_index_path(lang: params[:lang].presence) %></li>
+  <li><%= link_to l(:label_table_of_contents), help_index_path(lang: params[:lang].presence) %></li>
 </ul>
 
 <% RedmineHelp.library.sections(@language).each do |section| %>

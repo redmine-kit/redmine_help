@@ -1,7 +1,7 @@
 <h2><%= l(:label_help) %></h2>
 
 <% if @sections.empty? %>
-  <p class="nodata"><%= l(:text_help_not_installed) %></p>
+  <p class="nodata"><%= l(:label_no_data) %></p>
 <% else %>
   <% @sections.each do |section| %>
     <h3><%= section.title(@language) %></h3>
