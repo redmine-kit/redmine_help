@@ -1,7 +1,9 @@
 sections:
   - id: user
     title: { en: User guide, ja: ユーザーガイド }
-    topics: [user/issues, user/issue-list]
+    topics:
+      - user/issues
+      - { id: user/issue-list, title: { en: The issue list } }
   - id: admin
     title: { en: Administrator guide, ja: 管理者ガイド }
     topics: [admin/settings]

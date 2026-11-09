@@ -66,6 +66,15 @@ module RedmineHelp
       end
     end
 
+    test 'the sidebar shows a translated heading, or the label of index.yml' do
+      with_help do
+        en = RedmineHelp.library.sections('en').first
+        ja = RedmineHelp.library.sections('ja').first
+        assert_equal(['Issue tracking', 'The issue list'], en.topics.map { |topic| en.topic_title(topic, 'en') })
+        assert_equal(['チケットトラッキング', 'The issue list'], ja.topics.map { |topic| ja.topic_title(topic, 'ja') })
+      end
+    end
+
     test 'searches titles and text' do
       with_help do
         results = RedmineHelp.library.search('filter issues', 'en')

@@ -102,12 +102,14 @@ module RedmineHelp
 
     private
 
+    # A topic in index.yml is its id, or { id:, title: } with a label.
     def section(entry, language, listed)
-      topics = (Array(entry['topics']).map(&:to_s) - listed).filter_map { |id| topic(id, language) }
+      labels = Array(entry['topics']).to_h { |t| t.is_a?(Hash) ? [t['id'].to_s, t['title']] : [t.to_s, nil] }
+      topics = (labels.keys - listed).filter_map { |id| topic(id, language) }
       listed.concat(topics.map(&:id))
       return if topics.empty?
 
-      Section.new(id: entry['id'].to_s, titles: entry['title'], topics: topics)
+      Section.new(id: entry['id'].to_s, titles: entry['title'], topics: topics, labels: labels.compact)
     end
 
     def find(id, language)

@@ -33,4 +33,11 @@ module RedmineHelp
   def reset!
     @library = nil
   end
+
+  # A title in the language: a string, or a hash of languages.
+  def localized(titles, language)
+    return titles.presence&.to_s unless titles.is_a?(Hash)
+
+    titles[language] || titles[FALLBACK_LANGUAGE] || titles.values.first
+  end
 end

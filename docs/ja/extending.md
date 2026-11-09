@@ -18,13 +18,15 @@ ja/
 images/            # トピックが相対のリンクで表示する画像
 ```
 
-`index.yml` には、章とそのトピックを並べます。
+`index.yml` には、章とそのトピックを並べます。トピックは ID だけか、ID とサイドバーの表示名です。表示名は、トピックがユーザーの言語に翻訳されていないあいだ使います(翻訳されたトピックは、その見出しを表示します)。
 
 ```yaml
 sections:
   - id: support
     title: { en: Support, ja: サポート }
-    topics: [support/contact, support/hours]
+    topics:
+      - support/contact
+      - { id: support/hours, title: { en: Opening hours, ja: 受付時間 } }
 ```
 
 ユーザーの言語にないトピックは、英語で、その旨を添えて表示します。

@@ -12,7 +12,7 @@
   <h3><%= section.title(@language) %></h3>
   <ul>
     <% section.topics.each do |topic| %>
-      <li><%= link_to_unless(@topic&.id == topic.id, help_title(topic), help_topic_path(topic.id, lang: params[:lang].presence)) { |name| content_tag('strong', name) } %></li>
+      <li><%= link_to_unless(@topic&.id == topic.id, section.topic_title(topic, @language), help_topic_path(topic.id, lang: params[:lang].presence)) { |name| content_tag('strong', name) } %></li>
     <% end %>
   </ul>
 <% end %>

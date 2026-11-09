@@ -16,13 +16,15 @@ ja/
 images/            # images the topics show, by relative links
 ```
 
-`index.yml` lists sections and their topics:
+`index.yml` lists sections and their topics. A topic is its id, or an id with a label for the sidebar, used while the topic is not translated into the user's language (a translated topic shows its own heading):
 
 ```yaml
 sections:
   - id: support
     title: { en: Support, ja: サポート }
-    topics: [support/contact, support/hours]
+    topics:
+      - support/contact
+      - { id: support/hours, title: { en: Opening hours, ja: 受付時間 } }
 ```
 
 A topic missing in the user's language is shown in English, with a note.
