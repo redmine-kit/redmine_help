@@ -13,11 +13,22 @@ class RedmineHelpScreenshotsTest < ScreenshotCase
       visit find('#top-menu a.help')[:href]
       assert_selector 'div.wiki.wiki-page ul.toc'
       load_images
-      shoot 'help', language, selector: '#main'
+      shoot_window 'help', language
     end
   end
 
   private
+
+  # Saves the browser window (Redmine's header, the start of the page and
+  # the sidebar) as docs/<images>/<name>.png: a help page is too long for a
+  # screenshot of the whole page.
+  def shoot_window(name, language)
+    page.driver.browser.manage.window.resize_to(1280, 1000)
+    page.execute_script('window.scrollTo(0, 0); document.activeElement?.blur()')
+    path = File.join(DOCS, LANGUAGES.fetch(language), "#{name}.png")
+    page.driver.browser.save_screenshot(path)
+    assert File.size?(path), "no screenshot at #{path}"
+  end
 
   # Loads every image of the page before the screenshot: the window grows
   # only when the screenshot is taken, and images below the window may not
