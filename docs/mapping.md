@@ -10,7 +10,7 @@ A map is `map.yml` next to the topics (in the guide, in a plugin's `help/`, in t
 issues#index: user/issue-list
 issues#show: user/issues
 issues: user/issues
-settings#index?tab=authentication: admin/settings#authentication
+settings#index?tab=authentication: admin/settings#Authentication
 settings#index: admin/settings
 ```
 
@@ -28,4 +28,6 @@ Within one key, the maps are tried in the order of precedence: the operator's di
 
 ## Anchors
 
-An anchor is the anchor Redmine gives the heading: the heading's text with spaces turned into `-` (as in Redmine's wiki). `admin/settings#authentication` opens the page at the heading "Authentication".
+An anchor is the anchor Redmine gives the heading: the heading's text with spaces turned into `-` (as in Redmine's wiki). `admin/settings#Authentication` opens the page at the heading "Authentication".
+
+Anchors are always the English page's. A translation keeps the English page's headings one for one (same count, levels and order), and the help finds the heading at the same position in the translation. The same goes for links between topics (`settings.md#Authentication`). A translation whose headings differ opens at the top.

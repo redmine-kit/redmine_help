@@ -12,7 +12,7 @@
 issues#index: user/issue-list
 issues#show: user/issues
 issues: user/issues
-settings#index?tab=authentication: admin/settings#authentication
+settings#index?tab=authentication: admin/settings#Authentication
 settings#index: admin/settings
 ```
 
@@ -34,4 +34,6 @@ settings#index: admin/settings
 
 ## アンカー
 
-アンカーは、Redmine が見出しに付けるものと同じです。見出しの文字の空白を `-` にしたものです(Redmine の Wiki と同じ)。`admin/settings#authentication` は、「Authentication」の見出しの位置でページを開きます。
+アンカーは、Redmine が見出しに付けるものと同じです。見出しの文字の空白を `-` にしたものです(Redmine の Wiki と同じ)。`admin/settings#Authentication` は、「Authentication」の見出しの位置でページを開きます。
+
+アンカーは常に英語のページのものを書きます。翻訳は英語のページと同じ数と階層の見出しを同じ順に持ち、ヘルプは翻訳の同じ位置の見出しを開きます。トピック間のリンク(`settings.md#Authentication`)も同じです。見出しが英語と違う翻訳は、ページの先頭で開きます。

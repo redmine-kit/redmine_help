@@ -26,6 +26,17 @@ module RedmineHelp
       end
     end
 
+    test 'finds an English anchor in a translation by the heading position' do
+      with_help do
+        library = RedmineHelp.library
+        assert_equal 'チケットの更新', library.anchor('user/issues', 'ja', 'Updating-an-issue')
+        assert_equal 'Updating-an-issue', library.anchor('user/issues', 'en', 'Updating-an-issue')
+        assert_equal 'Filters', library.anchor('user/issue-list', 'ja', 'Filters')
+        assert_equal 'Missing', library.anchor('user/issues', 'ja', 'Missing')
+        assert_nil library.anchor('user/issues', 'ja', nil)
+      end
+    end
+
     test 'chooses the language there is help in' do
       with_help do
         library = RedmineHelp.library

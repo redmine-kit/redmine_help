@@ -10,7 +10,8 @@ class RedmineHelpController < ApplicationController
   def context
     found = library.resolve(params[:c].to_s, params[:a].to_s, params.permit(*RedmineHelp::MAP_PARAMS).to_h)
     if found && library.topic(found.first, @language)
-      redirect_to help_topic_path(found.first, lang: language_param, anchor: found.second.presence)
+      anchor = library.anchor(found.first, @language, found.second)
+      redirect_to help_topic_path(found.first, lang: language_param, anchor: anchor.presence)
     else
       redirect_to help_index_path(lang: language_param)
     end

@@ -31,8 +31,9 @@ module RedmineHelpHelper
     path, anchor = link['href'].split('#', 2)
     return if link['href'].match?(%r{\A([a-z]+:|//|#|/)}i) || !path.end_with?('.md')
 
-    link['href'] = help_topic_path(help_join(dir, path.delete_suffix('.md')), lang: params[:lang].presence,
-                                                                              anchor: anchor.presence)
+    topic = help_join(dir, path.delete_suffix('.md'))
+    anchor = RedmineHelp.library.anchor(topic, @language, anchor)
+    link['href'] = help_topic_path(topic, lang: params[:lang].presence, anchor: anchor.presence)
   end
 
   # The image and its srcset (Redmine adds "<name>@2x.png 2x" for images

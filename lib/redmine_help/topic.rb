@@ -16,6 +16,20 @@ module RedmineHelp
     def body
       text.sub(/\A---\n.*?\n---\n/m, '')
     end
+
+    # The headings' anchors in order, as Redmine makes them
+    # (ApplicationHelper#parse_headings and #sanitize_anchor_name).
+    def anchors
+      @anchors ||= begin
+        seen = Hash.new(0)
+        body.gsub(/^```.*?^```/m, '').scan(/^#+[ \t]+(.+)$/).flatten.map do |heading|
+          plain = heading.strip.gsub(/!?\[([^\]]*)\]\([^)]*\)/, '\\1').delete('`*')
+          anchor = plain.gsub(/[^\s\-\p{Word}]/, '').gsub(/\s+(-+\s*)?/, '-')
+          seen[anchor] += 1
+          seen[anchor] > 1 ? "#{anchor}-#{seen[anchor]}" : anchor
+        end
+      end
+    end
   end
 
   # A section of the sidebar: its title (one string, or one per language),

@@ -40,6 +40,20 @@ module RedmineHelp
       find(id, language) || (language == FALLBACK_LANGUAGE ? nil : find(id, FALLBACK_LANGUAGE))
     end
 
+    # A translation keeps the English page's headings one for one, so an
+    # English anchor (map.yml, links between topics) points to the
+    # translation's heading at the same position.
+    def anchor(id, language, anchor)
+      return anchor if anchor.blank? || language == FALLBACK_LANGUAGE
+
+      english = find(id, FALLBACK_LANGUAGE)
+      translated = find(id, language)
+      return anchor unless english && translated && english.anchors.size == translated.anchors.size
+
+      index = english.anchors.index(anchor)
+      index ? translated.anchors[index] : anchor
+    end
+
     def topics(language)
       ids = sources.flat_map { |source| source.topics(language).keys + source.topics(FALLBACK_LANGUAGE).keys }.uniq
       ids.filter_map { |id| topic(id, language) }

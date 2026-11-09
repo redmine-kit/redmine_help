@@ -17,6 +17,17 @@ class RedmineHelpControllerTest < Redmine::ControllerTest
     end
   end
 
+  test "context finds the anchor in the user's language" do
+    User.find(2).update!(language: 'ja')
+    with_help do
+      get :context, params: { c: 'journals', a: 'edit' }
+      assert_equal 'チケットの更新', CGI.unescape(URI(response.location).fragment)
+      get :show, params: { topic: 'user/issues' }
+      link = css_select('div.wiki-page p a').first
+      assert_equal 'チケットの更新', CGI.unescape(URI(link['href']).fragment)
+    end
+  end
+
   test 'context opens the index for a screen without a topic' do
     with_help do
       get :context, params: { c: 'news', a: 'index' }
@@ -47,7 +58,7 @@ class RedmineHelpControllerTest < Redmine::ControllerTest
       assert_select 'div.wiki h1', text: /チケットトラッキング/
       get :show, params: { topic: 'user/issue-list' }
       assert_select 'div.wiki h1', text: /Issue list/
-      assert_select 'p.other-formats', text: /English/
+      assert_select 'p.other-formats', text: /言語: English/
     end
   end
 
