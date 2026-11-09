@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# The plugin's tests in Redmine 7.0.3 on PostgreSQL 16, in Docker.
+#   bin/test              # the plugin's tests
+#   bin/test --redmine    # also every Redmine test, with the plugin installed
+#   bin/test <files>      # some files of the plugin's tests
+#   REDMINE_BRANCH=master bin/test   # on Redmine's master branch
+# Commands that run inside the container are in single quotes on purpose.
+# shellcheck disable=SC2016
+set -euo pipefail
+cd "$(dirname "$0")/.."
+image=redmine-help-test${REDMINE_BRANCH:+-$REDMINE_BRANCH}
+bin/services >/dev/null
+docker buildx build --load -q -t "$image" --build-arg REDMINE_BRANCH="${REDMINE_BRANCH:-}" -f test/Dockerfile . >/dev/null
+run() {
+  docker run --rm --network redmine-help-test_default -e PARALLEL_WORKERS="${PARALLEL_WORKERS:-4}" "$image" \
+    sh -c 'bin/rails db:drop db:create db:migrate db:schema:dump >/dev/null && "$@"' test "$@"
+}
+# The plugin's tests, with coverage written to coverage/coverage.xml.
+run_plugin() {
+  mkdir -p coverage
+  docker run --rm --network redmine-help-test_default -e PLUGIN_COVERAGE=1 -e PARALLEL_WORKERS=1 \
+    -v "$PWD/coverage:/redmine/plugins/redmine_help/coverage" "$image" \
+    sh -c 'bin/rails db:drop db:create db:migrate db:schema:dump >/dev/null && "$@"' test "$@"
+}
+if [[ "${1:-}" == "--redmine" ]]; then
+  run_plugin bin/rails test plugins/redmine_help/test
+  run bin/rails test
+elif (($#)); then
+  run bin/rails test "${@/#/plugins/redmine_help/}"
+else
+  run_plugin bin/rails test plugins/redmine_help/test
+fi

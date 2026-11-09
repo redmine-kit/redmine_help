@@ -1,0 +1,4 @@
+sections:
+  - id: support
+    title: { en: Support, ja: サポート }
+    topics: [support/contact]

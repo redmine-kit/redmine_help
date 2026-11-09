@@ -1,0 +1,5 @@
+issues#index: user/issue-list
+issues#show: user/issues
+issues: user/issues
+settings#index?tab=authentication: admin/settings#authentication
+settings#index: admin/settings

@@ -1,0 +1,4 @@
+sections:
+  - id: sample
+    title: Sample plugin
+    topics: [sample/screen]
