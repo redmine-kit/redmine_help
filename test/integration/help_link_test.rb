@@ -18,6 +18,18 @@ module RedmineHelp
       end
     end
 
+    test 'images are served by their URLs, with @ and dots in their names' do
+      with_help do
+        get '/help/user/issues', params: { lang: 'en' }
+        sources = css_select('div.wiki img').map { |image| image['src'] }
+        assert_equal ['/help/assets/en/user/images/issue.png', '/help/assets/en/user/images/issue@2x.png'], sources
+        sources.each do |source|
+          get source
+          assert_response :success, source
+        end
+      end
+    end
+
     test "Redmine's own help pages (text formatting) still work" do
       with_help do
         get '/help/wiki_syntax'

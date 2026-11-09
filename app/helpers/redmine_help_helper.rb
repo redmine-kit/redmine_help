@@ -35,10 +35,22 @@ module RedmineHelpHelper
                                                                               anchor: anchor.presence)
   end
 
+  # The image and its srcset (Redmine adds "<name>@2x.png 2x" for images
+  # named @2x).
   def help_rewrite_image(image, dir)
-    return if image['src'].match?(%r{\A([a-z]+:|//|/)}i)
+    image['src'] = help_image_url(image['src'], dir)
+    return unless image['srcset']
 
-    image['src'] = help_asset_path(help_join(@topic&.language || @language, dir, image['src']))
+    image['srcset'] = image['srcset'].split(',').map do |candidate|
+      url, size = candidate.strip.split(/\s+/, 2)
+      [help_image_url(url, dir), size].compact.join(' ')
+    end.join(', ')
+  end
+
+  def help_image_url(url, dir)
+    return url if url.match?(%r{\A([a-z]+:|//|/)}i)
+
+    help_asset_path(help_join(@topic&.language || @language, dir, url))
   end
 
   def help_join(*parts)

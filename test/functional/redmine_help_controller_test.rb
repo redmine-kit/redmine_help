@@ -33,7 +33,8 @@ class RedmineHelpControllerTest < Redmine::ControllerTest
       assert_select 'a[href="/help/user/issue-list?lang=en#filters"]'
       assert_select 'a[href="/help/admin/settings?lang=en"]'
       assert_select 'img[src="/help/assets/en/user/images/issue.png"]'
-      assert_select 'img[src="/help/assets/en/user/images/issue@2x.png"]'
+      retina = '/help/assets/en/user/images/issue@2x.png'
+      assert_select "img[src=\"#{retina}\"][srcset=\"#{retina} 2x\"]"
       assert_select '#sidebar h3', text: 'User guide'
       assert_select '#sidebar strong', text: 'Issue tracking'
     end
