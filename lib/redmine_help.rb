@@ -5,7 +5,7 @@
 # screen; the topics come from the Redmine guide, from other plugins' help/
 # directories, and from an operator's directory (REDMINE_HELP_EXTRA_PATH).
 module RedmineHelp
-  VERSION = '0.2.0'
+  VERSION = '0.2.1'
 
   # The language of the topics when the user's language has none.
   FALLBACK_LANGUAGE = 'en'
