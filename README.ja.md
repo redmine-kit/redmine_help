@@ -8,7 +8,7 @@ Redmine Help(`redmine_help`)は、Redmine のヘッダーの「ヘルプ」を�
 
 [English](README.md)
 
-> **状態:** 開発の初期です(0.1.0)。Redmine 7.0 に対応し、Redmine 7.0.3 で確認しています。
+> **状態:** 開発の初期です。実装し、Redmine 7.0.3 でテストしています。Redmine 7.0 に対応しています。
 
 <a id="documentation"></a>
 

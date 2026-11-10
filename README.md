@@ -8,7 +8,7 @@ Redmine Help (`redmine_help`) is a Redmine plugin that turns the Help link in Re
 
 [日本語](README.ja.md)
 
-> **Status:** early development (0.1.0). It supports Redmine 7.0 and has been checked with Redmine 7.0.3.
+> **Status:** early development. It is implemented and tested on Redmine 7.0.3. It supports Redmine 7.0.
 
 ## Documentation
 
