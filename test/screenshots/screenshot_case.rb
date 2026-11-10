@@ -19,15 +19,28 @@ class ScreenshotCase < ApplicationSystemTestCase
   end
 
   # Runs the block once per language, logged in as the administrator with
-  # that language.
+  # that language, with the demo data of the language.
   def each_language
     LANGUAGES.each_key do |language|
       User.find(1).update!(language: language)
+      localize_data(language)
       Capybara.reset_sessions!
       page.driver.browser.manage.window.resize_to(1280, 900)
       log_user('admin', 'admin')
       yield language
     end
+  end
+
+  # The demo data of the language (test/screenshots/data/<lang>.yml): the
+  # fixtures' records renamed as a team using that language would name them,
+  # as redmine-guide's screenshots do. English keeps the fixtures.
+  def localize_data(language)
+    file = File.join(__dir__, 'data', "#{language}.yml")
+    data = File.exist?(file) ? YAML.safe_load_file(file) : {}
+    (data['records'] || {}).each do |model, records|
+      records.each { |id, attributes| model.constantize.find(id).update_columns(attributes) }
+    end
+    (data['settings'] || {}).each { |name, value| Setting.send(:"#{name}=", value) }
   end
 
   # Hides the siblings after the element, to keep a screenshot to the part

@@ -1,0 +1,113 @@
+# The demo data of the Japanese screenshots (test/screenshots/screens.rb):
+# what a Japanese team's Redmine shows, the same names as the demo data of
+# redmine-guide's screenshots (screenshots/data/ja.yml there), so that the
+# screens and the guide's images match. Trackers, issue statuses,
+# priorities, activities, document categories and roles are named as Redmine
+# 7.0.3's default data for Japanese (config/locales/ja.yml, default_*); the
+# rest is translated, and the users' names are fictional. Identifiers
+# (logins, project identifiers, version numbers, email addresses) stay as
+# they are. English keeps Redmine's test data.
+
+# Records of Redmine's test fixtures, by model and id.
+records:
+  Tracker:
+    1: { name: バグ, description: 不具合の報告 }
+    2: { name: 機能, description: 新しい機能の要望 }
+    3: { name: サポート }
+  IssueStatus:
+    1: { name: 新規 }
+    2: { name: 進行中 }
+    3: { name: 解決 }
+    4: { name: フィードバック }
+    5: { name: 終了 }
+    6: { name: 却下 }
+  Enumeration:
+    1: { name: 未分類 }
+    2: { name: ユーザー文書 }
+    3: { name: 技術文書 }
+    4: { name: 低め }
+    5: { name: 通常 }
+    6: { name: 高め }
+    7: { name: 急いで }
+    8: { name: 今すぐ }
+    9: { name: 設計作業 }
+    10: { name: 開発作業 }
+    11: { name: テスト作業 }
+    14: { name: 使用しない作業分類 }
+    15: { name: 使用しない優先度 }
+    16: { name: 使用しない文書カテゴリ }
+  Role:
+    1: { name: 管理者 }
+    2: { name: 開発者 }
+    3: { name: 報告者 }
+  User:
+    1: { firstname: 管理者, lastname: Redmine }
+    2: { firstname: 一郎, lastname: 鈴木 }
+    3: { firstname: 健, lastname: 佐藤 }
+    4: { firstname: 誠, lastname: 高橋 }
+    5: { firstname: 大輔, lastname: 山本 }
+    7: { firstname: 美咲, lastname: 田中 }
+    8: { firstname: 翔, lastname: 伊藤 }
+    9: { firstname: 陽子, lastname: 渡辺 }
+  Group:
+    10: { lastname: 開発チーム }
+    11: { lastname: 運用チーム }
+  Project:
+    1: { name: レシピサイト, description: レシピを管理するアプリケーション }
+    2: { name: オンラインストア, description: EC サイト }
+    3: { name: スマホアプリ, description: レシピサイトのスマホアプリ }
+    4: { name: 管理画面, description: レシピサイトの管理画面 }
+    5: { name: 社内向けツール, description: 社内だけで使うツール }
+    6: { name: 在庫連携, description: 社内向けツールと在庫システムの連携 }
+  Version:
+    1: { description: ベータ }
+    2: { description: 正式リリース, wiki_page_title: リリースノート1.0 }
+    3: { description: 次期リリース }
+    4: { description: スマホアプリの次期リリース }
+    5: { name: アルファ, description: 社内向けアルファ }
+    6: { name: 社内リリース, description: 近日中に完了予定 }
+    7: { name: 全社共通リリース }
+  IssueCategory:
+    1: { name: 印刷 }
+    2: { name: レシピ }
+    3: { name: 在庫管理 }
+    4: { name: 印刷 }
+  CustomField:
+    1: { name: データベース }
+    2: { name: 検索キーワード, default_value: "" }
+    3: { name: 開発状況, possible_values: [安定, ベータ, アルファ, 計画中] }
+    4: { name: 電話番号 }
+    5: { name: 予算 }
+    6: { name: 係数 }
+    7: { name: 請求対象 }
+    8: { name: 検収日 }
+    9: { name: 公開予定日 }
+    10: { name: 残業 }
+  CustomValue:
+    7: { value: 安定 }
+    9: { value: 並び順 }
+  Issue:
+    1: { subject: レシピを印刷できない, description: レシピを印刷しようとするとエラーになる。 }
+    2: { subject: 材料のカテゴリを追加, description: レシピの材料をカテゴリで分類できるようにしたい。 }
+    3: { subject: レシピの保存時にエラー 281 が発生, description: レシピを保存するとエラー 281 が発生する。 }
+    4: { subject: 決済画面の金額表示の不具合, description: 決済画面で金額が正しく表示されない。 }
+    5: { subject: ログイン画面のレイアウトが崩れる, description: スマホアプリのログイン画面のレイアウトが崩れる。 }
+    6: { subject: 権限設定の見直し, description: 社内向けツールの権限設定を見直す。 }
+    7: { subject: 検索結果の並び順を修正, description: 検索結果が更新日の順に並ばない。期日は今日。 }
+    8: { subject: トップページの表示崩れ, description: 完了したチケット。 }
+    9: { subject: アカウント連携の実装, description: "#10 の完了を待っている。" }
+    10: { subject: 認証 API の更新, description: "これが終わるまで #9 に着手できない。" }
+    11: { subject: 0.1 の不具合修正, description: "" }
+    12: { subject: 1.0 の不具合修正, description: "" }
+    13: { subject: プッシュ通知が届かない, description: スマホアプリにプッシュ通知が届かないことがある。 }
+    14: { subject: セキュリティ診断の指摘への対応, description: 非公開のチケット。 }
+  Journal:
+    1: { notes: 調査を始めました。 }
+    2: { notes: "#2 と r2 も参照してください。" }
+    3: { notes: "画面のキャプチャです: !picture.jpg! #1 と r2 も参照してください。" }
+    4: { notes: 社内リリースで対応します。 }
+    5: { notes: 非公開のチケットへのコメント。 }
+
+# Settings a Japanese site uses: family name first.
+settings:
+  user_format: lastname_firstname

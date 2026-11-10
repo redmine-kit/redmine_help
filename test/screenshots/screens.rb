@@ -4,7 +4,7 @@ require_relative 'screenshot_case'
 
 # The screens of docs/README.md, with the guide of redmine-guide
 # (REDMINE_HELP_GUIDE_PATH, set by bin/screenshots): the side panel next to
-# the new issue form and next to a tab of Administration › Settings, and the
+# the new issue form and over a tab of Administration › Settings, and the
 # help page of the issue list.
 class RedmineHelpScreenshotsTest < ScreenshotCase
   def test_screens
