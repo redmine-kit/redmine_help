@@ -1,0 +1,7 @@
+<%# The search over the help: in the sidebar of the help pages and at the top
+    of the side panel (id: the form's id). %>
+<%= form_tag(help_search_path, method: :get, id: id) do %>
+  <%= hidden_field_tag 'lang', params[:lang], id: nil if params[:lang].present? %>
+  <label for="<%= id %>-q" class="hidden-for-sighted"><%= l(:label_search) %></label>
+  <p><%= text_field_tag 'q', @query, size: 20, id: "#{id}-q", placeholder: l(:label_search) %></p>
+<% end %>

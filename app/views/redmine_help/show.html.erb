@@ -3,19 +3,7 @@
   <% if @section %>&#187; <%= @section.title(@language) %><% end %>
 </p>
 
-<div class="wiki wiki-page">
-  <%= help_to_html(@topic.body, @topic.id) %>
-</div>
-
-<% @support.each do |block| %>
-  <div class="box wiki">
-    <%= help_to_html(block, @topic.id, toc: false) %>
-  </div>
-<% end %>
-
-<% if @topic.language != @language %>
-  <p class="other-formats"><%= l(:field_language) %>: <%= ::I18n.t(:general_lang_name, locale: @topic.language, default: @topic.language) %></p>
-<% end %>
+<%= render partial: 'redmine_help/topic' %>
 
 <% content_for :sidebar do %>
   <%= render partial: 'redmine_help/sidebar' %>

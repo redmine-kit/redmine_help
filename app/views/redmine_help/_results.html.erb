@@ -1,0 +1,16 @@
+<% if @query.present? %>
+  <h3><%= l(:label_result_plural) %> (<%= @results.size %>)</h3>
+  <% if @results.empty? %>
+    <p class="nodata"><%= l(:label_no_data) %></p>
+  <% else %>
+    <dl id="search-results">
+      <% @results.each do |topic, snippet| %>
+        <dt class="wiki-page icon icon-wiki-page">
+          <%= sprite_icon('wiki-page') %>
+          <%= link_to help_title(topic), help_topic_path(topic.id, lang: params[:lang].presence) %>
+        </dt>
+        <dd><span class="description"><%= snippet %></span></dd>
+      <% end %>
+    </dl>
+  <% end %>
+<% end %>

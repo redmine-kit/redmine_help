@@ -17,6 +17,16 @@ module RedmineHelp
       end
     end
 
+    test 'tells which key of the map matched the screen' do
+      with_help do
+        library = RedmineHelp.library
+        assert_equal ['settings#index?tab=authentication', %w[admin/settings authentication]],
+                     library.lookup('settings', 'index', 'tab' => 'authentication')
+        assert_equal ['settings#index', ['admin/settings']], library.lookup('settings', 'index', 'tab' => 'display')
+        assert_nil library.lookup('news', 'index')
+      end
+    end
+
     test 'falls back to English for a topic not translated' do
       with_help do
         library = RedmineHelp.library

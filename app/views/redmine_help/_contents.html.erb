@@ -1,0 +1,12 @@
+<% if @sections.empty? %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
+<% else %>
+  <% @sections.each do |section| %>
+    <h3><%= section.title(@language) %></h3>
+    <ul>
+      <% section.topics.each do |topic| %>
+        <li><%= link_to section.topic_title(topic, @language), help_topic_path(topic.id, lang: params[:lang].presence) %></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>

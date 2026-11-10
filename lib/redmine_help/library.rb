@@ -81,12 +81,20 @@ module RedmineHelp
     # then "controller#action", then "controller". An earlier source's entry
     # wins. Returns [topic, anchor] or nil.
     def resolve(controller, action, params = {})
+      lookup(controller, action, params)&.last
+    end
+
+    # The key of the map that matched the screen, and its [topic, anchor];
+    # nil when no key matched. A key with a parameter
+    # ("settings#index?tab=authentication") means the parameter has a topic
+    # of its own: the side panel follows a tab only then.
+    def lookup(controller, action, params = {})
       keys = MAP_PARAMS.filter_map { |name| "#{controller}##{action}?#{name}=#{params[name]}" if params[name].present? }
       keys += ["#{controller}##{action}", controller.to_s]
       keys.each do |key|
         sources.each do |source|
           value = source.map[key]
-          return value.to_s.split('#', 2) if value.present?
+          return [key, value.to_s.split('#', 2)] if value.present?
         end
       end
       nil

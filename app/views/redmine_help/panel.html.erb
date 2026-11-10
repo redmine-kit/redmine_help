@@ -1,0 +1,39 @@
+<%# The side panel's content (panel=1): the topic, the search results or the
+    contents, without Redmine's layout. help_panel.js puts it into
+    aside#help-panel. Its header follows the sidebar: actions in
+    .contextual, then the title. %>
+<%
+  lang = params[:lang].presence
+  if @topic
+    title = help_title(@topic)
+    full_view = help_topic_path(@topic.id, lang: lang, anchor: @anchor)
+  elsif @results
+    title = l(:label_search)
+    full_view = help_search_path(q: @query.presence, lang: lang)
+  else
+    title = l(:label_help)
+    full_view = help_index_path(lang: lang)
+  end
+%>
+<div class="help-panel-header" data-anchor="<%= @anchor %>" data-follow="<%= @follow ? 'true' : 'false' %>">
+  <div class="contextual">
+    <%= link_to sprite_icon('arrow-narrow-left', l(:button_back), rtl: true), '#', class: 'icon icon-back help-panel-back', role: 'button', hidden: true %>
+    <%= link_to sprite_icon('list', l(:label_table_of_contents)), help_index_path(lang: lang),
+                class: 'icon icon-list help-panel-contents', target: '_blank', rel: 'noopener' %>
+    <%= link_to sprite_icon('maximize', l(:label_open_in_full_view), icon_only: true), full_view,
+                class: 'icon-only icon-maximize help-panel-full-view', title: l(:label_open_in_full_view), target: '_blank', rel: 'noopener' %>
+    <%= link_to sprite_icon('close', l(:button_redmine_help_close), icon_only: true), '#',
+                class: 'icon-only icon-close help-panel-close', title: l(:button_redmine_help_close), role: 'button' %>
+  </div>
+  <h3 id="help-panel-title" tabindex="-1"><%= title %></h3>
+</div>
+<div class="help-panel-content">
+  <%= render partial: 'redmine_help/search_form', locals: { id: 'help-panel-search' } %>
+  <% if @topic %>
+    <%= render partial: 'redmine_help/topic' %>
+  <% elsif @results %>
+    <%= render partial: 'redmine_help/results' %>
+  <% else %>
+    <%= render partial: 'redmine_help/contents' %>
+  <% end %>
+</div>

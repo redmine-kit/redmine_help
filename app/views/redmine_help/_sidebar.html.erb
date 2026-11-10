@@ -1,9 +1,5 @@
 <h3><%= l(:label_help) %></h3>
-<%= form_tag(help_search_path, method: :get, id: 'help-search') do %>
-  <%= hidden_field_tag 'lang', params[:lang] if params[:lang].present? %>
-  <label for="help-search-q" class="hidden-for-sighted"><%= l(:label_search) %></label>
-  <p><%= text_field_tag 'q', @query, size: 20, id: 'help-search-q', placeholder: l(:label_search) %></p>
-<% end %>
+<%= render partial: 'redmine_help/search_form', locals: { id: 'help-search' } %>
 <ul>
   <li><%= link_to l(:label_table_of_contents), help_index_path(lang: params[:lang].presence) %></li>
 </ul>

@@ -1,0 +1,13 @@
+<div class="wiki wiki-page">
+  <%= help_to_html(@topic.body, @topic.id, panel: panel?) %>
+</div>
+
+<% @support.each do |block| %>
+  <div class="box wiki">
+    <%= help_to_html(block, @topic.id, toc: false) %>
+  </div>
+<% end %>
+
+<% if @topic.language != @language %>
+  <p class="other-formats"><%= l(:field_language) %>: <%= ::I18n.t(:general_lang_name, locale: @topic.language, default: @topic.language) %></p>
+<% end %>

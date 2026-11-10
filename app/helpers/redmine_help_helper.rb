@@ -5,23 +5,28 @@
 # (ApplicationHelper#parse_headings and #replace_toc), then links between
 # topics and to the topics' images.
 module RedmineHelpHelper
-  def help_to_html(markdown, topic_id, toc: true)
+  # panel: for the side panel, whose header shows the title: the page's
+  # # heading is left out, and the table of contents is not floated
+  # ({{toc}} instead of {{>toc}}), since the panel is narrow.
+  def help_to_html(markdown, topic_id, toc: true, panel: false)
     html = Redmine::WikiFormatting.to_html('common_mark', markdown.to_s).dup
     @parsed_headings = []
     @heading_anchors = {}
     parse_headings(html, nil, nil, nil, true, {})
     if toc
-      html.prepend('<p>{{>toc}}</p>')
+      html.prepend(panel ? '<p>{{toc}}</p>' : '<p>{{>toc}}</p>')
       replace_toc(html, @parsed_headings.reject { |level, _, _| level == 1 })
     end
-    help_rewrite_links(html, topic_id).html_safe
+    help_rewrite_links(html, topic_id, title: !panel).html_safe
   end
 
   # Relative links to .md files become links to topics; relative images
-  # become links to the topic's directory under /help/assets.
-  def help_rewrite_links(html, topic_id)
+  # become links to the topic's directory under /help/assets. title: false
+  # leaves out the first # heading.
+  def help_rewrite_links(html, topic_id, title: true)
     dir = File.dirname(topic_id)
     doc = Nokogiri::HTML::DocumentFragment.parse(html)
+    doc.at_css('h1')&.remove unless title
     doc.css('a[href]').each { |link| help_rewrite_link(link, dir) }
     doc.css('img[src]').each { |image| help_rewrite_image(image, dir) }
     doc.to_html
