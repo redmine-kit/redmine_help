@@ -8,7 +8,7 @@ Redmine Help (`redmine_help`) turns the Help link in Redmine's header into help 
 
 ## Features
 
-- **Help for the current screen, next to it.** The Help link opens a side panel with the topic mapped to the screen, at the screen's section (for example the issue list opens the guide's page on the issue list, Administration › Settings › Authentication opens the section on authentication). The page stays usable next to the panel, so a form can be filled in while reading. A screen without a topic shows the contents. See [Side panel](#side-panel).
+- **Help for the current screen, next to it.** The Help link opens a side panel with the topic mapped to the screen, at the section that describes the screen (for example a new issue opens the section on adding a new issue, the issue list the guide's page on the issue list, Administration › Settings › Authentication the section on authentication). The panel is laid over the end side of the window; the rest of the page stays usable, so a form can be filled in while reading. A screen without a topic shows the contents. See [Side panel](#side-panel).
 - **In the user's language.** The help is shown in the user's language when it is translated, otherwise in English with a note. A switch in the sidebar shows the other languages.
 - **Inside Redmine.** The panel and the help pages look like Redmine's sidebar and wiki pages: the text with its table of contents, a search over the help, and on the help pages the guide's sections in the sidebar.
 - **The Redmine guide.** The guide of redmine.org, converted to Markdown and translated, comes from [redmine-guide](https://github.com/redmine-kit/redmine-guide), a separate repository and gem.
@@ -17,15 +17,15 @@ Redmine Help (`redmine_help`) turns the Help link in Redmine's header into help 
 
 ## Screen
 
-![The side panel next to the new issue form, with the help on issues](images/help-panel.png)
+![The side panel over the new issue form, at the section on adding a new issue](images/help-panel.png)
 
-![The side panel next to Administration › Settings › Authentication, at the section on authentication](images/help-panel-settings.png)
+![The side panel over Administration › Settings › Authentication, at the section on authentication](images/help-panel-settings.png)
 
 ![The help page of the issue list, with the guide's sections in the sidebar](images/help.png)
 
 ## Side panel
 
-The Help link in the header opens and closes the panel at the end side of the window. The panel is not modal: the page makes room for it and stays usable. Close in the panel's header or Esc closes it too. On narrow windows (Redmine's responsive layout, up to 899 px wide) the panel covers the window.
+The Help link in the header opens and closes the panel, laid over the end side of the window. The panel is not modal: there is no backdrop, and the part of the page it does not cover stays usable. Redmine's own dialogs (such as a new issue category) open above it. Close in the panel's header or Esc closes it too. On narrow windows (Redmine's responsive layout, up to 899 px wide) the panel covers the window.
 
 ### Content
 
@@ -49,7 +49,7 @@ The panel uses Redmine's strings: Help (`label_help`), Back (`button_back`), Ope
 
 ### Stylesheet
 
-Redmine has no side panel. The panel's content is built from core's pieces: the sidebar's colors and border, `.contextual` with `.icon-only` links and core's icons (`sprite_icon`), `div.wiki` for the text and `dl#search-results`. Only what core cannot give is in `assets/stylesheets/help_panel.css`: the panel's frame and position (fixed at the end side, the full height, the header kept above the scrolling text), the margin that makes room for the panel next to the page and at the end of Redmine's sticky issue header, the full-window panel at Redmine's responsive breakpoint, and `[hidden]` inside the panel (core's `.icon` is `display: inline-flex`, which would show Back on the first page). The colors are core's variables (`--oc-gray-0`, `--oc-gray-4`), so themes that set them style the panel as they style the sidebar. The [Redmine Design Guide](https://redmine-kit.github.io/design-guide/side-panel.html) describes the pattern.
+Redmine has no side panel. The panel's content is built from core's pieces: the sidebar's colors and padding, `.contextual` with `.icon-only` links and core's icons (`sprite_icon`), `div.wiki` for the text and `dl#search-results`. Only what core cannot give is in `assets/stylesheets/help_panel.css`: the panel's frame and position (laid over the end side, the full height, the header kept above the scrolling text), its edge (a border and a light shadow, as on Redmine's dropdowns), its stacking (above Redmine's sticky issue header and dropdowns, and under Redmine's modal dialogs while one is open), the full-window panel at Redmine's responsive breakpoint, and `[hidden]` inside the panel (core's `.icon` is `display: inline-flex`, which would show Back on the first page). The colors are core's variables (`--oc-gray-0`, `--oc-gray-4`, `--oc-black-rgb`), so themes that set them style the panel as they style the sidebar. The [Redmine Design Guide](https://redmine-kit.github.io/design-guide/side-panel.html) describes the pattern.
 
 ## Access
 
