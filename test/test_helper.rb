@@ -2,7 +2,7 @@
 
 # Coverage of the plugin's own files (bin/test sets PLUGIN_COVERAGE for the
 # plugin's tests), written as Cobertura XML to coverage/ for Codecov.
-if ENV['PLUGIN_COVERAGE']
+unless ENV['PLUGIN_COVERAGE'].to_s.empty?
   require 'simplecov'
   require 'simplecov-cobertura'
   SimpleCov.start do
@@ -21,16 +21,25 @@ module RedmineHelp
 
     # The help of the fixtures: the guide, a plugin's help/ and the
     # operator's directory, as the given environment would have them.
-    def with_help(guide: true, extra: false, plugin: false)
-      saved = ENV.to_h.slice('REDMINE_HELP_GUIDE_PATH', 'REDMINE_HELP_EXTRA_PATH')
+    def with_help(...)
+      use_help(...)
+      yield
+    ensure
+      restore_help
+    end
+
+    def use_help(guide: true, extra: false, plugin: false)
+      @saved_help_env = ENV.to_h.slice('REDMINE_HELP_GUIDE_PATH', 'REDMINE_HELP_EXTRA_PATH')
       ENV['REDMINE_HELP_GUIDE_PATH'] = guide ? File.join(FIXTURES, 'guide') : nil
       ENV['REDMINE_HELP_EXTRA_PATH'] = extra ? File.join(FIXTURES, 'extra') : nil
       plugins = plugin ? [RedmineHelp::Source.new('sample', File.join(FIXTURES, 'plugin'), :plugin)] : []
       RedmineHelp::Source.stubs(:plugins).returns(plugins)
       RedmineHelp.reset!
-      yield
-    ensure
+    end
+
+    def restore_help
       RedmineHelp::Source.unstub(:plugins)
+      saved = @saved_help_env || {}
       saved.each { |key, value| ENV[key] = value }
       %w[REDMINE_HELP_GUIDE_PATH REDMINE_HELP_EXTRA_PATH].each { |key| ENV.delete(key) unless saved.key?(key) }
       RedmineHelp.reset!

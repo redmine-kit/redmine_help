@@ -13,7 +13,7 @@ plugin=redmine_help
 image=redmine-help-test
 project=redmine-help-screenshots
 guide=$(cd "${GUIDE:-../redmine-guide}" && pwd)
-compose=(docker compose -f test/compose.yml -p "$project" --profile screenshots)
+compose=(docker compose -f test/compose.yml -p "$project" --profile browser)
 "${compose[@]}" up -d --wait >/dev/null
 # Its own Compose project, apart from bin/test's, removed afterwards.
 trap '"${compose[@]}" down -v >/dev/null 2>&1' EXIT
