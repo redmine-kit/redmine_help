@@ -2,14 +2,26 @@
 
 require_relative 'screenshot_case'
 
-# The help screen of docs/README.md: the help for the issue list, opened by
-# the header's Help link, with the guide of redmine-guide
-# (REDMINE_HELP_GUIDE_PATH, set by bin/screenshots).
+# The screens of docs/README.md, with the guide of redmine-guide
+# (REDMINE_HELP_GUIDE_PATH, set by bin/screenshots): the side panel next to
+# the new issue form and next to a tab of Administration › Settings, and the
+# help page of the issue list.
 class RedmineHelpScreenshotsTest < ScreenshotCase
   def test_screens
     each_language do |language|
+      visit '/projects/ecookbook/issues/new'
+      open_panel
+      shoot_window 'help-panel', language
+      close_panel
+
+      visit '/settings?tab=authentication'
+      open_panel
+      shoot_window 'help-panel-settings', language
+      close_panel
+
       visit '/projects/ecookbook/issues'
-      # The link opens a new tab; the screenshot follows it in this one.
+      # The help page, as the Help link opens it without JavaScript and the
+      # panel's full view link opens it in a new window.
       visit find('#top-menu a.help')[:href]
       assert_selector 'div.wiki.wiki-page ul.toc'
       load_images
@@ -18,6 +30,26 @@ class RedmineHelpScreenshotsTest < ScreenshotCase
   end
 
   private
+
+  # Opens the side panel with the Help link and waits for its images. The
+  # panel's scroll position (the mapped section) is kept.
+  def open_panel
+    # The script has set the link up as the panel's button.
+    find('#top-menu a.help[aria-controls="help-panel"]').click
+    assert_selector '#help-panel .help-panel-content div.wiki-page', wait: 30
+    page.execute_script("document.querySelectorAll('#help-panel img').forEach(function (i) { i.loading = 'eager'; })")
+    Timeout.timeout(30) do
+      sleep 0.2 until page.evaluate_script(
+        "Array.from(document.querySelectorAll('#help-panel img')).every(function (img) { return img.complete; })"
+      )
+    end
+  end
+
+  # Closes the panel, so that the next screen opens without it.
+  def close_panel
+    find('#help-panel .help-panel-close').click
+    assert_no_selector '#help-panel'
+  end
 
   # Saves the browser window (Redmine's header, the start of the page and
   # the sidebar) as docs/<images>/<name>.png: a help page is too long for a
