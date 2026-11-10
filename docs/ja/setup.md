@@ -60,7 +60,7 @@ export REDMINE_HELP_GUIDE_PATH=/srv/redmine-guide
 
 | キー | 説明 | パラメーター |
 | --- | --- | --- |
-| `REDMINE_HELP_GUIDE_PATH` | ガイドのディレクトリ(redmine-guide のチェックアウト) | 省略可。既定は gem の `redmine-guide` |
+| `REDMINE_HELP_GUIDE_PATH` | ガイドのディレクトリ(redmine-guide のチェックアウト) | 省略可。デフォルトは gem の `redmine-guide` |
 | `REDMINE_HELP_EXTRA_PATH` | 運用者のディレクトリ。足すページ、囲み、置き換えるトピック([extending.md](extending.md#the-operators-directory)) | 省略可 |
 
 「ヘルプ」は、Redmine の元のリンクと同じく、新しいタブで開きます。
