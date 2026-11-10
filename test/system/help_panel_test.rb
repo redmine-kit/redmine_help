@@ -43,6 +43,18 @@ module RedmineHelp
       assert_equal 'false', help_link['aria-expanded']
     end
 
+    test "core's modal dialogs open above the panel" do
+      start '/projects/ecookbook/issues/new'
+      help_link.click
+      within_panel { assert_selector '#help-panel-title', text: 'Issue tracking' }
+      find('a.icon-add[href$="/issue_categories/new"]').click
+      assert_selector '.ui-dialog', visible: true
+      assert_selector '#help-panel.help-panel-under-dialog'
+      find('.ui-dialog .ui-dialog-titlebar-close').click
+      assert_no_selector '.ui-dialog', visible: true
+      assert_selector '#help-panel:not(.help-panel-under-dialog)'
+    end
+
     test 'links open in the panel, and Back returns' do
       start '/projects/ecookbook/issues/new'
       help_link.click

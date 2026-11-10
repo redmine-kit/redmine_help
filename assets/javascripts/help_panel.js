@@ -2,8 +2,8 @@
  * The side panel of Redmine Help (docs/README.md#side-panel).
  *
  * The header's Help link opens and closes a panel at the end side of the
- * window with the help for the current screen. The panel is not modal: the
- * page stays usable next to it. Its content comes from the help pages with
+ * window with the help for the current screen, laid over the page. The
+ * panel is not modal: the part of the page it does not cover stays usable. Its content comes from the help pages with
  * panel=1 (RedmineHelpController), and links between topics, the search
  * and Back stay inside the panel. Without this script, the Help link opens
  * the help page in a new tab.
@@ -74,7 +74,6 @@
   function setExpanded(open) {
     var link = toggleLink();
     if (link) { link.setAttribute('aria-expanded', open ? 'true' : 'false'); }
-    document.documentElement.classList.toggle('help-panel-open', open);
   }
 
   // Loads a page of the help into the panel. options.follow: show it only
@@ -304,6 +303,17 @@
     ensurePanel();
     document.addEventListener('click', onDocumentClick);
     document.addEventListener('keydown', onDocumentKey);
+    // Core's dialogs (jQuery UI) are modal: while one is open, the panel goes
+    // under it and its backdrop.
+    if (window.jQuery) {
+      window.jQuery(document)
+        .on('dialogopen', function () { panel.classList.add('help-panel-under-dialog'); })
+        .on('dialogclose', function () {
+          if (!document.querySelector('.ui-dialog:not([style*="display: none"])')) {
+            panel.classList.remove('help-panel-under-dialog');
+          }
+        });
+    }
     // Open on this screen too when it was open on the previous one.
     if (storageGet() === 'open') { open(false); }
   }

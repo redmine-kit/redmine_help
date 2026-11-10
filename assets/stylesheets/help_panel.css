@@ -3,9 +3,9 @@
  *
  * Redmine has no side panel, so this file holds only what core cannot give:
  * the panel's frame and position. Its content uses core's classes (the
- * sidebar's colors and border, .contextual, .icon and .icon-only, div.wiki,
- * dl#search-results), and the colors are core's variables, so that themes
- * reach the panel as they reach the sidebar.
+ * sidebar's colors and padding, .contextual, .icon and .icon-only,
+ * div.wiki, dl#search-results), and the colors are core's variables, so
+ * that themes reach the panel as they reach the sidebar.
  */
 
 :root {
@@ -14,25 +14,30 @@
 }
 
 /*
- * Fixed at the end side of the window, the full height. The page makes room
- * for it (below), so that the page stays in view and usable next to it.
- * z-index 100 is jQuery UI's .ui-front: Redmine's dialogs open later in the
- * document and come above the panel.
+ * Laid over the end side of the window, the full height. It is not modal:
+ * there is no backdrop, and the part of the page it does not cover stays
+ * usable. The edge is the one of core's dropdowns (dropdown.css): a 1px
+ * border and a light shadow. z-index 1001 is above core's sticky issue
+ * header and dropdowns (1000).
  */
 .help-panel {
   position: fixed;
   inset-block: 0;
   inset-inline-end: 0;
-  z-index: 100;
+  z-index: 1001;
   box-sizing: border-box;
   inline-size: var(--help-panel-size);
   display: flex;
   flex-direction: column;
   background: var(--oc-gray-0);
   border-inline-start: 1px solid var(--oc-gray-4);
+  box-shadow: 0 0 6px rgba(var(--oc-black-rgb), 0.1);
   font-size: 0.875rem;
 }
 .help-panel[hidden] { display: none; }
+/* Under core's modal dialogs and their backdrop (jQuery UI's .ui-front,
+   z-index 100) while one is open (help_panel.js). */
+.help-panel.help-panel-under-dialog { z-index: 99; }
 /* Back is hidden on the first page; core's .icon (display: inline-flex)
    would show it. */
 .help-panel [hidden] { display: none; }
@@ -51,11 +56,6 @@
   padding-inline: 20px 8px;
 }
 
-/* The page makes room for the panel. */
-html.help-panel-open #wrapper { margin-inline-end: var(--help-panel-size); }
-/* Core's sticky issue header is fixed to the window's width as well. */
-html.help-panel-open #sticky-issue-header { inset-inline-end: var(--help-panel-size); }
-
 /*
  * Narrow windows (Redmine's responsive breakpoint, responsive.css): the
  * panel covers the window, above the fixed header (z-index 9999 there).
@@ -66,7 +66,6 @@ html.help-panel-open #sticky-issue-header { inset-inline-end: var(--help-panel-s
     inset-inline-start: 0;
     z-index: 10000;
     border-inline-start: 0;
+    box-shadow: none;
   }
-  html.help-panel-open #wrapper { margin-inline-end: 0; }
-  html.help-panel-open #sticky-issue-header { inset-inline-end: 0; }
 }
