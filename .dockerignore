@@ -4,6 +4,7 @@
 !redmine_help.gemspec
 !LICENSE
 !app/
+!assets/
 !config/
 !lib/
 !test/

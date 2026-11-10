@@ -21,6 +21,7 @@ module RedmineHelp
     require_relative 'redmine_help/topic'
     require_relative 'redmine_help/library'
     require_relative 'redmine_help/menu'
+    require_relative 'redmine_help/hooks'
     Menu.install
   end
 

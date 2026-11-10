@@ -1,0 +1,72 @@
+/*
+ * The side panel of Redmine Help (docs/README.md#side-panel).
+ *
+ * Redmine has no side panel, so this file holds only what core cannot give:
+ * the panel's frame and position. Its content uses core's classes (the
+ * sidebar's colors and border, .contextual, .icon and .icon-only, div.wiki,
+ * dl#search-results), and the colors are core's variables, so that themes
+ * reach the panel as they reach the sidebar.
+ */
+
+:root {
+  /* About the width of core's sidebar at each window width. */
+  --help-panel-size: clamp(320px, 33vw, 480px);
+}
+
+/*
+ * Fixed at the end side of the window, the full height. The page makes room
+ * for it (below), so that the page stays in view and usable next to it.
+ * z-index 100 is jQuery UI's .ui-front: Redmine's dialogs open later in the
+ * document and come above the panel.
+ */
+.help-panel {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: 100;
+  box-sizing: border-box;
+  inline-size: var(--help-panel-size);
+  display: flex;
+  flex-direction: column;
+  background: var(--oc-gray-0);
+  border-inline-start: 1px solid var(--oc-gray-4);
+  font-size: 0.875rem;
+}
+.help-panel[hidden] { display: none; }
+/* Back is hidden on the first page; core's .icon (display: inline-flex)
+   would show it. */
+.help-panel [hidden] { display: none; }
+
+/* The header stays; the content scrolls under it. The padding is the sidebar's. */
+.help-panel-header {
+  padding-block: 10px 0;
+  padding-inline: 20px 8px;
+  border-block-end: 1px solid var(--oc-gray-4);
+}
+.help-panel-content {
+  flex: 1;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-block: 10px 20px;
+  padding-inline: 20px 8px;
+}
+
+/* The page makes room for the panel. */
+html.help-panel-open #wrapper { margin-inline-end: var(--help-panel-size); }
+/* Core's sticky issue header is fixed to the window's width as well. */
+html.help-panel-open #sticky-issue-header { inset-inline-end: var(--help-panel-size); }
+
+/*
+ * Narrow windows (Redmine's responsive breakpoint, responsive.css): the
+ * panel covers the window, above the fixed header (z-index 9999 there).
+ */
+@media screen and (max-width: 899px) {
+  .help-panel {
+    inline-size: auto;
+    inset-inline-start: 0;
+    z-index: 10000;
+    border-inline-start: 0;
+  }
+  html.help-panel-open #wrapper { margin-inline-end: 0; }
+  html.help-panel-open #sticky-issue-header { inset-inline-end: 0; }
+}

@@ -18,6 +18,26 @@ module RedmineHelp
       end
     end
 
+    test "without JavaScript the Help link opens the help page in a new tab, as Redmine's does" do
+      with_help do
+        log_user('admin', 'admin')
+        get '/projects/ecookbook/issues/new'
+        assert_select '#top-menu a.help[target="_blank"][rel="noopener"][href=?]', '/help/context?a=new&c=issues'
+        get '/help/context?a=new&c=issues'
+        assert_redirected_to '/help/user/issues'
+      end
+    end
+
+    test 'the side panel is loaded on Redmine pages, not on the help pages' do
+      with_help do
+        get '/projects/ecookbook/issues'
+        assert_select 'head script[src*="plugin_assets/redmine_help/help_panel"][defer]'
+        assert_select 'head link[href*="plugin_assets/redmine_help/help_panel"]'
+        get '/help/user/issues'
+        assert_select 'head script[src*="help_panel"]', 0
+      end
+    end
+
     test 'images are served by their URLs, with @ and dots in their names' do
       with_help do
         get '/help/user/issues', params: { lang: 'en' }

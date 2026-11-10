@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.license = 'GPL-2.0-or-later'
   spec.homepage = 'https://github.com/redmine-kit/redmine_help'
   spec.required_ruby_version = '>= 4.0'
-  spec.files = Dir['{init.rb,LICENSE}', '{app,config,lib}/**/*']
+  spec.files = Dir['{init.rb,LICENSE}', '{app,assets,config,lib}/**/*']
   spec.require_paths = []
   spec.metadata['github_repo'] = 'ssh://github.com/redmine-kit/redmine_help'
   spec.metadata['rubygems_mfa_required'] = 'true'
