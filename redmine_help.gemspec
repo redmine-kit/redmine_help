@@ -13,7 +13,10 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/redmine-kit/redmine_help'
   spec.required_ruby_version = '>= 4.0'
   spec.files = Dir['{init.rb,LICENSE}', '{app,assets,config,lib}/**/*']
-  spec.require_paths = []
+  # RubyGems needs a require path: lib (the default), as in
+  # redmine_serverless_s3. Bundler may then require lib/redmine_help.rb before
+  # Redmine starts; it only defines the module, and init.rb sets the plugin up.
+  spec.require_paths = ['lib']
   spec.metadata['github_repo'] = 'ssh://github.com/redmine-kit/redmine_help'
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
