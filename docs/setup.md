@@ -51,17 +51,17 @@ Without the guide, the help shows only the help of other plugins and the operato
 | `REDMINE_HELP_GUIDE_PATH` | The guide's directory (a checkout of redmine-guide) | Optional. Default: the gem `redmine-guide` |
 | `REDMINE_HELP_EXTRA_PATH` | The operator's directory: added pages, support blocks, replaced topics ([extending.md](extending.md#the-operators-directory)) | Optional |
 
-The Help link opens in a new tab, as Redmine's own link does.
+The Help link opens the side panel ([README.md](README.md#side-panel)). Without JavaScript, it opens the help page in a new tab, as Redmine's own link does.
 
 ## Tests
 
-The tests run in Docker with Redmine 7.0.3 and PostgreSQL 16:
+The tests run in Docker with Redmine 7.0.3 and PostgreSQL 16; the system tests of the side panel (`test/system`) run in headless Chromium:
 
 ```sh
 bin/test              # the plugin's tests
 bin/test --redmine    # also every Redmine test, with the plugin installed
 REDMINE_BRANCH=master bin/test
-bin/services --down   # stops PostgreSQL
+bin/services --down   # stops PostgreSQL and Chromium
 bin/lint              # RuboCop
 ```
 

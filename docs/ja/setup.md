@@ -63,19 +63,19 @@ export REDMINE_HELP_GUIDE_PATH=/srv/redmine-guide
 | `REDMINE_HELP_GUIDE_PATH` | ガイドのディレクトリ(redmine-guide のチェックアウト) | 省略可。デフォルトは gem の `redmine-guide` |
 | `REDMINE_HELP_EXTRA_PATH` | 運用者のディレクトリ。足すページ、囲み、置き換えるトピック([extending.md](extending.md#the-operators-directory)) | 省略可 |
 
-「ヘルプ」は、Redmine の元のリンクと同じく、新しいタブで開きます。
+「ヘルプ」は、サイドパネルを開きます ([README.md](README.md#side-panel))。JavaScript がないときは、Redmine の元のリンクと同じく、ヘルプページを新しいタブで開きます。
 
 <a id="tests"></a>
 
 ## テスト
 
-テストは、Docker の中の Redmine 7.0.3 と PostgreSQL 16 で動かします。
+テストは、Docker の中の Redmine 7.0.3 と PostgreSQL 16 で動かします。サイドパネルのシステムテスト (`test/system`) は、ヘッドレスの Chromium で動かします。
 
 ```sh
 bin/test              # プラグインのテスト
 bin/test --redmine    # プラグインを入れた状態で、Redmine のすべてのテストも
 REDMINE_BRANCH=master bin/test
-bin/services --down   # PostgreSQL を止める
+bin/services --down   # PostgreSQL と Chromium を止める
 bin/lint              # RuboCop
 ```
 

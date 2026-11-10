@@ -1,6 +1,6 @@
 # Mapping screens to topics
 
-The Help link in the header goes to `/help/context` with the screen it was clicked on: the controller, the action, and the parameters `tab` and `type` when the screen has them. The plugin looks the screen up in the maps and opens the topic.
+The Help link in the header goes to `/help/context` with the screen it was clicked on: the controller, the action, and the parameters `tab` and `type` when the screen has them. The plugin looks the screen up in the maps and opens the topic. The side panel asks the same URL with `panel=1`, which renders the topic for the panel instead of redirecting to it; `show` and `search` take `panel=1` too.
 
 ## The map
 
@@ -25,6 +25,8 @@ For a screen, the keys are tried in this order, and the first key found in any m
 3. `controller` (every action of the controller)
 
 Within one key, the maps are tried in the order of precedence: the operator's directory, then the plugins, then the guide. A screen with no key opens the contents (`/help`).
+
+When a tab is switched in the page (without loading the page again), the side panel looks the screen up with the new tab, and moves only when a key with the tab (`controller#action?tab=value`) matches. A tab without its own key keeps the panel where it is.
 
 ## Anchors
 
