@@ -4,7 +4,7 @@
 [![Coverage](https://img.shields.io/codecov/c/github/redmine-kit/redmine_help?label=Coverage)](https://codecov.io/gh/redmine-kit/redmine_help)
 [![License](https://img.shields.io/github/license/redmine-kit/redmine_help?label=License)](LICENSE)
 
-Redmine Help(`redmine_help`)は、Redmine のヘッダーの「ヘルプ」を、いま開いている画面のヘルプに変える Redmine のプラグインです。ヘルプはユーザーの言語で表示します。ヘルプの中身は Markdown で、[redmine-kit/redmine-guide](https://github.com/redmine-kit/redmine-guide) の Redmine のガイド、ほかのプラグインが `help/` に持つヘルプ、運用者が足すページ(社内の問い合わせ先や、ホスティングのサービスのサポートなど)です。
+Redmine Help (`redmine_help`) は、Redmine のヘッダーの「ヘルプ」を、いま開いている画面のヘルプに変える Redmine のプラグインです。ヘルプはユーザーの言語で表示します。ヘルプの中身は Markdown で、[redmine-kit/redmine-guide](https://github.com/redmine-kit/redmine-guide) の Redmine のガイド、ほかのプラグインが `help/` に持つヘルプ、運用者が追加するページ (社内の問い合わせ先や、ホスティングのサービスのサポートなど) です。
 
 [English](README.md)
 
