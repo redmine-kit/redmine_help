@@ -31,7 +31,7 @@ A topic missing in the user's language is shown in English, with a note.
 
 ## Plugins
 
-A Redmine plugin adds help by shipping a `help/` directory at its root with the layout above. Redmine Help finds it in every installed plugin; nothing needs to be registered. The plugin's sections come after the guide's in the sidebar, and its `map.yml` maps the plugin's screens (its controllers) to its topics. Name the topics under the plugin's own directory (for example `serverless-ses/sending`) so that they do not clash with the guide's.
+A Redmine plugin adds help by shipping a `help/` directory at its root with the layout above. Redmine Help finds it in every installed plugin; nothing needs to be registered. The plugin's sections come after the guide's in the sidebar, and its `map.yml` maps the plugin's screens (its controllers) to its topics. Name the topics under the plugin's own directory (for example `aws-ses/sending`) so that they do not clash with the guide's.
 
 ## The operator's directory
 

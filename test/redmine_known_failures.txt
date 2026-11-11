@@ -1,6 +1,6 @@
 # Tests of Redmine that fail with the current gems, with the reason. bin/test
 # --redmine leaves them out. Remove a line when the cause is fixed upstream.
-# The same list as redmine_serverless's test/redmine_known_failures.txt.
+# The same list as Serverless's test/core/known_failures.txt.
 
 # Nokogiri 1.19.5 removes CSS escapes from string arguments of custom
 # pseudo-classes. rails-dom-testing 2.3.0 passes a Regexp to :match as such a
