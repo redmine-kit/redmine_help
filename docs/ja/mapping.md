@@ -20,7 +20,7 @@ settings#index: admin/settings
 
 <a id="lookup"></a>
 
-## 探す順
+## 検索順序
 
 画面ごとに、次の順にキーを探し、どれかの対応表で最初に見つかったキーを使います。
 
