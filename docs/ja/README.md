@@ -14,8 +14,8 @@ Redmine Help (`redmine_help`) は、Redmine のヘッダーの「ヘルプ」を
 - **ユーザーの言語:** 翻訳があればユーザーの言語で、なければ英語で、その旨を添えて表示します。サイドバーで、ほかの言語に切り替えられます。
 - **Redmine の中に表示:** サイドパネルとヘルプページは、Redmine のサイドバーと Wiki のページと同じ形です。本文と目次、ヘルプの中の検索があり、ヘルプページにはサイドバーにガイドの章があります。
 - **Redmine のガイド:** redmine.org のガイドを Markdown にして翻訳したものです。別のリポジトリと gem の [redmine-guide](https://github.com/redmine-kit/redmine-guide) にあります。
-- **ほかのプラグインのヘルプ:** プラグインは、`help/` のディレクトリを持つだけで、自分のトピック、章、画面を足せます ([extending.md](extending.md#plugins))。
-- **運用者のページ:** `REDMINE_HELP_EXTRA_PATH` で指定したディレクトリから、ページ (社内の問い合わせ先、ホスティングのサービスのサポートなど)、すべてのページや一部のトピックに出す囲み、トピックの置き換えを足せます ([extending.md](extending.md#the-operators-directory))。
+- **ほかのプラグインのヘルプ:** プラグインは、`help/` のディレクトリを持つだけで、自分のトピック、章、画面を追加できます ([extending.md](extending.md#plugins))。
+- **運用者のページ:** `REDMINE_HELP_EXTRA_PATH` で指定したディレクトリから、ページ (社内の問い合わせ先、ホスティングのサービスのサポートなど)、すべてのページや一部のトピックに出す囲み、トピックの置き換えを追加できます ([extending.md](extending.md#the-operators-directory))。
 
 <a id="screen"></a>
 

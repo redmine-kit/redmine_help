@@ -15,7 +15,7 @@
 
 ### gem
 
-バージョンのタグごとに、プラグインを gem として GitHub Packages (`https://rubygems.pkg.github.com/redmine-kit`) に公開しています。GitHub Packages からインストールするには、公開のパッケージでも、`read:packages` のある GitHub のトークンが要ります。プラグインとガイドを `Gemfile.local` に足してインストールし、プラグインを `plugins/` にリンクします。
+バージョンのタグごとに、プラグインを gem として GitHub Packages (`https://rubygems.pkg.github.com/redmine-kit`) に公開しています。GitHub Packages からインストールするには、公開のパッケージでも、`read:packages` のある GitHub のトークンが要ります。プラグインとガイドを `Gemfile.local` に追加してインストールし、プラグインを `plugins/` にリンクします。
 
 ```ruby
 source 'https://rubygems.pkg.github.com/redmine-kit' do
@@ -47,7 +47,7 @@ export REDMINE_HELP_GUIDE_PATH=/srv/redmine-guide
 
 ## ガイド
 
-ガイドの中身 (`en/` と `ja/` の Markdown、`index.yml` の章、`map.yml` の画面) は、このプラグインには入っていません。別のリポジトリの [redmine-guide](https://github.com/redmine-kit/redmine-guide) にあります。ガイドを redmine.org の更新に合わせ、翻訳を別の予定で進められるようにするためです。プラグインは、次の順にガイドを探します。
+ガイドの中身 (`en/` と `ja/` の Markdown、`index.yml` の章、`map.yml` の画面) は、このプラグインには含まれていません。別のリポジトリの [redmine-guide](https://github.com/redmine-kit/redmine-guide) にあります。ガイドを redmine.org の更新に合わせ、翻訳を別の予定で進められるようにするためです。プラグインは、次の順にガイドを探します。
 
 1. `REDMINE_HELP_GUIDE_PATH`: redmine-guide のチェックアウト
 2. gem の `redmine-guide` (Bundler が読み込んでいるとき)
@@ -61,7 +61,7 @@ export REDMINE_HELP_GUIDE_PATH=/srv/redmine-guide
 | キー | 説明 | パラメーター |
 | --- | --- | --- |
 | `REDMINE_HELP_GUIDE_PATH` | ガイドのディレクトリ (redmine-guide のチェックアウト) | 省略可。デフォルトは gem の `redmine-guide` |
-| `REDMINE_HELP_EXTRA_PATH` | 運用者のディレクトリ。足すページ、囲み、置き換えるトピック ([extending.md](extending.md#the-operators-directory)) | 省略可 |
+| `REDMINE_HELP_EXTRA_PATH` | 運用者のディレクトリ。追加するページ、囲み、置き換えるトピック ([extending.md](extending.md#the-operators-directory)) | 省略可 |
 
 「ヘルプ」は、サイドパネルを開きます ([README.md](README.md#side-panel))。JavaScript がないときは、Redmine の元のリンクと同じく、ヘルプページを新しいタブで開きます。
 
@@ -73,7 +73,7 @@ export REDMINE_HELP_GUIDE_PATH=/srv/redmine-guide
 
 ```sh
 bin/test              # プラグインのテスト
-bin/test --redmine    # プラグインを入れた状態で、Redmine のすべてのテストも
+bin/test --redmine    # プラグインをインストールした状態で、Redmine のすべてのテストも
 REDMINE_BRANCH=master bin/test
 bin/services --down   # PostgreSQL と Chromium を止める
 bin/lint              # RuboCop
