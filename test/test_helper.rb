@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-# Coverage of the plugin's own files (bin/test sets PLUGIN_COVERAGE for the
-# plugin's tests), written as Cobertura XML to coverage/ for Codecov.
+# Coverage of the plugin's own files (COVERAGE=1 bin/test sets PLUGIN_COVERAGE
+# for the plugin's tests), written as Cobertura XML to coverage/ for Codecov.
+# It starts before Redmine loads, so that lib/ and app/ are counted.
 unless ENV['PLUGIN_COVERAGE'].to_s.empty?
   require 'simplecov'
   require 'simplecov-cobertura'

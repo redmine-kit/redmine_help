@@ -75,8 +75,11 @@ export REDMINE_HELP_GUIDE_PATH=/srv/redmine-guide
 bin/test              # プラグインのテスト
 bin/test --redmine    # プラグインをインストールした状態で、Redmine のすべてのテストも
 REDMINE_BRANCH=master bin/test
+COVERAGE=1 bin/test   # カバレッジを coverage/coverage.xml に出力する
 bin/services --down   # PostgreSQL と Chromium を止める
 bin/lint              # RuboCop
 ```
+
+`COVERAGE=1` を付けると、プラグインのテストは、プラグイン自身のファイルのカバレッジ (SimpleCov。Cobertura の XML の `coverage/coverage.xml`) も出力します。CI は Redmine 7.0.3 でこれを有効にし、レポートを `plugin` フラグで [Codecov](https://codecov.io/gh/redmine-kit/redmine_help) に送信します。送信の認証は OIDC (`id-token: write`) なので、トークンをシークレットに保存しません。Codecov のステータスは参考情報で、コミットや Pull Request を失敗にしません (`codecov.yml`)。
 
 テストは、redmine-guide ではなく、`test/fixtures/help` の小さなガイドを使います。この資料のスクリーンショットは `bin/screenshots` で作ります。

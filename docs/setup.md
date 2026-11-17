@@ -61,8 +61,11 @@ The tests run in Docker with Redmine 7.0.3 and PostgreSQL 16; the system tests o
 bin/test              # the plugin's tests
 bin/test --redmine    # also every Redmine test, with the plugin installed
 REDMINE_BRANCH=master bin/test
+COVERAGE=1 bin/test   # with the coverage in coverage/coverage.xml
 bin/services --down   # stops PostgreSQL and Chromium
 bin/lint              # RuboCop
 ```
+
+With `COVERAGE=1`, the plugin's tests also write the coverage of the plugin's own files (SimpleCov, Cobertura XML in `coverage/coverage.xml`). CI sets it on Redmine 7.0.3 and uploads the report to [Codecov](https://codecov.io/gh/redmine-kit/redmine_help) with the flag `plugin`. The upload authenticates with OIDC (`id-token: write`), so no token is stored as a secret. Codecov's statuses are informational and never fail a commit or a pull request (`codecov.yml`).
 
 The tests use the small guide in `test/fixtures/help`, not redmine-guide. The screenshots of these docs are made with `bin/screenshots`.

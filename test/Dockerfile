@@ -20,7 +20,11 @@ RUN if [ -n "$REDMINE_BRANCH" ]; then \
 WORKDIR /redmine
 COPY test/database.yml config/database.yml
 COPY . plugins/redmine_help/
-RUN printf "gem 'simplecov-cobertura', group: :test\n" > Gemfile.local \
+# simplecov-cobertura writes the coverage that Codecov reads (bin/test with
+# COVERAGE). 3.2.0 on Redmine 7.0.3, whose Gemfile pins simplecov ~> 0.22.0
+# (4.0 needs simplecov 1.x); 4.0.0 on master, whose Gemfile has simplecov 1.3.
+RUN if [ -n "$REDMINE_BRANCH" ]; then cobertura=4.0.0; else cobertura=3.2.0; fi \
+  && printf "gem 'simplecov-cobertura', '%s', group: :test\n" "$cobertura" > Gemfile.local \
   && bundle config set --local without development \
   && bundle install --jobs 4
 ENV RAILS_ENV=test

@@ -45,6 +45,8 @@ jobs:
       id-token: write
     env:
       REDMINE_BRANCH: ${{ matrix.redmine == 'master' && 'master' || '' }}
+      # The plugin's coverage (bin/test), on the release whose report is uploaded.
+      COVERAGE: ${{ matrix.redmine == 'master' && '' || '1' }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -57,6 +59,7 @@ jobs:
         with:
           use_oidc: true
           files: coverage/coverage.xml
+          flags: plugin
           fail_ci_if_error: false
       - if: always()
         run: bin/services --down
