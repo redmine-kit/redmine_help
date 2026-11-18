@@ -19,14 +19,14 @@
 
 ```ruby
 source 'https://rubygems.pkg.github.com/redmine-kit' do
-  gem 'redmine_help'
+  gem 'redmine_kit_help'
   gem 'redmine-guide'
 end
 ```
 
 ```sh
 bundle install
-ln -s "$(bundle info --path redmine_help)" plugins/redmine_help
+ln -s "$(bundle info --path redmine_kit_help)" plugins/redmine_kit_help
 ```
 
 Redmine を再起動します。マイグレーションはありません。
@@ -38,9 +38,9 @@ Redmine を再起動します。マイグレーションはありません。
 プラグインを `plugins/` に、ガイドを任意の場所にクローンし、プラグインにガイドの場所を指定します。
 
 ```sh
-git clone https://github.com/redmine-kit/redmine_help.git plugins/redmine_help
+git clone https://github.com/redmine-kit/redmine_help.git plugins/redmine_kit_help
 git clone https://github.com/redmine-kit/redmine-guide.git /srv/redmine-guide
-export REDMINE_HELP_GUIDE_PATH=/srv/redmine-guide
+export REDMINE_KIT_HELP_GUIDE_PATH=/srv/redmine-guide
 ```
 
 <a id="the-guide"></a>
@@ -49,7 +49,7 @@ export REDMINE_HELP_GUIDE_PATH=/srv/redmine-guide
 
 ガイドの中身 (`en/` と `ja/` の Markdown、`index.yml` の章、`map.yml` の画面) は、このプラグインには含まれていません。別のリポジトリの [redmine-guide](https://github.com/redmine-kit/redmine-guide) にあります。ガイドを redmine.org の更新に合わせ、翻訳を別の予定で進められるようにするためです。プラグインは、次の順にガイドを探します。
 
-1. `REDMINE_HELP_GUIDE_PATH`: redmine-guide のチェックアウト
+1. `REDMINE_KIT_HELP_GUIDE_PATH`: redmine-guide のチェックアウト
 2. gem の `redmine-guide` (Bundler が読み込んでいるとき)
 
 ガイドがないときは、ほかのプラグインのヘルプと運用者のページだけを表示し、目次にガイドがインストールされていないことを出します。
@@ -60,8 +60,8 @@ export REDMINE_HELP_GUIDE_PATH=/srv/redmine-guide
 
 | キー | 説明 | パラメーター |
 | --- | --- | --- |
-| `REDMINE_HELP_GUIDE_PATH` | ガイドのディレクトリ (redmine-guide のチェックアウト) | 省略可。デフォルトは gem の `redmine-guide` |
-| `REDMINE_HELP_EXTRA_PATH` | 運用者のディレクトリ。追加するページ、囲み、置き換えるトピック ([extending.md](extending.md#the-operators-directory)) | 省略可 |
+| `REDMINE_KIT_HELP_GUIDE_PATH` | ガイドのディレクトリ (redmine-guide のチェックアウト) | 省略可。デフォルトは gem の `redmine-guide` |
+| `REDMINE_KIT_HELP_EXTRA_PATH` | 運用者のディレクトリ。追加するページ、囲み、置き換えるトピック ([extending.md](extending.md#the-operators-directory)) | 省略可 |
 
 「ヘルプ」は、サイドパネルを開きます ([README.md](README.md#side-panel))。JavaScript がないときは、Redmine の元のリンクと同じく、ヘルプページを新しいタブで開きます。
 

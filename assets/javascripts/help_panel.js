@@ -1,5 +1,5 @@
 /*
- * The side panel of Redmine Help (docs/README.md#side-panel).
+ * The side panel of Redmine Kit Help (docs/README.md#side-panel).
  *
  * The header's Help link opens and closes a panel at the end side of the
  * window with the help for the current screen, laid over the page. The
@@ -12,7 +12,7 @@
   'use strict';
 
   var PANEL_ID = 'help-panel';
-  var STORAGE_KEY = 'redmine_help.panel';
+  var STORAGE_KEY = 'redmine_kit_help.panel';
 
   var panel = null;
   var helpRoot = null;

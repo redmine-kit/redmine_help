@@ -1,10 +1,10 @@
-# Redmine Help
+# Redmine Kit Help
 
 [![CI](https://img.shields.io/github/actions/workflow/status/redmine-kit/redmine_help/ci.yml?branch=main&label=CI)](https://github.com/redmine-kit/redmine_help/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/redmine-kit/redmine_help?label=Coverage)](https://codecov.io/gh/redmine-kit/redmine_help)
 [![License](https://img.shields.io/github/license/redmine-kit/redmine_help?label=License)](LICENSE)
 
-Redmine Help (`redmine_help`) は、Redmine のヘッダーの「ヘルプ」を、いま開いている画面のヘルプに変える Redmine のプラグインです。ヘルプはユーザーの言語で表示します。ヘルプの中身は Markdown で、[redmine-kit/redmine-guide](https://github.com/redmine-kit/redmine-guide) の Redmine のガイド、ほかのプラグインが `help/` に持つヘルプ、運用者が追加するページ (社内の問い合わせ先や、ホスティングのサービスのサポートなど) です。
+Redmine Kit Help (`redmine_kit_help`) は、Redmine のヘッダーの「ヘルプ」を、いま開いている画面のヘルプに変える Redmine のプラグインです。ヘルプはユーザーの言語で表示します。ヘルプの中身は Markdown で、[redmine-kit/redmine-guide](https://github.com/redmine-kit/redmine-guide) の Redmine のガイド、ほかのプラグインが `help/` に持つヘルプ、運用者が追加するページ (社内の問い合わせ先や、ホスティングのサービスのサポートなど) です。
 
 [English](README.md)
 
@@ -32,4 +32,4 @@ Redmine Help (`redmine_help`) は、Redmine のヘッダーの「ヘルプ」を
 
 ## ライセンス
 
-Redmine Help は、GNU General Public License バージョン 2 またはそれ以降のバージョンで公開しています。[LICENSE](LICENSE) を参照してください。Redmine の非公式のプラグインです。
+Redmine Kit Help は、GNU General Public License バージョン 2 またはそれ以降のバージョンで公開しています。[LICENSE](LICENSE) を参照してください。Redmine の非公式のプラグインです。

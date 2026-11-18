@@ -5,8 +5,8 @@
 # linked into Redmine's plugins/ (docs/setup.md#installation). The guide's
 # content is a separate gem, redmine-guide (docs/setup.md#the-guide).
 Gem::Specification.new do |spec|
-  spec.name = 'redmine_help'
-  spec.version = File.read(File.join(__dir__, 'lib/redmine_help.rb'))[/VERSION = '([^']+)'/, 1]
+  spec.name = 'redmine_kit_help'
+  spec.version = File.read(File.join(__dir__, 'lib/redmine_kit/help.rb'))[/VERSION = '([^']+)'/, 1]
   spec.summary = "Opens help for the current Redmine screen in the user's language"
   spec.authors = ['Redmine Kit']
   spec.license = 'GPL-2.0-or-later'
@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 4.0'
   spec.files = Dir['{init.rb,LICENSE}', '{app,assets,config,lib}/**/*']
   # RubyGems needs a require path: lib (the default), as in
-  # redmine_aws_s3. Bundler may then require lib/redmine_help.rb before
+  # redmine_aws_s3. Bundler may then require lib/redmine_kit/help.rb before
   # Redmine starts; it only defines the module, and init.rb sets the plugin up.
   spec.require_paths = ['lib']
   spec.metadata['github_repo'] = 'ssh://github.com/redmine-kit/redmine_help'

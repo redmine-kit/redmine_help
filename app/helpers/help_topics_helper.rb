@@ -37,7 +37,7 @@ module HelpTopicsHelper
     return if link['href'].match?(%r{\A([a-z]+:|//|#|/)}i) || !path.end_with?('.md')
 
     topic = help_join(dir, path.delete_suffix('.md'))
-    anchor = RedmineHelp.library.anchor(topic, @language, anchor)
+    anchor = RedmineKit::Help.library.anchor(topic, @language, anchor)
     link['href'] = help_topic_path(topic, lang: params[:lang].presence, anchor: anchor.presence)
   end
 
@@ -69,7 +69,7 @@ module HelpTopicsHelper
 
   # Links to the help in the other languages there is help in.
   def help_language_links
-    RedmineHelp.library.languages.map do |code|
+    RedmineKit::Help.library.languages.map do |code|
       name = ::I18n.t(:general_lang_name, locale: code, default: code)
       if code == @language
         content_tag('strong', name)

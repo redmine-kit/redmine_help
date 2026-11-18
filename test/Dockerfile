@@ -19,7 +19,7 @@ RUN if [ -n "$REDMINE_BRANCH" ]; then \
   && rm /tmp/redmine.tar.gz
 WORKDIR /redmine
 COPY test/database.yml config/database.yml
-COPY . plugins/redmine_help/
+COPY . plugins/redmine_kit_help/
 # simplecov-cobertura writes the coverage that Codecov reads (bin/test with
 # COVERAGE). 3.2.0 on Redmine 7.0.3, whose Gemfile pins simplecov ~> 0.22.0
 # (4.0 needs simplecov 1.x); 4.0.0 on master, whose Gemfile has simplecov 1.3.

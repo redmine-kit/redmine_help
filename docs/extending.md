@@ -31,11 +31,11 @@ A topic missing in the user's language is shown in English, with a note.
 
 ## Plugins
 
-A Redmine plugin adds help by shipping a `help/` directory at its root with the layout above. Redmine Help finds it in every installed plugin; nothing needs to be registered. The plugin's sections come after the guide's in the sidebar, and its `map.yml` maps the plugin's screens (its controllers) to its topics. Name the topics under the plugin's own directory (for example `aws-ses/sending`) so that they do not clash with the guide's.
+A Redmine plugin adds help by shipping a `help/` directory at its root with the layout above. Redmine Kit Help finds it in every installed plugin; nothing needs to be registered. The plugin's sections come after the guide's in the sidebar, and its `map.yml` maps the plugin's screens (its controllers) to its topics. Name the topics under the plugin's own directory (for example `aws-ses/sending`) so that they do not clash with the guide's.
 
 ## The operator's directory
 
-`REDMINE_HELP_EXTRA_PATH` points at a directory with the same layout, kept outside Redmine (for example in a derived image or a mounted volume). It can:
+`REDMINE_KIT_HELP_EXTRA_PATH` points at a directory with the same layout, kept outside Redmine (for example in a derived image or a mounted volume). It can:
 
 - **add pages:** topics and sections of its own, such as whom to contact in the company or the support of a hosted service. Its sections come first in the sidebar.
 - **add a block to pages:** `<language>/_support.md` is shown below every page, `<language>/_support/<topic>.md` below one topic (for example the help desk's number, or a note on how the company uses issues). Without a block in the user's language, the English block is shown.

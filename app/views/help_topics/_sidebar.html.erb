@@ -4,7 +4,7 @@
   <li><%= link_to l(:label_table_of_contents), help_index_path(lang: params[:lang].presence) %></li>
 </ul>
 
-<% RedmineHelp.library.sections(@language).each do |section| %>
+<% RedmineKit::Help.library.sections(@language).each do |section| %>
   <h3><%= section.title(@language) %></h3>
   <ul>
     <% section.topics.each do |topic| %>
@@ -13,7 +13,7 @@
   </ul>
 <% end %>
 
-<% if RedmineHelp.library.languages.size > 1 %>
+<% if RedmineKit::Help.library.languages.size > 1 %>
   <h3><%= l(:field_language) %></h3>
   <p><%= safe_join(help_language_links, ' | ') %></p>
 <% end %>

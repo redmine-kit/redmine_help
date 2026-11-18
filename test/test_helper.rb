@@ -20,34 +20,38 @@ end
 
 require File.expand_path('../../../test/test_helper', __dir__)
 
-module RedmineHelp
-  module TestHelper
-    FIXTURES = File.expand_path('fixtures/help', __dir__)
+module RedmineKit
+  module Help
+    module TestHelper
+      FIXTURES = File.expand_path('fixtures/help', __dir__)
 
-    # The help of the fixtures: the guide, a plugin's help/ and the
-    # operator's directory, as the given environment would have them.
-    def with_help(...)
-      use_help(...)
-      yield
-    ensure
-      restore_help
-    end
+      # The help of the fixtures: the guide, a plugin's help/ and the
+      # operator's directory, as the given environment would have them.
+      def with_help(...)
+        use_help(...)
+        yield
+      ensure
+        restore_help
+      end
 
-    def use_help(guide: true, extra: false, plugin: false)
-      @saved_help_env = ENV.to_h.slice('REDMINE_HELP_GUIDE_PATH', 'REDMINE_HELP_EXTRA_PATH')
-      ENV['REDMINE_HELP_GUIDE_PATH'] = guide ? File.join(FIXTURES, 'guide') : nil
-      ENV['REDMINE_HELP_EXTRA_PATH'] = extra ? File.join(FIXTURES, 'extra') : nil
-      plugins = plugin ? [RedmineHelp::Source.new('sample', File.join(FIXTURES, 'plugin'), :plugin)] : []
-      RedmineHelp::Source.stubs(:plugins).returns(plugins)
-      RedmineHelp.reset!
-    end
+      def use_help(guide: true, extra: false, plugin: false)
+        @saved_help_env = ENV.to_h.slice('REDMINE_KIT_HELP_GUIDE_PATH', 'REDMINE_KIT_HELP_EXTRA_PATH')
+        ENV['REDMINE_KIT_HELP_GUIDE_PATH'] = guide ? File.join(FIXTURES, 'guide') : nil
+        ENV['REDMINE_KIT_HELP_EXTRA_PATH'] = extra ? File.join(FIXTURES, 'extra') : nil
+        plugins = plugin ? [RedmineKit::Help::Source.new('sample', File.join(FIXTURES, 'plugin'), :plugin)] : []
+        RedmineKit::Help::Source.stubs(:plugins).returns(plugins)
+        RedmineKit::Help.reset!
+      end
 
-    def restore_help
-      RedmineHelp::Source.unstub(:plugins)
-      saved = @saved_help_env || {}
-      saved.each { |key, value| ENV[key] = value }
-      %w[REDMINE_HELP_GUIDE_PATH REDMINE_HELP_EXTRA_PATH].each { |key| ENV.delete(key) unless saved.key?(key) }
-      RedmineHelp.reset!
+      def restore_help
+        RedmineKit::Help::Source.unstub(:plugins)
+        saved = @saved_help_env || {}
+        saved.each { |key, value| ENV[key] = value }
+        %w[REDMINE_KIT_HELP_GUIDE_PATH REDMINE_KIT_HELP_EXTRA_PATH].each do |key|
+          ENV.delete(key) unless saved.key?(key)
+        end
+        RedmineKit::Help.reset!
+      end
     end
   end
 end

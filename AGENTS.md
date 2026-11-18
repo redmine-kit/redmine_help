@@ -4,7 +4,7 @@ Guidelines for people and coding agents working in this repository. See [README.
 
 ## What this project does
 
-Redmine Help (`redmine_help`) is a Redmine plugin that points the header's Help link at help for the current screen, in the user's language, shown inside Redmine. The plugin holds the code only. The Redmine guide's content (Markdown, sections, the map from screens to topics) is [redmine-guide](https://github.com/redmine-kit/redmine-guide); other plugins ship their own `help/`; operators add a directory of their own (`REDMINE_HELP_EXTRA_PATH`).
+Redmine Kit Help (`redmine_kit_help`) is a Redmine plugin that points the header's Help link at help for the current screen, in the user's language, shown inside Redmine. The plugin holds the code only. The Redmine guide's content (Markdown, sections, the map from screens to topics) is [redmine-guide](https://github.com/redmine-kit/redmine-guide); other plugins ship their own `help/`; operators add a directory of their own (`REDMINE_KIT_HELP_EXTRA_PATH`).
 
 ## Rules
 

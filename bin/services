@@ -7,7 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 source bin/container_cli
 if [[ "$cli" == docker ]]; then
-  compose=(docker compose -f test/compose.yml -p redmine-help-test --profile browser)
+  compose=(docker compose -f test/compose.yml -p redmine-kit-help-test --profile browser)
   if [[ "${1:-}" == "--down" ]]; then
     "${compose[@]}" down -v
     exit 0
@@ -16,9 +16,9 @@ if [[ "$cli" == docker ]]; then
   exit 0
 fi
 # Apple container: the same services as test/compose.yml.
-network=redmine-help-test
-postgres=redmine-help-test-postgres
-chrome=redmine-help-test-chrome
+network=redmine-kit-help-test
+postgres=redmine-kit-help-test-postgres
+chrome=redmine-kit-help-test-chrome
 if [[ "${1:-}" == "--down" ]]; then
   container rm -f "$postgres" "$chrome" >/dev/null 2>&1 || true
   container network rm "$network" >/dev/null 2>&1 || true

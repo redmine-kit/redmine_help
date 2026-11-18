@@ -1,5 +1,5 @@
 /*
- * The side panel of Redmine Help (docs/README.md#side-panel).
+ * The side panel of Redmine Kit Help (docs/README.md#side-panel).
  *
  * Redmine has no side panel, so this file holds only what core cannot give:
  * the panel's frame and position. Its content uses core's classes (the

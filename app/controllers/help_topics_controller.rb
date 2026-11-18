@@ -13,7 +13,7 @@ class HelpTopicsController < ApplicationController
 
   # The topic for the screen the Help link was clicked on.
   def context
-    key, (id, anchor) = library.lookup(params[:c].to_s, params[:a].to_s, params.permit(*RedmineHelp::MAP_PARAMS).to_h)
+    key, (id, anchor) = library.lookup(params[:c].to_s, params[:a].to_s, params.permit(*RedmineKit::Help::MAP_PARAMS).to_h)
     @topic = library.topic(id, @language) if id
     @anchor = library.anchor(id, @language, anchor).presence if @topic
     if panel?
@@ -54,7 +54,7 @@ class HelpTopicsController < ApplicationController
   private
 
   def library
-    RedmineHelp.library
+    RedmineKit::Help.library
   end
 
   def render_index

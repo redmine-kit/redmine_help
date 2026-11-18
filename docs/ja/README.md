@@ -1,6 +1,6 @@
-# Redmine Help
+# Redmine Kit Help
 
-Redmine Help (`redmine_help`) は、Redmine のヘッダーの「ヘルプ」を、ユーザーがいま開いている画面のヘルプに変えるプラグインです。ヘルプはユーザーの言語で、Redmine の中に表示します。
+Redmine Kit Help (`redmine_kit_help`) は、Redmine のヘッダーの「ヘルプ」を、ユーザーがいま開いている画面のヘルプに変えるプラグインです。ヘルプはユーザーの言語で、Redmine の中に表示します。
 
 - [準備](setup.md): 前提、インストール、ガイドの中身、設定、テスト
 - [画面とトピックの対応](mapping.md): 画面からヘルプのトピックへの対応表
@@ -15,7 +15,7 @@ Redmine Help (`redmine_help`) は、Redmine のヘッダーの「ヘルプ」を
 - **Redmine の中に表示:** サイドパネルとヘルプページは、Redmine のサイドバーと Wiki のページと同じ形です。本文と目次、ヘルプの中の検索があり、ヘルプページにはサイドバーにガイドの章があります。
 - **Redmine のガイド:** redmine.org のガイドを Markdown にして翻訳したものです。別のリポジトリと gem の [redmine-guide](https://github.com/redmine-kit/redmine-guide) にあります。
 - **ほかのプラグインのヘルプ:** プラグインは、`help/` のディレクトリを持つだけで、自分のトピック、章、画面を追加できます ([extending.md](extending.md#plugins))。
-- **運用者のページ:** `REDMINE_HELP_EXTRA_PATH` で指定したディレクトリから、ページ (社内の問い合わせ先、ホスティングのサービスのサポートなど)、すべてのページや一部のトピックに出す囲み、トピックの置き換えを追加できます ([extending.md](extending.md#the-operators-directory))。
+- **運用者のページ:** `REDMINE_KIT_HELP_EXTRA_PATH` で指定したディレクトリから、ページ (社内の問い合わせ先、ホスティングのサービスのサポートなど)、すべてのページや一部のトピックに出す囲み、トピックの置き換えを追加できます ([extending.md](extending.md#the-operators-directory))。
 
 <a id="screen"></a>
 
@@ -83,4 +83,4 @@ Redmine にはサイドパネルがありません。サイドパネルの内容
 
 ## ライセンス
 
-Redmine Help は、GNU General Public License バージョン 2 またはそれ以降のバージョンで公開しています。[LICENSE](../../LICENSE) を参照してください。Redmine の非公式のプラグインです。
+Redmine Kit Help は、GNU General Public License バージョン 2 またはそれ以降のバージョンで公開しています。[LICENSE](../../LICENSE) を参照してください。Redmine の非公式のプラグインです。

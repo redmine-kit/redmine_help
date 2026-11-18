@@ -3,7 +3,7 @@
 require_relative '../test_helper'
 
 class HelpTopicsControllerTest < Redmine::ControllerTest
-  include RedmineHelp::TestHelper
+  include RedmineKit::Help::TestHelper
 
   def setup
     User.current = nil

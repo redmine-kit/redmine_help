@@ -1,6 +1,6 @@
 # Security
 
-Redmine Help is in early development.
+Redmine Kit Help is in early development.
 
 ## Reporting a vulnerability
 

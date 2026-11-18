@@ -10,14 +10,14 @@
 # shellcheck disable=SC2016
 set -euo pipefail
 cd "$(dirname "$0")/.."
-image=redmine-help-test${REDMINE_BRANCH:+-$REDMINE_BRANCH}
+image=redmine-kit-help-test${REDMINE_BRANCH:+-$REDMINE_BRANCH}
 source bin/container_cli
 bin/services >/dev/null
 address() { container inspect "$1" | sed -n 's/.*"ipv4Address" : "\([0-9.]*\)\/.*/\1/p' | head -1; }
 if [[ "$cli" == docker ]]; then
   # The services by their names on the network of test/compose.yml; Chromium
   # opens this container's test server by its network alias.
-  opts=(--network redmine-help-test_default --network-alias redmine-test)
+  opts=(--network redmine-kit-help-test_default --network-alias redmine-test)
   selenium=http://chrome:4444
   app_host='http://redmine-test:3001'
   chrome_args=--headless=new
@@ -27,8 +27,8 @@ else
   # containers don't find each other by name on a network of their own, and
   # the test server by this container's own address. More memory than the
   # 1 GB a container gets by default, for the parallel workers.
-  opts=(--network redmine-help-test -m 4G -e TEST_DATABASE_HOST="$(address redmine-help-test-postgres)")
-  selenium="http://$(address redmine-help-test-chrome):4444"
+  opts=(--network redmine-kit-help-test -m 4G -e TEST_DATABASE_HOST="$(address redmine-kit-help-test-postgres)")
+  selenium="http://$(address redmine-kit-help-test-chrome):4444"
   app_host='http://$(ruby -rsocket -e "print Socket.ip_address_list.find(&:ipv4_private?).ip_address"):3001'
   chrome_args=--headless=new,--disable-dev-shm-usage
   # The build's log only when it fails (`container build -q` doesn't return).
@@ -55,7 +55,7 @@ run_plugin() {
   local cov=()
   if [[ -n "${COVERAGE:-}" ]]; then
     rm -f coverage/.resultset.json && mkdir -p coverage
-    cov=(-e PLUGIN_COVERAGE=1 -v "$PWD/coverage:/redmine/plugins/redmine_help/coverage")
+    cov=(-e PLUGIN_COVERAGE=1 -v "$PWD/coverage:/redmine/plugins/redmine_kit_help/coverage")
   fi
   "$cli" run --rm "${opts[@]}" ${cov[@]+"${cov[@]}"} -e TEST_DATABASE="$db" \
     -e SELENIUM_REMOTE_URL="$selenium" -e CAPYBARA_SERVER_HOST=0.0.0.0 -e CAPYBARA_SERVER_PORT=3001 \
@@ -65,10 +65,10 @@ run_plugin() {
 # Redmine's tests that fail with the current gems for known reasons.
 known=$(grep -v -e '^#' -e '^$' test/redmine_known_failures.txt | sed 's/[.]/\\./g' | paste -sd '|' -)
 if [[ "${1:-}" == "--redmine" ]]; then
-  run_plugin bin/rails test plugins/redmine_help/test
+  run_plugin bin/rails test plugins/redmine_kit_help/test
   run bin/rails test --exclude "/^($known)\$/"
 elif (($#)); then
-  run_plugin bin/rails test "${@/#/plugins/redmine_help/}"
+  run_plugin bin/rails test "${@/#/plugins/redmine_kit_help/}"
 else
-  run_plugin bin/rails test plugins/redmine_help/test
+  run_plugin bin/rails test plugins/redmine_kit_help/test
 fi

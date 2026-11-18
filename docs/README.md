@@ -1,6 +1,6 @@
-# Redmine Help
+# Redmine Kit Help
 
-Redmine Help (`redmine_help`) turns the Help link in Redmine's header into help for the screen the user is on, in the user's language, shown inside Redmine.
+Redmine Kit Help (`redmine_kit_help`) turns the Help link in Redmine's header into help for the screen the user is on, in the user's language, shown inside Redmine.
 
 - [Setup](setup.md): requirements, installation, the guide's content, configuration, tests
 - [Mapping screens to topics](mapping.md): the map from a screen to its help topic
@@ -13,7 +13,7 @@ Redmine Help (`redmine_help`) turns the Help link in Redmine's header into help 
 - **Inside Redmine.** The panel and the help pages look like Redmine's sidebar and wiki pages: the text with its table of contents, a search over the help, and on the help pages the guide's sections in the sidebar.
 - **The Redmine guide.** The guide of redmine.org, converted to Markdown and translated, comes from [redmine-guide](https://github.com/redmine-kit/redmine-guide), a separate repository and gem.
 - **Help of other plugins.** A plugin adds its own topics, sections and screens by shipping a `help/` directory ([extending.md](extending.md#plugins)).
-- **The operator's pages.** An operator adds pages (whom to contact, the support of a hosted service), a block shown on every page or on some topics, and replacements of topics, from a directory set with `REDMINE_HELP_EXTRA_PATH` ([extending.md](extending.md#the-operators-directory)).
+- **The operator's pages.** An operator adds pages (whom to contact, the support of a hosted service), a block shown on every page or on some topics, and replacements of topics, from a directory set with `REDMINE_KIT_HELP_EXTRA_PATH` ([extending.md](extending.md#the-operators-directory)).
 
 ## Screen
 
@@ -61,4 +61,4 @@ The help is open to whoever can see Redmine: signed-in users, and anonymous user
 
 ## License
 
-Redmine Help is released under the GNU General Public License, version 2 or (at your option) any later version. See [LICENSE](../LICENSE). An unofficial Redmine plugin.
+Redmine Kit Help is released under the GNU General Public License, version 2 or (at your option) any later version. See [LICENSE](../LICENSE). An unofficial Redmine plugin.
