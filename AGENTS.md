@@ -12,7 +12,7 @@ Redmine Help (`redmine_help`) is a Redmine plugin that points the header's Help 
 - **Screens like Redmine's:** the help pages follow Redmine's wiki page (`.wiki.wiki-page`, Redmine's heading anchors and table of contents, the sidebar) and search results (`dl#search-results`). See the organization's rule on Redmine screens.
 - **No guide content here:** the guide's pages, translations, `index.yml` and `map.yml` belong to redmine-guide. Tests use the small guide in `test/fixtures/help`.
 - **Safe file access:** topics and images are read only from inside a source's directory; never show a raw exception.
-- **Tests:** `bin/test` (Docker, Redmine 7.0.3, PostgreSQL 16). Mapping, fallback, precedence and the header link have tests.
+- **Tests:** `bin/test` (Apple container or Docker, Redmine 7.0.3, PostgreSQL 16). Mapping, fallback, precedence and the header link have tests.
 - **No secrets in the repository.**
 
 ## Translations
@@ -37,3 +37,9 @@ The organization's translation rules apply to this plugin's locale files and doc
 - English, imperative mood, 72 characters or fewer in the first line, no trailing period.
 - One purpose per commit.
 - Do not rewrite pushed history.
+
+## Development environment
+
+- **Apple container first, Docker too** (a public repository). Scripts (`bin/test`, databases, emulators) use Apple container (`container`) when it is installed and running, else Docker (other machines, CI); `CONTAINER_CLI=docker|container` chooses. Docs give both, Apple container first. Images are built from the `Dockerfile` with either tool.
+- **Libraries at their latest versions.** Dependencies are kept at their latest stable releases, pinned exactly in the lockfiles; a version held back has its reason next to the pin.
+- Both are the organization's rules (`../AGENTS.md`, "Development environment").

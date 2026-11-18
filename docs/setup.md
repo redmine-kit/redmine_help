@@ -55,7 +55,7 @@ The Help link opens the side panel ([README.md](README.md#side-panel)). Without 
 
 ## Tests
 
-The tests run in Docker with Redmine 7.0.3 and PostgreSQL 16; the system tests of the side panel (`test/system`) run in headless Chromium:
+The tests run in a container with Redmine 7.0.3 and PostgreSQL 16 ([Apple container](https://github.com/apple/container) when it is installed and running, else Docker; `CONTAINER_CLI=container` or `CONTAINER_CLI=docker` chooses); the system tests of the side panel (`test/system`) run in headless Chromium:
 
 ```sh
 bin/test              # the plugin's tests
@@ -63,9 +63,9 @@ bin/test --redmine    # also every Redmine test, with the plugin installed
 REDMINE_BRANCH=master bin/test
 COVERAGE=1 bin/test   # with the coverage in coverage/coverage.xml
 bin/services --down   # stops PostgreSQL and Chromium
-bin/lint              # RuboCop
+bin/lint              # RuboCop (in the same container tool)
 ```
 
 With `COVERAGE=1`, the plugin's tests also write the coverage of the plugin's own files (SimpleCov, Cobertura XML in `coverage/coverage.xml`). CI sets it on Redmine 7.0.3 and uploads the report to [Codecov](https://codecov.io/gh/redmine-kit/redmine_help) with the flag `plugin`. The upload authenticates with OIDC (`id-token: write`), so no token is stored as a secret. Codecov's statuses are informational and never fail a commit or a pull request (`codecov.yml`).
 
-The tests use the small guide in `test/fixtures/help`, not redmine-guide. The screenshots of these docs are made with `bin/screenshots`.
+The tests use the small guide in `test/fixtures/help`, not redmine-guide. The screenshots of these docs are made with `bin/screenshots` (Docker only for now).

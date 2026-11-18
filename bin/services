@@ -1,11 +1,49 @@
 #!/usr/bin/env bash
 # Starts PostgreSQL 16 and headless Chromium for the tests, or stops them with
-# --down.
+# --down: in Apple container when it runs, else in Docker
+# (CONTAINER_CLI=container|docker chooses). No host ports: the tests run in a
+# container on the same network.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-compose=(docker compose -f test/compose.yml -p redmine-help-test --profile browser)
-if [[ "${1:-}" == "--down" ]]; then
-  "${compose[@]}" down -v
+source bin/container_cli
+if [[ "$cli" == docker ]]; then
+  compose=(docker compose -f test/compose.yml -p redmine-help-test --profile browser)
+  if [[ "${1:-}" == "--down" ]]; then
+    "${compose[@]}" down -v
+    exit 0
+  fi
+  "${compose[@]}" up -d --wait
   exit 0
 fi
-"${compose[@]}" up -d --wait
+# Apple container: the same services as test/compose.yml.
+network=redmine-help-test
+postgres=redmine-help-test-postgres
+chrome=redmine-help-test-chrome
+if [[ "${1:-}" == "--down" ]]; then
+  container rm -f "$postgres" "$chrome" >/dev/null 2>&1 || true
+  container network rm "$network" >/dev/null 2>&1 || true
+  exit 0
+fi
+running() { container inspect "$1" 2>/dev/null | grep -q '"state" : "running"'; }
+container network inspect "$network" >/dev/null 2>&1 || container network create "$network" >/dev/null
+if ! running "$postgres"; then
+  container rm -f "$postgres" >/dev/null 2>&1 || true
+  container run -d --name "$postgres" --network "$network" -m 1G --progress none \
+    -e POSTGRES_HOST_AUTH_METHOD=trust \
+    postgres:16@sha256:f9a7b9ebf6f56201f949db745e47bc423c0f0f8294bafe991cc10bf74b029657 >/dev/null
+fi
+# Chromium's shared memory: Apple container has no --shm-size, so bin/test
+# starts Chromium with --disable-dev-shm-usage instead.
+if ! running "$chrome"; then
+  container rm -f "$chrome" >/dev/null 2>&1 || true
+  container run -d --name "$chrome" --network "$network" -m 2G --progress none \
+    selenium/standalone-chromium:155.0-chromedriver-155.0-grid-4.51.0-20261010@sha256:c7c17cd79c62819a8329df00e610dbc4073c279da034a6f37135d454eb0d8870 \
+    >/dev/null
+fi
+for _ in $(seq 60); do
+  container exec "$postgres" pg_isready -q -U postgres &&
+    container exec "$chrome" /opt/bin/check-grid.sh --host 0.0.0.0 --port 4444 >/dev/null 2>&1 && exit 0
+  sleep 2
+done
+echo "PostgreSQL or Chromium did not start: container logs $postgres, container logs $chrome" >&2
+exit 1
