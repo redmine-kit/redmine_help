@@ -3,9 +3,9 @@
   <% if @section %>&#187; <%= @section.title(@language) %><% end %>
 </p>
 
-<%= render partial: 'redmine_help/topic' %>
+<%= render partial: 'help_topics/topic' %>
 
 <% content_for :sidebar do %>
-  <%= render partial: 'redmine_help/sidebar' %>
+  <%= render partial: 'help_topics/sidebar' %>
 <% end %>
 <% html_title(help_title(@topic), l(:label_help)) %>

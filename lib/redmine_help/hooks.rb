@@ -6,7 +6,7 @@ module RedmineHelp
   # link as a plain link.
   class Hooks < Redmine::Hook::ViewListener
     def view_layouts_base_html_head(context = {})
-      return '' if context[:controller].is_a?(RedmineHelpController)
+      return '' if context[:controller].is_a?(HelpTopicsController)
 
       safe_join([
                   stylesheet_link_tag('help_panel', plugin: 'redmine_help'),

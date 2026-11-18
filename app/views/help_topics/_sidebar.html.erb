@@ -1,5 +1,5 @@
 <h3><%= l(:label_help) %></h3>
-<%= render partial: 'redmine_help/search_form', locals: { id: 'help-search' } %>
+<%= render partial: 'help_topics/search_form', locals: { id: 'help-search' } %>
 <ul>
   <li><%= link_to l(:label_table_of_contents), help_index_path(lang: params[:lang].presence) %></li>
 </ul>

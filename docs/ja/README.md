@@ -59,7 +59,7 @@ Redmine Help (`redmine_help`) は、Redmine のヘッダーの「ヘルプ」を
 
 ### 文言
 
-サイドパネルは Redmine の文言を使います。「ヘルプ」(`label_help`)、「戻る」(`button_back`)、「全画面で表示」(`label_open_in_full_view`)、「目次」(`label_table_of_contents`)、「検索」(`label_search`) です。「閉じる」だけはプラグインの文言 (`button_redmine_help_close`: Close、閉じる) です。Redmine の `button_close` は、プロジェクトを終了する操作の文言 (日本語は「終了」) のためです。
+サイドパネルは Redmine の文言を使います。「ヘルプ」(`label_help`)、「戻る」(`button_back`)、「全画面で表示」(`label_open_in_full_view`)、「目次」(`label_table_of_contents`)、「検索」(`label_search`) です。「閉じる」だけはプラグインの文言 (`button_help_panel_close`: Close、閉じる) です。Redmine の `button_close` は、プロジェクトを終了する操作の文言 (日本語は「終了」) のためです。
 
 <a id="stylesheet"></a>
 

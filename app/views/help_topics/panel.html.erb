@@ -22,18 +22,18 @@
                 class: 'icon icon-list help-panel-contents', target: '_blank', rel: 'noopener' %>
     <%= link_to sprite_icon('maximize', l(:label_open_in_full_view), icon_only: true), full_view,
                 class: 'icon-only icon-maximize help-panel-full-view', title: l(:label_open_in_full_view), target: '_blank', rel: 'noopener' %>
-    <%= link_to sprite_icon('close', l(:button_redmine_help_close), icon_only: true), '#',
-                class: 'icon-only icon-close help-panel-close', title: l(:button_redmine_help_close), role: 'button' %>
+    <%= link_to sprite_icon('close', l(:button_help_panel_close), icon_only: true), '#',
+                class: 'icon-only icon-close help-panel-close', title: l(:button_help_panel_close), role: 'button' %>
   </div>
   <h3 id="help-panel-title" tabindex="-1"><%= title %></h3>
 </div>
 <div class="help-panel-content">
-  <%= render partial: 'redmine_help/search_form', locals: { id: 'help-panel-search' } %>
+  <%= render partial: 'help_topics/search_form', locals: { id: 'help-panel-search' } %>
   <% if @topic %>
-    <%= render partial: 'redmine_help/topic' %>
+    <%= render partial: 'help_topics/topic' %>
   <% elsif @results %>
-    <%= render partial: 'redmine_help/results' %>
+    <%= render partial: 'help_topics/results' %>
   <% else %>
-    <%= render partial: 'redmine_help/contents' %>
+    <%= render partial: 'help_topics/contents' %>
   <% end %>
 </div>

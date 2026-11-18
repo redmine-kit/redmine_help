@@ -6,9 +6,9 @@
 # With panel=1, context, show and search render the same content without
 # Redmine's layout, for the side panel that the header's Help link opens
 # (assets/javascripts/help_panel.js).
-class RedmineHelpController < ApplicationController
+class HelpTopicsController < ApplicationController
   before_action :set_help_language
-  helper :redmine_help
+  helper :help_topics
   helper_method :panel?
 
   # The topic for the screen the Help link was clicked on.

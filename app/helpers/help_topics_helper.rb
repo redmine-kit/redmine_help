@@ -4,7 +4,7 @@
 # formatter, then Redmine's own heading anchors and table of contents
 # (ApplicationHelper#parse_headings and #replace_toc), then links between
 # topics and to the topics' images.
-module RedmineHelpHelper
+module HelpTopicsHelper
   # panel: for the side panel, whose header shows the title: the page's
   # # heading is left out, and the table of contents is not floated
   # ({{toc}} instead of {{>toc}}), since the panel is narrow.

@@ -9,9 +9,9 @@
   <p><%= submit_tag l(:label_search), name: nil %></p>
 <% end %>
 
-<%= render partial: 'redmine_help/results' %>
+<%= render partial: 'help_topics/results' %>
 
 <% content_for :sidebar do %>
-  <%= render partial: 'redmine_help/sidebar' %>
+  <%= render partial: 'help_topics/sidebar' %>
 <% end %>
 <% html_title(l(:label_search), l(:label_help)) %>

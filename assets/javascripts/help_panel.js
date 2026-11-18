@@ -4,7 +4,7 @@
  * The header's Help link opens and closes a panel at the end side of the
  * window with the help for the current screen, laid over the page. The
  * panel is not modal: the part of the page it does not cover stays usable. Its content comes from the help pages with
- * panel=1 (RedmineHelpController), and links between topics, the search
+ * panel=1 (HelpTopicsController), and links between topics, the search
  * and Back stay inside the panel. Without this script, the Help link opens
  * the help page in a new tab.
  */

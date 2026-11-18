@@ -2,7 +2,7 @@
 
 require_relative '../test_helper'
 
-class RedmineHelpControllerTest < Redmine::ControllerTest
+class HelpTopicsControllerTest < Redmine::ControllerTest
   include RedmineHelp::TestHelper
 
   def setup
