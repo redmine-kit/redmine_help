@@ -27,7 +27,7 @@ else
   # containers don't find each other by name on a network of their own, and
   # the test server by this container's own address. More memory than the
   # 1 GB a container gets by default, for the parallel workers.
-  opts=(--network redmine-kit-help-test -m 4G -e TEST_DATABASE_HOST="$(address redmine-kit-help-test-postgres)")
+  opts=(--network "$kit_test_network" -m 4G -e TEST_DATABASE_HOST="$(address redmine-kit-help-test-postgres)")
   selenium="http://$(address redmine-kit-help-test-chrome):4444"
   app_host='http://$(ruby -rsocket -e "print Socket.ip_address_list.find(&:ipv4_private?).ip_address"):3001'
   chrome_args=--headless=new,--disable-dev-shm-usage
