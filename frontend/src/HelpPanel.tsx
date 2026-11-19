@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { AppLink, ExtensionPanelHeader, useExtensionContext, useKitQuery, useT } from '@redmine-kit/plugin';
 import { IconButton, SearchInput } from '@redmine-kit/ui';
-import { helpHref, helpPaths, type HelpContextJson, type HelpView } from './api';
+import { KEYBOARD_TOPIC, contextView, helpHref, helpPaths, type HelpContextJson, type HelpView } from './api';
 import { HelpContents, HelpLoadError, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCapture } from './HelpContent';
 
 // HelpPanel: the help for the current screen in the app's panel at the right (the slot topbar.panel; the app draws the
@@ -14,18 +14,26 @@ import { HelpContents, HelpLoadError, HelpResults, HelpTextSkeleton, HelpTopicVi
 //   全画面で表示 (the help page of what is shown). Under it the search (live: results as the user types).
 // - It stays open while the user moves between screens and then shows the new screen's topic; a change of the screen's
 //   tab moves it only when the map has a topic for that tab (`follow`).
-// Not declared in config/kit_ui.yml yet: the app draws its own help panel until the extension API has G37 (anonymous
-// visitors), G38 (the TopBar's ヘルプ), G39 (the ? key and the editors' links open a topic) and G50 (open across
-// reloads) (ui-restructure-plan.md 5.3).
+// - The app's requests (`panel.request`, a new key per opening): `context` the screen's topic (the TopBar's ヘルプ, and the
+//   panel restored with the page: config/kit_ui.yml's `persist`), `keyboard` the keyboard's topic (the ? key),
+//   `wiki_syntax` the topic of the server's text formatting (an editor's すべての記法: /help/context.json?syntax=wiki).
+//   Each one starts a fresh trail.
+// config/kit_ui.yml: the slot topbar.panel with `replaces: help` (the TopBar's ヘルプ is its toggle) and `persist: true`.
+// Signed-in users only until the extension API lets anonymous visitors have a panel (G37 of ui-restructure-plan.md 5.3).
 
 type Entry = { view: HelpView; scroll?: number };
 
+/** Outside the app's panel (a test without one): the screen's topic. */
+const NO_REQUEST = { target: 'context', key: 0 } as const;
+
 export function HelpPanel() {
   const t = useT();
-  const { screen } = useExtensionContext();
+  const { screen, panel } = useExtensionContext();
   const name = screen?.name ?? null;
   const tab = screen?.tab ?? null;
+  const request = panel?.request ?? NO_REQUEST;
   const context = useKitQuery<HelpContextJson>(name ? helpPaths.context(name, tab) : null);
+  const syntax = useKitQuery<HelpContextJson>(request.target === 'wiki_syntax' ? helpPaths.syntax('wiki') : null);
   const [current, setCurrent] = useState<Entry | null>(null);
   const [trail, setTrail] = useState<Entry[]>([]);
   const [q, setQ] = useState('');
@@ -40,9 +48,24 @@ export function HelpPanel() {
         ? { kind: 'topic', id: context.data.help.topic, anchor: context.data.help.anchor ?? undefined }
         : { kind: 'contents' }
       : null;
+  // what the app asked for: the screen's topic, the keyboard's, the text formatting's
+  const requested: HelpView | null =
+    request.target === 'keyboard' ? { kind: 'topic', id: KEYBOARD_TOPIC } : request.target === 'wiki_syntax' ? (syntax.data ? contextView(syntax.data) : null) : screenView;
+  const answered = useRef<number | null>(null);
   const seen = useRef<{ name: string | null; tab: string | null } | null>(null);
+  // a new request (each opening): its view, a fresh trail
   useEffect(() => {
-    if (!screenView) return;
+    if (!requested || answered.current === request.key) return;
+    answered.current = request.key;
+    seen.current = { name, tab };
+    setCurrent({ view: requested });
+    setTrail([]);
+    setQ('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [request.key, requested?.kind, requested && 'id' in requested ? requested.id : null]);
+  // then the screen it follows: another screen's topic, another tab's when the map has one
+  useEffect(() => {
+    if (!screenView || answered.current !== request.key) return;
     const prev = seen.current;
     const moved = !prev || prev.name !== name;
     const tabMoved = !!prev && prev.name === name && prev.tab !== tab && !!context.data?.help.follow;
@@ -103,7 +126,7 @@ export function HelpPanel() {
         <SearchInput size={28} aria-label={t('label_search')} placeholder={t('label_search')} value={q} onChange={(e) => onSearch(e.target.value)} onClear={() => onSearch('')} />
       </form>
       <div ref={body} onClickCapture={helpLinkCapture(go)} className="min-h-0 flex-1 overflow-y-auto overscroll-contain ps-5 pe-4 pt-4 pb-6">
-        {context.isError ? (
+        {context.isError || syntax.isError ? (
           <HelpLoadError />
         ) : !view ? (
           <HelpTextSkeleton />

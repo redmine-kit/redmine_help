@@ -98,6 +98,38 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
     end
   end
 
+  # Redmine's help pages (help#show_wiki_syntax, #show_code_highlighting) as the guide's topics: the new UI draws the
+  # topic at Redmine's address (G53). syntax => [text formatting, topic]
+  SYNTAXES = {
+    'wiki' => [['markdown', 'user/text-formatting-markdown'], ['common_mark', 'user/text-formatting-markdown'],
+               ['textile', 'user/text-formatting-textile'], ['', 'user/text-formatting-markdown']],
+    'code' => [['markdown', 'user/code-highlighting-languages'], ['textile', 'user/code-highlighting-languages']],
+    'other' => [['markdown', nil]],
+    '../user/issues' => [['markdown', nil]]
+  }.freeze
+
+  SYNTAXES.each do |syntax, cases|
+    cases.each do |formatting, topic|
+      test "Redmine's help page #{syntax} with the text formatting #{formatting.inspect}" do
+        with_help do
+          with_settings text_formatting: formatting do
+            get :context, params: { syntax: syntax, lang: 'en' }, format: :json
+            assert_response :success
+            assert_equal [topic, nil, false], json.values_at('topic', 'anchor', 'follow')
+          end
+        end
+      end
+    end
+  end
+
+  test "Redmine's help page: a syntax that isn't text is none" do
+    with_help do
+      get :context, params: { syntax: %w[wiki], lang: 'en' }, format: :json
+      assert_response :success
+      assert_nil json['topic']
+    end
+  end
+
   test 'anonymous users get the JSON unless login is required' do
     with_help do
       get :index, format: :json
@@ -106,6 +138,8 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
         get :index, format: :json
         assert_response :unauthorized
         get :show, params: { topic: 'user/issues' }, format: :json
+        assert_response :unauthorized
+        get :context, params: { syntax: 'wiki' }, format: :json
         assert_response :unauthorized
       end
     end

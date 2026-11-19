@@ -41,6 +41,26 @@ module RedmineKit
         { help: { q: query, results: results } }
       end
 
+      # Redmine's help pages as the guide's topics (G53 of Redmine Kit UI's
+      # plan): the text formatting's (help#show_wiki_syntax) is the topic of
+      # the server's formatting, Textile's or else Markdown's; the code
+      # highlighting's (help#show_code_highlighting) its languages.
+      SYNTAX_TOPICS = {
+        'wiki' => lambda {
+          Setting.text_formatting == 'textile' ? 'user/text-formatting-textile' : 'user/text-formatting-markdown'
+        },
+        'code' => -> { 'user/code-highlighting-languages' }
+      }.freeze
+
+      # GET /help/context.json?syntax=wiki|code: the topic of one of Redmine's
+      # help pages, or none (the contents) for another value or a topic the
+      # library doesn't have.
+      def syntax(library, language, value)
+        id = value.is_a?(String) && SYNTAX_TOPICS[value]&.call
+        topic = id && library.topic(id, language)
+        { help: { topic: topic&.id, anchor: nil, follow: false } }
+      end
+
       # GET /help/context.json?screen=&tab=: the topic of the new UI's screen
       # (KitScreens), at its anchor in the language, or none (the contents);
       # `follow`: the screen's tab has a topic of its own, so the panel moves

@@ -54,7 +54,20 @@ export const helpPaths = {
   topic: (id: string, anchor?: string) => `/help/${enc(id)}.json${anchor ? `?anchor=${encodeURIComponent(anchor)}` : ''}`,
   search: (q: string) => `/help/search.json?q=${encodeURIComponent(q)}`,
   context: (screen: string, tab: string | null) => `/help/context.json?screen=${encodeURIComponent(screen)}${tab ? `&tab=${encodeURIComponent(tab)}` : ''}`,
+  /** the topic of Redmine's help page of the server's text formatting (wiki: help#show_wiki_syntax) or of the code
+   *  highlighting (code: help#show_code_highlighting) */
+  syntax: (syntax: HelpSyntax) => `/help/context.json?syntax=${syntax}`,
 };
+
+/** Redmine's help pages the plugin's topics stand for: the text formatting's, the code highlighting's. */
+export type HelpSyntax = 'wiki' | 'code';
+
+/** The keyboard's topic of the guide (the app's ? key: the panel's request `keyboard`). */
+export const KEYBOARD_TOPIC = 'user/keyboard-navigation';
+
+/** The view of a context answer: its topic at its anchor, or the contents. */
+export const contextView = (data: HelpContextJson): HelpView =>
+  data.help.topic ? { kind: 'topic', id: data.help.topic, anchor: data.help.anchor ?? undefined } : { kind: 'contents' };
 
 /** The help page of a view: Redmine's help pages' addresses (/help, /help/<topic>#<anchor>, /help/search?q=). */
 export function helpHref(view: HelpView): string {

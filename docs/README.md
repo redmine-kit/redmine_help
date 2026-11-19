@@ -62,11 +62,20 @@ also JSON, and the plugin has a module of the new UI (`frontend/`, built into `a
 | `GET /help.json` | the contents: the sections (the operator's first, then the guide's, then the plugins') with their topics |
 | `GET /help/<topic>.json?anchor=` | the topic in the user's language (or English), as Markdown with its links rewritten to `/help/<topic>#<anchor>` and its images to `/help/assets/…`; its anchors; the anchor asked for, in the topic's language; the operator's blocks; its section |
 | `GET /help/search.json?q=` | the topics with every word, each with a snippet |
+| `GET /help/context.json?syntax=` | the topic of one of Redmine's help pages: `wiki` (help#show_wiki_syntax), the topic of the server's text formatting (Textile's, else Markdown's); `code` (help#show_code_highlighting), the code highlighting's languages |
 | `GET /help/context.json?screen=&tab=` | the topic of a screen of the new UI (its name in Redmine Kit UI's route table, and its tab), at its anchor; `follow` when the tab has a topic of its own. `config/kit_screens.yml` gives each screen the Redmine screen it redesigns (`ProjectSettings: projects#settings`), so the same `map.yml` serves both UIs |
 
-The JSON is open to the same users as the pages ([Access](#access)). The module isn't declared to Redmine Kit UI yet (no
-`config/kit_ui.yml`): the new UI shows its own help until its extension API lets a plugin's panel take the place of the
-header's Help, open for anonymous users, and open at a topic from the app (the `?` key, the editors' help).
+The JSON is open to the same users as the pages ([Access](#access)). `config/kit_ui.yml` declares the module to Redmine
+Kit UI (its docs/plugins-kit.md):
+
+- **The panel is the TopBar's Help.** The slot `topbar.panel` with `replaces: help` (the plugin replaces Redmine's top
+  menu `:help` on the server too, which Redmine Kit UI checks) and `persist: true` (it stays open in the browser's tab
+  across moves and reloads). The app opens it at the screen's topic, at the keyboard's topic (the `?` key) and at the
+  text formatting's (an editor's help › all the syntax).
+- **The help pages are screens:** `/help`, `/help/search` and `/help/*topic` (`HelpPage`), and Redmine's help pages,
+  `/help/wiki_syntax[/detailed]` (`HelpWikiSyntax`) and `/help/code_highlighting` (`HelpCodeHighlighting`), which show
+  the plugin's topic of each at Redmine's address. Without this plugin the new UI shows Redmine's own pages there.
+- **Anonymous visitors** don't get the panel yet (Redmine Kit UI's G37): the new UI's Help is a link to `/help` for them.
 
 The module's source is built against `@redmine-kit/ui` and `@redmine-kit/plugin`, which aren't published yet: `bin/setup`
 needs the ui-mock checkout next to this repository. The built files are committed, so installing the plugin needs no

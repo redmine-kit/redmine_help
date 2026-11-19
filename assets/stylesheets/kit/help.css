@@ -5,6 +5,21 @@
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: block))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
     *, :before, :after, ::backdrop {
       --tw-font-weight: initial;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-color: initial;
+      --tw-shadow-alpha: 100%;
+      --tw-inset-shadow: 0 0 #0000;
+      --tw-inset-shadow-color: initial;
+      --tw-inset-shadow-alpha: 100%;
+      --tw-ring-color: initial;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-inset-ring-color: initial;
+      --tw-inset-ring-shadow: 0 0 #0000;
+      --tw-ring-inset: initial;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-outline-style: solid;
     }
   }
 }
@@ -52,8 +67,16 @@
     }
   }
 
+  .-mx-2\.25 {
+    margin-inline: -.5625rem;
+  }
+
   .mt-4 {
     margin-top: 1rem;
+  }
+
+  .box-content {
+    box-sizing: content-box;
   }
 
   .line-clamp-2 {
@@ -75,12 +98,20 @@
     display: flex;
   }
 
+  .grid {
+    display: grid;
+  }
+
   .inline-flex {
     display: inline-flex;
   }
 
   .min-h-0 {
     min-height: 0;
+  }
+
+  .w-60 {
+    width: 15rem;
   }
 
   .w-full {
@@ -91,12 +122,28 @@
     max-width: 47.5rem;
   }
 
+  .min-w-50 {
+    min-width: 12.5rem;
+  }
+
   .flex-1 {
     flex: 1;
   }
 
+  .flex-\[0_1_244px\] {
+    flex: 0 244px;
+  }
+
+  .flex-\[999_1_520px\] {
+    flex: 999 520px;
+  }
+
   .flex-none {
     flex: none;
+  }
+
+  .grid-cols-fill-240 {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 
   .flex-col {
@@ -105,6 +152,10 @@
 
   .items-center {
     align-items: center;
+  }
+
+  .items-start {
+    align-items: flex-start;
   }
 
   .gap-0\.5 {
@@ -121,6 +172,14 @@
 
   .gap-4 {
     gap: 1rem;
+  }
+
+  .gap-x-8 {
+    column-gap: 2rem;
+  }
+
+  .gap-y-section-gap {
+    row-gap: var(--rk-section-gap);
   }
 
   .self-start {
@@ -149,12 +208,20 @@
     background-color: var(--rk-surface-band);
   }
 
+  .p-6 {
+    padding: 1.5rem;
+  }
+
   .px-3 {
     padding-inline: .75rem;
   }
 
   .px-5 {
     padding-inline: 1.25rem;
+  }
+
+  .px-6 {
+    padding-inline: 1.5rem;
   }
 
   .py-1 {
@@ -179,6 +246,10 @@
 
   .pt-4 {
     padding-top: 1rem;
+  }
+
+  .pt-5 {
+    padding-top: 1.25rem;
   }
 
   .pb-6 {
@@ -218,12 +289,140 @@
     text-decoration-line: none;
   }
 
+  .shadow-line-s {
+    --tw-shadow: inset calc(1px * var(--rk-dir)) 0 0 var(--tw-shadow-color, var(--rk-line-structural));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+
+  .outline {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
+  }
+
   .hover\:text-text-link-hover:hover {
     color: var(--rk-text-link-hover);
+  }
+
+  @container app not (min-width: 64rem) {
+    .\@max-5xl\/app\:flex-none {
+      flex: none;
+    }
+
+    .\@max-5xl\/app\:flex-col {
+      flex-direction: column;
+    }
+
+    .\@max-5xl\/app\:overflow-visible {
+      overflow: visible;
+    }
+
+    .\@max-5xl\/app\:overflow-y-auto {
+      overflow-y: auto;
+    }
+
+    .\@max-5xl\/app\:overscroll-contain {
+      overscroll-behavior: contain;
+    }
+
+    .\@max-5xl\/app\:shadow-line-t {
+      --tw-shadow: inset 0 1px 0 var(--tw-shadow-color, var(--rk-line-structural));
+      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    }
+  }
+
+  @container not (min-width: 40rem) {
+    .\@max-phone\:w-full {
+      width: 100%;
+    }
   }
 }
 
 @property --tw-font-weight {
   syntax: "*";
   inherits: false
+}
+
+@property --tw-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+
+@property --tw-shadow-color {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
+@property --tw-inset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+
+@property --tw-inset-shadow-color {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-inset-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
+@property --tw-ring-color {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+
+@property --tw-inset-ring-color {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-inset-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+
+@property --tw-ring-inset {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-ring-offset-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tw-ring-offset-color {
+  syntax: "*";
+  inherits: false;
+  initial-value: #fff;
+}
+
+@property --tw-ring-offset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
 }

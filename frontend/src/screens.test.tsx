@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { PanelHeaderContext } from '@redmine-kit/plugin/host'; // check-ui-ok: a test; the app's panel gives its header's places
-import { HelpPage } from './HelpPage';
+import { ExtensionContext, PanelHeaderContext } from '@redmine-kit/plugin/host'; // check-ui-ok: a test; the app's panel gives its header's places and its requests
+import type { ExtensionPanelTarget } from '@redmine-kit/plugin';
+import { Button } from '@redmine-kit/ui';
+import { HelpCodeHighlighting, HelpPage, HelpWikiSyntax } from './HelpPage';
 import { HelpPanel } from './HelpPanel';
 import { renderKit } from './test/render';
 
@@ -27,8 +29,29 @@ const RESPONSES = {
   'GET /help/user/issue-list.json': topic('user/issue-list', 'チケットの一覧', '[チケット](/help/user/issues) を開きます。'),
   'GET /help/user/issues.json': topic('user/issues', 'チケットトラッキング', 'チケットは Redmine の中心です。'),
   'GET /help/search.json?q=%E4%B8%AD%E5%BF%83': { help: { q: '中心', results: [{ id: 'user/issues', title: 'チケットトラッキング', snippet: '…Redmine の中心です。' }] } },
+  'GET /help/user/keyboard-navigation.json': topic('user/keyboard-navigation', 'キーボード操作', 'キーで移動します。'),
+  'GET /help/context.json?syntax=wiki': { help: { topic: 'user/text-formatting-markdown', anchor: null, follow: false } },
+  'GET /help/context.json?syntax=code': { help: { topic: 'user/code-highlighting-languages', anchor: null, follow: false } },
+  'GET /help/user/text-formatting-markdown.json': topic('user/text-formatting-markdown', 'Markdown', '## 強調\n\n太字にします。\n\n## リンク\n\nリンクを書きます。'),
+  'GET /help/user/code-highlighting-languages.json': topic('user/code-highlighting-languages', 'コードハイライト', 'Ruby を使えます。'),
 };
-const panel = { close: () => undefined };
+const panel = { close: () => undefined, request: { target: 'context' as const, key: 1 } };
+
+/** The panel as the app draws it, with the app's requests: each button opens it again at a target (a new key). */
+function Requested() {
+  const [request, setRequest] = useState<{ target: ExtensionPanelTarget; key: number }>({ target: 'context', key: 1 });
+  const ask = (target: ExtensionPanelTarget) => setRequest((now) => ({ target, key: now.key + 1 }));
+  return (
+    <>
+      <Button onClick={() => ask('keyboard')}>?</Button>
+      <Button onClick={() => ask('wiki_syntax')}>すべての記法</Button>
+      <Button onClick={() => ask('context')}>ヘルプ</Button>
+      <ExtensionContext.Provider value={{ plugin: 'redmine_kit_help', project: null, issueId: null, screen: { name: 'ProjectTable', tab: null }, panel: { close: () => undefined, request } }}>
+        <InPanel />
+      </ExtensionContext.Provider>
+    </>
+  );
+}
 
 /** The panel as the app draws it: its header with the places for the subtitle and the actions. */
 function InPanel() {
@@ -80,6 +103,24 @@ describe('the help panel', () => {
   });
 });
 
+describe("the app's requests to the panel", () => {
+  it('opens the keyboard’s topic, the text formatting’s, and the screen’s again, each with a fresh trail', async () => {
+    const user = userEvent.setup();
+    renderKit(<Requested />, { context: { plugin: 'redmine_kit_help' }, responses: RESPONSES });
+    expect(await screen.findByText('を開きます。', { exact: false })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '?' }));
+    expect(await screen.findByText('キーで移動します。')).toBeInTheDocument();
+    expect(screen.getByTestId('subtitle')).toHaveTextContent('キーボード操作');
+    expect(screen.queryByRole('button', { name: '戻る' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'すべての記法' }));
+    expect(await screen.findByText('太字にします。')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '全画面で表示' })).toHaveAttribute('href', '/help/user/text-formatting-markdown');
+    await user.click(screen.getByRole('button', { name: 'ヘルプ' }));
+    expect(await screen.findByText('を開きます。', { exact: false })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '戻る' })).toBeNull();
+  });
+});
+
 describe('the help page', () => {
   it('the contents, and a topic with its title in the header', async () => {
     const contents = renderKit(<HelpPage />, { context: { plugin: 'redmine_kit_help' }, responses: RESPONSES });
@@ -88,5 +129,33 @@ describe('the help page', () => {
     renderKit(<HelpPage />, { context: { plugin: 'redmine_kit_help', params: { topic: 'user/issues' } }, responses: RESPONSES });
     expect(await screen.findByRole('heading', { name: 'チケットトラッキング' })).toBeInTheDocument();
     expect(screen.getByText('チケットは Redmine の中心です。')).toBeInTheDocument();
+  });
+
+  it('the contents as sections of topics; the search in place, with 戻る to the contents', async () => {
+    const user = userEvent.setup();
+    renderKit(<HelpPage />, { context: { plugin: 'redmine_kit_help' }, responses: RESPONSES });
+    const contents = await screen.findByRole('navigation', { name: '目次' });
+    expect(contents.querySelectorAll('section')).toHaveLength(2);
+    await user.type(screen.getByRole('searchbox', { name: '検索' }), '中心{Enter}');
+    expect(await screen.findByText('…Redmine の中心です。')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'ヘルプに戻る' }));
+    expect(await screen.findByRole('navigation', { name: '目次' })).toBeInTheDocument();
+  });
+
+  it("Redmine's help pages show the plugin's topic, with the table of its headings", async () => {
+    const wiki = renderKit(<HelpWikiSyntax />, { context: { plugin: 'redmine_kit_help', params: { type: 'detailed' } }, responses: RESPONSES });
+    expect(await screen.findByText('太字にします。')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Markdown', level: 1 })).toBeInTheDocument();
+    const toc = await screen.findByRole('complementary', { name: '目次' });
+    expect(toc).toHaveTextContent('強調');
+    expect(toc).toHaveTextContent('リンク');
+    wiki.unmount();
+    renderKit(<HelpCodeHighlighting />, { context: { plugin: 'redmine_kit_help' }, responses: RESPONSES });
+    expect(await screen.findByText('Ruby を使えます。')).toBeInTheDocument();
+  });
+
+  it("Redmine's help page whose topic fails to load: a notice", async () => {
+    renderKit(<HelpWikiSyntax />, { context: { plugin: 'redmine_kit_help' }, responses: { ...RESPONSES, 'GET /help/context.json?syntax=wiki': new Error('boom') } });
+    expect(await screen.findByText('ヘルプを読み込めませんでした。')).toBeInTheDocument();
   });
 });

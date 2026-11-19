@@ -1,8 +1,8 @@
 // Redmine Kit Help: the plugin's module for the new UI, built from frontend/src by `npm run build` (frontend/vite.config.js).
 // Edit the source, not this file. React, @redmine-kit/ui and @redmine-kit/plugin come from the app (the shell's import map).
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppLink, ExtensionPanelHeader, ScreenSidebar, useExtensionContext, useKitNavigate, useKitQuery, useT } from "@redmine-kit/plugin";
-import { Card, CardBody, CardHeader, EmptyState, Icon, IconButton, Notice, Prose, SearchInput, SectionHeading, Skeleton, SkeletonRegion, cn } from "@redmine-kit/ui";
+import { Card, CardBody, CardHeader, EmptyState, Icon, IconButton, NavRow, Notice, PageToc, Pane, Panes, Prose, SearchInput, SectionHeading, Skeleton, SkeletonRegion, TitleBlock, cn } from "@redmine-kit/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/api.ts
 var enc = (id) => id.split("/").map(encodeURIComponent).join("/");
@@ -10,8 +10,19 @@ var helpPaths = {
 	contents: "/help.json",
 	topic: (id, anchor) => `/help/${enc(id)}.json${anchor ? `?anchor=${encodeURIComponent(anchor)}` : ""}`,
 	search: (q) => `/help/search.json?q=${encodeURIComponent(q)}`,
-	context: (screen, tab) => `/help/context.json?screen=${encodeURIComponent(screen)}${tab ? `&tab=${encodeURIComponent(tab)}` : ""}`
+	context: (screen, tab) => `/help/context.json?screen=${encodeURIComponent(screen)}${tab ? `&tab=${encodeURIComponent(tab)}` : ""}`,
+	/** the topic of Redmine's help page of the server's text formatting (wiki: help#show_wiki_syntax) or of the code
+	*  highlighting (code: help#show_code_highlighting) */
+	syntax: (syntax) => `/help/context.json?syntax=${syntax}`
 };
+/** The keyboard's topic of the guide (the app's ? key: the panel's request `keyboard`). */
+var KEYBOARD_TOPIC = "user/keyboard-navigation";
+/** The view of a context answer: its topic at its anchor, or the contents. */
+var contextView = (data) => data.help.topic ? {
+	kind: "topic",
+	id: data.help.topic,
+	anchor: data.help.anchor ?? void 0
+} : { kind: "contents" };
 /** The help page of a view: Redmine's help pages' addresses (/help, /help/<topic>#<anchor>, /help/search?q=). */
 function helpHref(view) {
 	if (view.kind === "topic") return `/help/${enc(view.id)}${view.anchor ? `#${encodeURIComponent(view.anchor)}` : ""}`;
@@ -176,12 +187,19 @@ function HelpContents({ current }) {
 	});
 }
 // src/HelpPanel.tsx
+/** Outside the app's panel (a test without one): the screen's topic. */
+var NO_REQUEST = {
+	target: "context",
+	key: 0
+};
 function HelpPanel() {
 	const t = useT();
-	const { screen } = useExtensionContext();
+	const { screen, panel } = useExtensionContext();
 	const name = screen?.name ?? null;
 	const tab = screen?.tab ?? null;
+	const request = panel?.request ?? NO_REQUEST;
 	const context = useKitQuery(name ? helpPaths.context(name, tab) : null);
+	const syntax = useKitQuery(request.target === "wiki_syntax" ? helpPaths.syntax("wiki") : null);
 	const [current, setCurrent] = useState(null);
 	const [trail, setTrail] = useState([]);
 	const [q, setQ] = useState("");
@@ -192,9 +210,29 @@ function HelpPanel() {
 		id: context.data.help.topic,
 		anchor: context.data.help.anchor ?? void 0
 	} : { kind: "contents" } : null;
+	const requested = request.target === "keyboard" ? {
+		kind: "topic",
+		id: KEYBOARD_TOPIC
+	} : request.target === "wiki_syntax" ? syntax.data ? contextView(syntax.data) : null : screenView;
+	const answered = useRef(null);
 	const seen = useRef(null);
 	useEffect(() => {
-		if (!screenView) return;
+		if (!requested || answered.current === request.key) return;
+		answered.current = request.key;
+		seen.current = {
+			name,
+			tab
+		};
+		setCurrent({ view: requested });
+		setTrail([]);
+		setQ("");
+	}, [
+		request.key,
+		requested?.kind,
+		requested && "id" in requested ? requested.id : null
+	]);
+	useEffect(() => {
+		if (!screenView || answered.current !== request.key) return;
 		const prev = seen.current;
 		const moved = !prev || prev.name !== name;
 		const tabMoved = !!prev && prev.name === name && prev.tab !== tab && !!context.data?.help.follow;
@@ -292,7 +330,7 @@ function HelpPanel() {
 				ref: body,
 				onClickCapture: helpLinkCapture(go),
 				className: "min-h-0 flex-1 overflow-y-auto overscroll-contain ps-5 pe-4 pt-4 pb-6",
-				children: context.isError ? /* @__PURE__ */ jsx(HelpLoadError, {}) : !view ? /* @__PURE__ */ jsx(HelpTextSkeleton, {}) : view.kind === "topic" ? /* @__PURE__ */ jsx(HelpTopicView, {
+				children: context.isError || syntax.isError ? /* @__PURE__ */ jsx(HelpLoadError, {}) : !view ? /* @__PURE__ */ jsx(HelpTextSkeleton, {}) : view.kind === "topic" ? /* @__PURE__ */ jsx(HelpTopicView, {
 					id: view.id,
 					anchor: view.anchor,
 					scroller: body,
@@ -304,31 +342,46 @@ function HelpPanel() {
 	});
 }
 // src/HelpPage.tsx
-function HelpPage() {
+function HelpPage({ syntax }) {
 	const t = useT();
-	const navigate = useKitNavigate();
 	const { params } = useExtensionContext();
-	const topic = params.topic;
-	const [q, setQ] = useState("");
-	const [title, setTitle] = useState("");
-	const pane = useRef(null);
-	const view = q.trim() ? {
+	const resolved = useKitQuery(syntax ? helpPaths.syntax(syntax) : null);
+	const [searched, setSearched] = useState(addressQuery);
+	const [q, setQ] = useState(searched);
+	const [shownTopic, setShownTopic] = useState(params.topic);
+	if (shownTopic !== params.topic) {
+		setShownTopic(params.topic);
+		setSearched("");
+		setQ("");
+	}
+	const view = searched ? {
 		kind: "search",
-		q: q.trim()
-	} : topic ? {
+		q: searched
+	} : syntax ? resolved.data ? contextView(resolved.data) : null : params.topic ? {
 		kind: "topic",
-		id: topic
+		id: params.topic,
+		anchor: addressAnchor()
 	} : { kind: "contents" };
-	const go = useCallback((next) => navigate(helpHref(next)), [navigate]);
-	const onSubmit = (e) => {
+	const onSearch = (e) => {
 		e.preventDefault();
-		if (q.trim()) go({
-			kind: "search",
-			q: q.trim()
-		});
+		setSearched(q.trim());
 	};
+	const search = /* @__PURE__ */ jsx("form", {
+		role: "search",
+		onSubmit: onSearch,
+		className: "flex w-60 @max-phone:w-full",
+		children: /* @__PURE__ */ jsx(SearchInput, {
+			"aria-label": t("label_search"),
+			placeholder: t("label_search"),
+			value: q,
+			onChange: (e) => setQ(e.target.value),
+			onClear: () => setQ(""),
+			className: "w-full"
+		})
+	});
 	const contents = useKitQuery(helpPaths.contents);
 	const sections = contents.data?.help.sections ?? [];
+	const current = view?.kind === "topic" ? view.id : void 0;
 	const groups = [{
 		key: "help",
 		label: t("label_help"),
@@ -337,7 +390,7 @@ function HelpPage() {
 			label: t("label_table_of_contents"),
 			icon: "list-bullet",
 			href: helpHref({ kind: "contents" }),
-			selected: view.kind === "contents"
+			selected: view?.kind === "contents"
 		}, ...sections.map((section) => ({
 			key: section.id,
 			label: section.title,
@@ -349,44 +402,205 @@ function HelpPage() {
 					kind: "topic",
 					id: item.id
 				}),
-				selected: item.id === topic
+				selected: item.id === current
 			}))
 		}))],
 		loadingRows: contents.isPending ? 4 : void 0
 	}];
-	const heading = view.kind === "topic" ? title || t("label_help") : view.kind === "search" ? t("label_search") : t("label_help");
+	let body;
+	if (!view) body = /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(CardHeader, {
+		title: t("label_help"),
+		actions: search,
+		sidebarToggle: true,
+		sidebarLabel: t("label_help"),
+		divider: true
+	}), /* @__PURE__ */ jsx(CardBody, {
+		padded: true,
+		children: resolved.isError ? /* @__PURE__ */ jsx(HelpLoadError, {}) : /* @__PURE__ */ jsx(HelpTextSkeleton, {})
+	})] });
+	else if (view.kind === "topic") body = /* @__PURE__ */ jsx(TopicPage, {
+		id: view.id,
+		anchor: view.anchor,
+		search
+	}, view.id);
+	else if (view.kind === "search") body = /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(CardHeader, {
+		title: t("label_search"),
+		back: {
+			label: t("label_help_back"),
+			onClick: () => (setSearched(""), setQ(""))
+		},
+		actions: search,
+		sidebarToggle: true,
+		sidebarLabel: t("label_help"),
+		divider: true
+	}), /* @__PURE__ */ jsx(CardBody, {
+		padded: true,
+		children: /* @__PURE__ */ jsx(HelpResults, { q: view.q })
+	})] });
+	else body = /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(CardHeader, {
+		title: t("label_help"),
+		actions: search,
+		sidebarToggle: true,
+		sidebarLabel: t("label_help"),
+		divider: true
+	}), /* @__PURE__ */ jsx(CardBody, {
+		padded: true,
+		children: /* @__PURE__ */ jsx(Contents, {
+			data: contents.data,
+			failed: contents.isError
+		})
+	})] });
 	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(ScreenSidebar, {
 		label: t("label_help"),
 		groups
-	}), /* @__PURE__ */ jsxs(Card, {
+	}), /* @__PURE__ */ jsx(Card, {
 		"aria-label": t("label_help"),
-		children: [/* @__PURE__ */ jsx(CardHeader, {
-			title: heading,
-			actions: /* @__PURE__ */ jsx("form", {
-				role: "search",
-				onSubmit,
-				children: /* @__PURE__ */ jsx(SearchInput, {
-					"aria-label": t("label_search"),
-					placeholder: t("label_search"),
-					value: q,
-					onChange: (e) => setQ(e.target.value),
-					onClear: () => setQ(""),
-					className: "w-full"
-				})
-			}),
-			divider: true
-		}), /* @__PURE__ */ jsx(CardBody, {
-			padded: true,
-			children: /* @__PURE__ */ jsx("div", {
-				ref: pane,
-				children: view.kind === "topic" ? /* @__PURE__ */ jsx(HelpTopicView, {
-					id: view.id,
-					scroller: pane,
-					reading: true,
-					onTitle: setTitle
-				}) : view.kind === "search" ? /* @__PURE__ */ jsx(HelpResults, { q: view.q }) : /* @__PURE__ */ jsx(HelpContents, {})
+		children: body
+	})] });
+}
+/** The words of the address /help/search?q= (the plugin's search page), else none. */
+function addressQuery() {
+	if (!/\/help\/search\/?$/.test(window.location.pathname)) return "";
+	return (new URLSearchParams(window.location.search).get("q") ?? "").trim().slice(0, 100);
+}
+/** The heading the address asks for (/help/<topic>#<anchor>). */
+function addressAnchor() {
+	try {
+		return window.location.hash ? decodeURIComponent(window.location.hash.slice(1)) : void 0;
+	} catch {
+		return;
+	}
+}
+/** Redmine's help#show_wiki_syntax (/help/wiki_syntax[/detailed]): the topic of the server's text formatting. */
+function HelpWikiSyntax() {
+	return /* @__PURE__ */ jsx(HelpPage, { syntax: "wiki" });
+}
+/** Redmine's help#show_code_highlighting (/help/code_highlighting): the code highlighting's languages. */
+function HelpCodeHighlighting() {
+	return /* @__PURE__ */ jsx(HelpPage, { syntax: "code" });
+}
+function Contents({ data, failed }) {
+	const t = useT();
+	if (failed) return /* @__PURE__ */ jsx(HelpLoadError, {});
+	if (!data) return /* @__PURE__ */ jsx(HelpTextSkeleton, {});
+	return /* @__PURE__ */ jsx("nav", {
+		"aria-label": t("label_table_of_contents"),
+		className: "grid grid-cols-fill-240 items-start gap-x-8 gap-y-section-gap",
+		children: data.help.sections.map((section) => /* @__PURE__ */ jsxs("section", {
+			"aria-label": section.title,
+			className: "flex flex-col gap-0.5",
+			children: [/* @__PURE__ */ jsx(SectionHeading, {
+				heading: section.title,
+				count: section.topics.length
+			}), section.topics.map((topic) => /* @__PURE__ */ jsx(NavRow, {
+				href: helpHref({
+					kind: "topic",
+					id: topic.id
+				}),
+				className: "-mx-2.25",
+				children: topic.title
+			}, topic.id))]
+		}, section.id))
+	});
+}
+function TopicPage({ id, anchor, search }) {
+	const t = useT();
+	const navigate = useKitNavigate();
+	const [title, setTitle] = useState("");
+	const article = useRef(null);
+	const [outline, setOutline] = useState([]);
+	useLayoutEffect(() => {
+		const box = article.current;
+		if (!box) return;
+		const read = () => {
+			const root = box.firstElementChild;
+			const next = Array.from(root?.querySelectorAll("h2, h3") ?? []).map((el, i) => {
+				if (!el.id) el.id = `help-h-${i + 1}`;
+				return {
+					level: el.tagName === "H3" ? 3 : 2,
+					text: el.textContent?.trim() ?? "",
+					id: el.id
+				};
+			});
+			setOutline((now) => JSON.stringify(now) === JSON.stringify(next) ? now : next);
+		};
+		read();
+		const observer = new MutationObserver(read);
+		observer.observe(box, {
+			childList: true,
+			subtree: true,
+			characterData: true
+		});
+		return () => observer.disconnect();
+	}, [id]);
+	const spy = useHeadingInView(article, outline);
+	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(TitleBlock, {
+		title: title || t("label_help"),
+		actions: search,
+		sidebarToggle: true,
+		sidebarLabel: t("label_help"),
+		divider: true
+	}), /* @__PURE__ */ jsxs(Panes, {
+		className: "@max-5xl/app:flex-col @max-5xl/app:overflow-y-auto @max-5xl/app:overscroll-contain",
+		children: [/* @__PURE__ */ jsx(Pane, {
+			as: "article",
+			ref: article,
+			"aria-label": title || t("label_help"),
+			onClickCapture: helpLinkCapture((next) => navigate(helpHref(next))),
+			className: "box-content flex-[999_1_520px] px-6 pt-5 pb-6 @max-5xl/app:flex-none @max-5xl/app:overflow-visible",
+			children: /* @__PURE__ */ jsx(HelpTopicView, {
+				id,
+				anchor,
+				scroller: article,
+				reading: true,
+				onTitle: setTitle
+			}, id + (anchor ?? ""))
+		}), outline.length > 1 && /* @__PURE__ */ jsx(Pane, {
+			as: "aside",
+			"aria-label": t("label_table_of_contents"),
+			className: "box-content flex min-w-50 flex-[0_1_244px] flex-col p-6 shadow-line-s @max-5xl/app:flex-none @max-5xl/app:overflow-visible @max-5xl/app:shadow-line-t",
+			children: /* @__PURE__ */ jsx(PageToc, {
+				items: outline.map((h) => ({
+					key: h.id,
+					level: h.level,
+					text: h.text,
+					href: "#" + h.id
+				})),
+				active: spy.active,
+				onSelect: spy.jump
 			})
 		})]
 	})] });
 }
-export { HelpPage, HelpPanel };
+/** The heading in view (the last one whose top is above the article's top, 16px under it), and a jump to one, 12px under
+*  the article's top: the app's wiki page's 目次 (its scroll-spy), for the topic's headings. */
+function useHeadingInView(scroller, headings) {
+	const [active, setActive] = useState(headings[0]?.id);
+	useEffect(() => {
+		const box = scroller.current;
+		if (!box || headings.length === 0) return;
+		const update = () => {
+			const top = box.getBoundingClientRect().top + 16;
+			let current = headings[0].id;
+			for (const heading of headings) {
+				const el = box.querySelector("#" + CSS.escape(heading.id));
+				if (el && el.getBoundingClientRect().top <= top) current = heading.id;
+			}
+			setActive(current);
+		};
+		update();
+		box.addEventListener("scroll", update, { passive: true });
+		return () => box.removeEventListener("scroll", update);
+	}, [scroller, headings]);
+	return {
+		active,
+		jump: useCallback((key) => {
+			const box = scroller.current;
+			const el = box?.querySelector("#" + CSS.escape(key));
+			if (!box || !el) return;
+			box.scrollTo({ top: el.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop - 12 });
+			setActive(key);
+		}, [scroller])
+	};
+}
+export { HelpCodeHighlighting, HelpPage, HelpPanel, HelpWikiSyntax };

@@ -1,5 +1,6 @@
 // Redmine Kit Help's module for the new UI: its components, exported by name (redmine_kit_ui's docs/plugins-kit.md,
-// "The module"). config/kit_ui.yml declares them once the extension API has what they need (ui-restructure-plan.md
-// 5.3, G37–G39 and G50–G52); until then the app draws its own help.
+// "The module"), as config/kit_ui.yml declares them: the panel that is the TopBar's ヘルプ (topbar.panel, replaces: help),
+// the help pages (/help, /help/search, /help/*topic) and Redmine's help pages (/help/wiki_syntax[/detailed],
+// /help/code_highlighting).
 export { HelpPanel } from './HelpPanel';
-export { HelpPage } from './HelpPage';
+export { HelpPage, HelpWikiSyntax, HelpCodeHighlighting } from './HelpPage';

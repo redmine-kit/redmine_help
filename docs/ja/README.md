@@ -80,12 +80,21 @@ Redmine にはサイドパネルがありません。サイドパネルの内容
 | `GET /help.json` | 目次: 章 (運用者のもの、ガイドのもの、プラグインのものの順) とそのトピック |
 | `GET /help/<トピック>.json?anchor=` | ユーザーの言語 (なければ英語) のトピック。Markdown で、リンクを `/help/<トピック>#<アンカー>` に、画像を `/help/assets/…` に書き換えたもの。アンカーの一覧、指定したアンカー (トピックの言語のもの)、運用者の囲み、章 |
 | `GET /help/search.json?q=` | すべての語を含むトピックと、その抜粋 |
+| `GET /help/context.json?syntax=` | Redmine のヘルプのページのトピック: `wiki` (help#show_wiki_syntax) はサーバーのテキスト書式のトピック (Textile、それ以外は Markdown)、`code` (help#show_code_highlighting) はコードハイライトの言語 |
 | `GET /help/context.json?screen=&tab=` | 新しい UI の画面 (Redmine Kit UI のルート表での名前とタブ) のトピックとアンカー。タブに専用のトピックがあれば `follow`。`config/kit_screens.yml` が各画面に、その画面が作り直した Redmine の画面 (`ProjectSettings: projects#settings`) を対応付けるので、同じ `map.yml` で両方の UI に対応します |
 
-JSON を使えるユーザーは、ページと同じです ([アクセス](#access))。モジュールは、まだ Redmine Kit UI に宣言していません
-(`config/kit_ui.yml` はありません)。新しい UI の拡張 API で、プラグインのパネルがヘッダーの「ヘルプ」の代わりになり、
-匿名ユーザーにも開け、アプリからトピックを指定して開ける (`?` キー、エディターのヘルプ) ようになるまでは、新しい UI は
-自分のヘルプを表示します。
+JSON を使えるユーザーは、ページと同じです ([アクセス](#access))。`config/kit_ui.yml` がモジュールを Redmine Kit UI に
+宣言します (その docs/plugins-kit.md):
+
+- **パネルは TopBar の「ヘルプ」です。** スロット `topbar.panel` に `replaces: help` (プラグインはサーバーでも Redmine の
+  トップメニューの `:help` を置き換えており、Redmine Kit UI がそれを確認します) と `persist: true` (ブラウザーのタブの中で、
+  移動やリロードの後も開いたまま) を付けます。アプリは画面のトピック、キーボード操作のトピック (`?` キー)、テキスト書式の
+  トピック (エディターのヘルプ › すべての記法) で開きます。
+- **ヘルプページは画面です:** `/help`、`/help/search`、`/help/*topic` (`HelpPage`) と、Redmine のヘルプのページ
+  `/help/wiki_syntax[/detailed]` (`HelpWikiSyntax`)、`/help/code_highlighting` (`HelpCodeHighlighting`)。後の 2 つは
+  Redmine のアドレスのまま、それぞれのプラグインのトピックを表示します。このプラグインがなければ、新しい UI はそこに
+  Redmine 自身のページを表示します。
+- **匿名の訪問者** にはまだパネルがありません (Redmine Kit UI の G37)。新しい UI の「ヘルプ」は `/help` へのリンクです。
 
 モジュールのソースは、まだ公開していない `@redmine-kit/ui` と `@redmine-kit/plugin` に対してビルドします。`bin/setup` には、
 このリポジトリの隣に ui-mock のチェックアウトが必要です。ビルドしたファイルはコミットしてあるので、プラグインの

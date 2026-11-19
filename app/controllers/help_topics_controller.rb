@@ -10,7 +10,9 @@
 # With .json, index, show, search and context answer the same help as JSON
 # for the new UI's panel and pages (RedmineKit::Help::Json; Redmine Kit UI's
 # kit requests of the session). context.json takes the new UI's screen
-# (?screen=, ?tab=) instead of Redmine's controller and action.
+# (?screen=, ?tab=) instead of Redmine's controller and action, or one of
+# Redmine's help pages (?syntax=wiki|code: help#show_wiki_syntax,
+# #show_code_highlighting).
 class HelpTopicsController < ApplicationController
   Json = RedmineKit::Help::Json
   before_action :set_help_language
@@ -19,7 +21,7 @@ class HelpTopicsController < ApplicationController
 
   # The topic for the screen the Help link was clicked on.
   def context
-    return render(json: Json.context(library, @language, params[:screen], params[:tab])) if json?
+    return render_context_json if json?
 
     key, (id, anchor) = library.lookup(params[:c].to_s, params[:a].to_s, params.permit(*RedmineKit::Help::MAP_PARAMS).to_h)
     @topic = library.topic(id, @language) if id
@@ -65,6 +67,14 @@ class HelpTopicsController < ApplicationController
   end
 
   private
+
+  # The new UI's screen (?screen=, ?tab=), or one of Redmine's help pages
+  # (?syntax=).
+  def render_context_json
+    return render(json: Json.syntax(library, @language, params[:syntax])) if params.key?(:syntax)
+
+    render(json: Json.context(library, @language, params[:screen], params[:tab]))
+  end
 
   def library
     RedmineKit::Help.library
