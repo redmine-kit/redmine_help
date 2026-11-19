@@ -130,50 +130,19 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
     end
   end
 
-  test "the search: at most #{HelpTopicsController::SEARCH_LIMIT} a minute per IP address, then 429, again later" do
+  # The search has no rate limit (Redmine's /search has none; the panel searches as the user types, and users share an
+  # office's address): one address's many searches in a row, as typing makes them, are all answered.
+  test 'many searches in a row from one address are all answered, the pages and the JSON alike' do
     with_help do
-      HelpTopicsController::SEARCH_LIMIT.times do |i|
-        get :search, params: { q: "issue #{i}", lang: 'en' }, format: :json
+      words = 'issue tracking'
+      150.times do |i|
+        get :search, params: { q: words[0, (i % words.size) + 1], lang: 'en' }, format: :json
         assert_response :success, i.to_s
       end
-      get :search, params: { q: 'issue', lang: 'en' }, format: :json
-      assert_response :too_many_requests
-      # the pages too: one count
-      get :search, params: { q: 'issue', lang: 'en' }
-      assert_response :too_many_requests
-      # another address is counted on its own
-      @request.remote_addr = '192.0.2.7'
-      get :search, params: { q: 'issue', lang: 'en' }, format: :json
-      assert_response :success
-      @request.remote_addr = '0.0.0.0'
-      travel 61.seconds do
-        get :search, params: { q: 'issue', lang: 'en' }, format: :json
-        assert_response :success
+      20.times do |i|
+        get :search, params: { q: 'issue', lang: 'en' }
+        assert_response :success, i.to_s
       end
-    end
-  end
-
-  test "the search's count goes to Rails.cache, shared by the server's processes" do
-    with_help do
-      RedmineKit::Help::RateLimitStore.store = nil
-      shared = ActiveSupport::Cache::MemoryStore.new
-      Rails.stubs(:cache).returns(shared)
-      2.times { get :search, params: { q: 'issue', lang: 'en' }, format: :json }
-      assert_response :success
-      key = 'rate-limit:help_topics:redmine_kit_help_search:0.0.0.0'
-      assert_equal 2, shared.read(key, raw: true).to_i
-    end
-  end
-
-  test 'the search JSON is cached per library, language and words' do
-    with_help do
-      RedmineKit::Help::Library.any_instance.expects(:search).once.returns([])
-      2.times do
-        get :search, params: { q: 'Issue  update', lang: 'en' }, format: :json
-        assert_response :success
-      end
-      get :search, params: { q: 'issue update', lang: 'en' }, format: :json
-      assert_equal [], json['results']
     end
   end
 

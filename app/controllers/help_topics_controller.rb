@@ -14,17 +14,14 @@
 # Redmine's help pages (?syntax=wiki|code: help#show_wiki_syntax,
 # #show_code_highlighting).
 #
-# The search reads every topic, and anonymous visitors may ask it (the new
-# UI's panel is theirs too unless Redmine requires a login): at most
-# SEARCH_LIMIT searches a minute per IP address (429), counted in
-# RateLimitStore (Rails.cache, shared by the server's processes), its JSON's
-# answers cached (Json.search).
+# The search has no rate limit and no cache of its own, as Redmine's
+# /search has none: the panel searches as the user types (users behind one
+# office address would reach a limit per address in normal use), and it
+# reads a few dozen topics the library keeps in memory, its words at most
+# 100 characters (5 words: Library#search). Floods are for what stands in
+# front of Redmine (a reverse proxy, AWS WAF).
 class HelpTopicsController < ApplicationController
   Json = RedmineKit::Help::Json
-  SEARCH_LIMIT = 60
-  rate_limit to: SEARCH_LIMIT, within: 1.minute, by: -> { request.remote_ip }, only: :search,
-             store: RedmineKit::Help::RateLimitStore, name: 'redmine_kit_help_search',
-             with: -> { head :too_many_requests }
   before_action :set_help_language
   helper :help_topics
   helper_method :panel?

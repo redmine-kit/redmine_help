@@ -33,18 +33,12 @@ module RedmineKit
         } }
       end
 
-      # Searches' answers: bounded, thread-safe, read-only values; a new
-      # library (its files changed) has new keys.
-      SEARCH_CACHE = ActiveSupport::Cache::MemoryStore.new(size: 4.megabytes)
-
-      # GET /help/search.json?q=: the topics with every word, with a snippet,
-      # cached per library, language and words.
+      # GET /help/search.json?q=: the topics with every word, with a snippet.
+      # The library is read once and kept (RedmineKit::Help.library), so a
+      # search reads a few dozen topics in memory: no cache to keep right.
       def search(library, query, language)
-        key = [library.cache_key, language, query.to_s.downcase.split.uniq].inspect
-        results = SEARCH_CACHE.fetch(key) do
-          library.search(query, language).map do |topic, snippet|
-            { id: topic.id, title: topic.title, snippet: snippet }.freeze
-          end.freeze
+        results = library.search(query, language).map do |topic, snippet|
+          { id: topic.id, title: topic.title, snippet: snippet }
         end
         { help: { q: query, results: results } }
       end

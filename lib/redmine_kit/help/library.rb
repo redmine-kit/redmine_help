@@ -22,12 +22,6 @@ module RedmineKit
         sources.any?
       end
 
-      # This library's key for caches of what it answers (Json.search): a
-      # library read again has another.
-      def cache_key
-        "#{object_id}-#{@loaded_at.to_f}"
-      end
-
       def languages
         sources.flat_map(&:languages).uniq.sort
       end
