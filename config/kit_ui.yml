@@ -6,16 +6,22 @@ module: kit/help.js
 stylesheet: kit/help.css
 screens:
   # the contents, the search, a topic (its id has slashes: user/issues, as params.topic)
-  - { path: /help, component: HelpPage, title: label_help, sidebar: true }
-  - { path: /help/search, component: HelpPage, title: label_help, sidebar: true }
-  - { path: /help/*topic, component: HelpPage, title: label_help, sidebar: true }
+  - { path: '/help', component: HelpPage, title: label_help, sidebar: true }
+  - { path: '/help/search', component: HelpPage, title: label_help, sidebar: true }
+  - { path: '/help/*topic', component: HelpPage, title: label_help, sidebar: true }
   # Redmine's help pages (help#show_wiki_syntax, help#show_code_highlighting): the plugin's topic of each; without this
   # plugin the app shows Redmine's page
-  - { path: /help/wiki_syntax/:type, component: HelpWikiSyntax, title: label_help, sidebar: true }
-  - { path: /help/wiki_syntax, component: HelpWikiSyntax, title: label_help, sidebar: true }
-  - { path: /help/code_highlighting, component: HelpCodeHighlighting, title: label_help, sidebar: true }
+  - { path: '/help/wiki_syntax/:type', component: HelpWikiSyntax, title: label_help, sidebar: true }
+  - { path: '/help/wiki_syntax', component: HelpWikiSyntax, title: label_help, sidebar: true }
+  - { path: '/help/code_highlighting', component: HelpCodeHighlighting, title: label_help, sidebar: true }
 slots:
   # the TopBar's ヘルプ (Redmine's top_menu :help, which RedmineKit::Help::Menu replaces on the server): the panel of the
-  # current screen's topic, open across the tab's moves and reloads. Signed-in users only until anonymous visitors may
-  # have a panel (G37); they get ヘルプ as a link to /help.
-  - { slot: topbar.panel, component: HelpPanel, title: label_help, icon: help, replaces: help, persist: true }
+  # current screen's topic, open across the tab's moves and reloads, for whoever may open Redmine's pages (anonymous
+  # visitors too unless Redmine requires a login: the JSON answers them as the pages do)
+  - slot: topbar.panel
+    component: HelpPanel
+    title: label_help
+    icon: help
+    replaces: help
+    persist: true
+    anonymous: true

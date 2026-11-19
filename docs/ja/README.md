@@ -94,7 +94,8 @@ JSON を使えるユーザーは、ページと同じです ([アクセス](#acc
   `/help/wiki_syntax[/detailed]` (`HelpWikiSyntax`)、`/help/code_highlighting` (`HelpCodeHighlighting`)。後の 2 つは
   Redmine のアドレスのまま、それぞれのプラグインのトピックを表示します。このプラグインがなければ、新しい UI はそこに
   Redmine 自身のページを表示します。
-- **匿名の訪問者** にはまだパネルがありません (Redmine Kit UI の G37)。新しい UI の「ヘルプ」は `/help` へのリンクです。
+- **匿名の訪問者** にも、Redmine がログインを必須にしていなければ、ページと同じくパネルを出します (`anonymous: true`)。JSON も
+  同じ規則で答えます ([アクセス](#access))。検索は IP アドレスごとに 1 分に 60 回までで (429)、答えはキャッシュします。
 
 モジュールのソースは、まだ公開していない `@redmine-kit/ui` と `@redmine-kit/plugin` に対してビルドします。`bin/setup` には、
 このリポジトリの隣に ui-mock のチェックアウトが必要です。ビルドしたファイルはコミットしてあるので、プラグインの

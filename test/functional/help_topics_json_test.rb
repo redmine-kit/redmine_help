@@ -130,6 +130,41 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
     end
   end
 
+  test "the search: at most #{HelpTopicsController::SEARCH_LIMIT} a minute per IP address, then 429, again later" do
+    with_help do
+      HelpTopicsController::SEARCH_LIMIT.times do |i|
+        get :search, params: { q: "issue #{i}", lang: 'en' }, format: :json
+        assert_response :success, i.to_s
+      end
+      get :search, params: { q: 'issue', lang: 'en' }, format: :json
+      assert_response :too_many_requests
+      # the pages too: one count
+      get :search, params: { q: 'issue', lang: 'en' }
+      assert_response :too_many_requests
+      # another address is counted on its own
+      @request.remote_addr = '192.0.2.7'
+      get :search, params: { q: 'issue', lang: 'en' }, format: :json
+      assert_response :success
+      @request.remote_addr = '0.0.0.0'
+      travel 61.seconds do
+        get :search, params: { q: 'issue', lang: 'en' }, format: :json
+        assert_response :success
+      end
+    end
+  end
+
+  test 'the search JSON is cached per library, language and words' do
+    with_help do
+      RedmineKit::Help::Library.any_instance.expects(:search).once.returns([])
+      2.times do
+        get :search, params: { q: 'Issue  update', lang: 'en' }, format: :json
+        assert_response :success
+      end
+      get :search, params: { q: 'issue update', lang: 'en' }, format: :json
+      assert_equal [], json['results']
+    end
+  end
+
   test 'anonymous users get the JSON unless login is required' do
     with_help do
       get :index, format: :json

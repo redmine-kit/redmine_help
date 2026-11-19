@@ -75,7 +75,9 @@ Kit UI (its docs/plugins-kit.md):
 - **The help pages are screens:** `/help`, `/help/search` and `/help/*topic` (`HelpPage`), and Redmine's help pages,
   `/help/wiki_syntax[/detailed]` (`HelpWikiSyntax`) and `/help/code_highlighting` (`HelpCodeHighlighting`), which show
   the plugin's topic of each at Redmine's address. Without this plugin the new UI shows Redmine's own pages there.
-- **Anonymous visitors** don't get the panel yet (Redmine Kit UI's G37): the new UI's Help is a link to `/help` for them.
+- **Anonymous visitors** get the panel too (`anonymous: true`) unless Redmine requires a login, as they get the pages;
+  the JSON answers them by the same rule ([Access](#access)). The search is limited to 60 a minute per IP address (429),
+  and its answers are cached.
 
 The module's source is built against `@redmine-kit/ui` and `@redmine-kit/plugin`, which aren't published yet: `bin/setup`
 needs the ui-mock checkout next to this repository. The built files are committed, so installing the plugin needs no

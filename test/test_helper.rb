@@ -41,6 +41,9 @@ module RedmineKit
         plugins = plugin ? [RedmineKit::Help::Source.new('sample', File.join(FIXTURES, 'plugin'), :plugin)] : []
         RedmineKit::Help::Source.stubs(:plugins).returns(plugins)
         RedmineKit::Help.reset!
+        # each test starts with no search counted or cached (HelpTopicsController's rate limit, Json.search)
+        HelpTopicsController::RATE_STORE.clear
+        RedmineKit::Help::Json::SEARCH_CACHE.clear
       end
 
       def restore_help

@@ -18,8 +18,8 @@ import { HelpContents, HelpLoadError, HelpResults, HelpTextSkeleton, HelpTopicVi
 //   panel restored with the page: config/kit_ui.yml's `persist`), `keyboard` the keyboard's topic (the ? key),
 //   `wiki_syntax` the topic of the server's text formatting (an editor's すべての記法: /help/context.json?syntax=wiki).
 //   Each one starts a fresh trail.
-// config/kit_ui.yml: the slot topbar.panel with `replaces: help` (the TopBar's ヘルプ is its toggle) and `persist: true`.
-// Signed-in users only until the extension API lets anonymous visitors have a panel (G37 of ui-restructure-plan.md 5.3).
+// config/kit_ui.yml: the slot topbar.panel with `replaces: help` (the TopBar's ヘルプ is its toggle), `persist: true` and
+// `anonymous: true` (anonymous visitors too, unless Redmine requires a login: the JSON answers them as the pages do).
 
 type Entry = { view: HelpView; scroll?: number };
 

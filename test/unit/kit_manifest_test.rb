@@ -30,10 +30,10 @@ class KitManifestTest < ActiveSupport::TestCase
     assert(manifest['screens'].none? { |screen| screen.key?('permission') })
   end
 
-  test "the panel replaces the TopBar's Help and stays open in the tab" do
+  test "the panel replaces the TopBar's Help, stays open in the tab and is anonymous visitors' too" do
     panel = manifest['slots'].sole
     assert_equal({ 'slot' => 'topbar.panel', 'component' => 'HelpPanel', 'title' => 'label_help', 'icon' => 'help',
-                   'replaces' => 'help', 'persist' => true }, panel)
+                   'replaces' => 'help', 'persist' => true, 'anonymous' => true }, panel)
     # Redmine's own Help is replaced on the server too, as redmine_kit_ui requires for `replaces: help`
     item = Redmine::MenuManager.items(:top_menu).detect { |menu_item| menu_item.name == :help }
     assert_not_equal Redmine::Info.help_url, item.url

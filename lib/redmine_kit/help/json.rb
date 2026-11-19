@@ -33,10 +33,18 @@ module RedmineKit
         } }
       end
 
-      # GET /help/search.json?q=: the topics with every word, with a snippet.
+      # Searches' answers: bounded, thread-safe, read-only values; a new
+      # library (its files changed) has new keys.
+      SEARCH_CACHE = ActiveSupport::Cache::MemoryStore.new(size: 4.megabytes)
+
+      # GET /help/search.json?q=: the topics with every word, with a snippet,
+      # cached per library, language and words.
       def search(library, query, language)
-        results = library.search(query, language).map do |topic, snippet|
-          { id: topic.id, title: topic.title, snippet: snippet }
+        key = [library.cache_key, language, query.to_s.downcase.split.uniq].inspect
+        results = SEARCH_CACHE.fetch(key) do
+          library.search(query, language).map do |topic, snippet|
+            { id: topic.id, title: topic.title, snippet: snippet }.freeze
+          end.freeze
         end
         { help: { q: query, results: results } }
       end
