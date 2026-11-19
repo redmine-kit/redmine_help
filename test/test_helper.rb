@@ -41,13 +41,15 @@ module RedmineKit
         plugins = plugin ? [RedmineKit::Help::Source.new('sample', File.join(FIXTURES, 'plugin'), :plugin)] : []
         RedmineKit::Help::Source.stubs(:plugins).returns(plugins)
         RedmineKit::Help.reset!
-        # each test starts with no search counted or cached (HelpTopicsController's rate limit, Json.search)
-        HelpTopicsController::RATE_STORE.clear
+        # each test starts with no search counted or cached: the rate limit's own store (Redmine's test environment's
+        # Rails.cache counts nothing: RateLimitStore), Json.search's cache
+        RedmineKit::Help::RateLimitStore.store = ActiveSupport::Cache::MemoryStore.new(size: 1.megabyte)
         RedmineKit::Help::Json::SEARCH_CACHE.clear
       end
 
       def restore_help
         RedmineKit::Help::Source.unstub(:plugins)
+        RedmineKit::Help::RateLimitStore.store = nil
         saved = @saved_help_env || {}
         saved.each { |key, value| ENV[key] = value }
         %w[REDMINE_KIT_HELP_GUIDE_PATH REDMINE_KIT_HELP_EXTRA_PATH].each do |key|

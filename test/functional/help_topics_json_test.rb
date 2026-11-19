@@ -153,6 +153,18 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
     end
   end
 
+  test "the search's count goes to Rails.cache, shared by the server's processes" do
+    with_help do
+      RedmineKit::Help::RateLimitStore.store = nil
+      shared = ActiveSupport::Cache::MemoryStore.new
+      Rails.stubs(:cache).returns(shared)
+      2.times { get :search, params: { q: 'issue', lang: 'en' }, format: :json }
+      assert_response :success
+      key = 'rate-limit:help_topics:redmine_kit_help_search:0.0.0.0'
+      assert_equal 2, shared.read(key, raw: true).to_i
+    end
+  end
+
   test 'the search JSON is cached per library, language and words' do
     with_help do
       RedmineKit::Help::Library.any_instance.expects(:search).once.returns([])

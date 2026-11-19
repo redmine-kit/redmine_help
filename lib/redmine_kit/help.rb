@@ -26,6 +26,7 @@ module RedmineKit
       require_relative 'help/kit_screens'
       require_relative 'help/markdown_links'
       require_relative 'help/json'
+      require_relative 'help/rate_limit_store'
       Menu.install
     end
 

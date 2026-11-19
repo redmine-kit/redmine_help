@@ -16,17 +16,15 @@
 #
 # The search reads every topic, and anonymous visitors may ask it (the new
 # UI's panel is theirs too unless Redmine requires a login): at most
-# SEARCH_LIMIT searches a minute per IP address (429), its JSON's answers
-# cached (Json.search).
+# SEARCH_LIMIT searches a minute per IP address (429), counted in
+# RateLimitStore (Rails.cache, shared by the server's processes), its JSON's
+# answers cached (Json.search).
 class HelpTopicsController < ApplicationController
   Json = RedmineKit::Help::Json
   SEARCH_LIMIT = 60
-  # Per process, bounded and thread-safe (a Redmine server of several
-  # processes counts per process: the limit only keeps one client from
-  # making a process read every topic without a pause).
-  RATE_STORE = ActiveSupport::Cache::MemoryStore.new(size: 1.megabyte)
-  rate_limit to: SEARCH_LIMIT, within: 1.minute, by: -> { request.remote_ip }, only: :search, store: RATE_STORE,
-             name: 'redmine_kit_help_search', with: -> { head :too_many_requests }
+  rate_limit to: SEARCH_LIMIT, within: 1.minute, by: -> { request.remote_ip }, only: :search,
+             store: RedmineKit::Help::RateLimitStore, name: 'redmine_kit_help_search',
+             with: -> { head :too_many_requests }
   before_action :set_help_language
   helper :help_topics
   helper_method :panel?
