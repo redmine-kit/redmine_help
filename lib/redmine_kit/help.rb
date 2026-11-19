@@ -23,6 +23,9 @@ module RedmineKit
       require_relative 'help/library'
       require_relative 'help/menu'
       require_relative 'help/hooks'
+      require_relative 'help/kit_screens'
+      require_relative 'help/markdown_links'
+      require_relative 'help/json'
       Menu.install
     end
 

@@ -13,6 +13,7 @@ Redmine Kit Help (`redmine_kit_help`) is a Redmine plugin that points the header
 - **No guide content here:** the guide's pages, translations, `index.yml` and `map.yml` belong to redmine-guide. Tests use the small guide in `test/fixtures/help`.
 - **Safe file access:** topics and images are read only from inside a source's directory; never show a raw exception.
 - **Tests:** `bin/test` (Apple container or Docker, Redmine 7.0.3, PostgreSQL 16). Mapping, fallback, precedence and the header link have tests.
+- **The new UI's module** (`frontend/`, docs/README.md "The new UI"): its components use only `@redmine-kit/ui` and `@redmine-kit/plugin` and read the help's JSON (`RedmineKit::Help::Json`, the same library and map as the pages). After a change to `frontend/src/`, run `bin/setup` once, then `npm run check` in `frontend/` (type check, tests, build, `kit-check-ui`), and commit `assets/javascripts/kit/help.js` and `assets/stylesheets/kit/help.css`. The new UI's screens map to Redmine's in `config/kit_screens.yml`; the topics stay in map.yml.
 - **No secrets in the repository.**
 
 ## Translations

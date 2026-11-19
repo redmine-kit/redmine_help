@@ -1,0 +1,229 @@
+/* Redmine Kit Help: the stylesheet of the plugin's module for the new UI, built from frontend/src by `npm run build`
+   (frontend/vite.config.js): the Tailwind CSS utilities its source uses. Edit the source, not this file. */
+/*! tailwindcss v4.3.5 | MIT License | https://tailwindcss.com */
+@layer properties {
+  @supports (((-webkit-hyphens: none)) and (not (margin-trim: block))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
+    *, :before, :after, ::backdrop {
+      --tw-font-weight: initial;
+    }
+  }
+}
+
+@layer theme;
+
+@layer utilities {
+  .container {
+    width: 100%;
+  }
+
+  @media (min-width: 40rem) {
+    .container {
+      max-width: 40rem;
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .container {
+      max-width: 48rem;
+    }
+  }
+
+  @media (min-width: 51.25rem) {
+    .container {
+      max-width: 51.25rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .container {
+      max-width: 64rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .container {
+      max-width: 80rem;
+    }
+  }
+
+  @media (min-width: 96rem) {
+    .container {
+      max-width: 96rem;
+    }
+  }
+
+  .mt-4 {
+    margin-top: 1rem;
+  }
+
+  .line-clamp-2 {
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
+  }
+
+  .block {
+    display: block;
+  }
+
+  .contents {
+    display: contents;
+  }
+
+  .flex {
+    display: flex;
+  }
+
+  .inline-flex {
+    display: inline-flex;
+  }
+
+  .min-h-0 {
+    min-height: 0;
+  }
+
+  .w-full {
+    width: 100%;
+  }
+
+  .max-w-190 {
+    max-width: 47.5rem;
+  }
+
+  .flex-1 {
+    flex: 1;
+  }
+
+  .flex-none {
+    flex: none;
+  }
+
+  .flex-col {
+    flex-direction: column;
+  }
+
+  .items-center {
+    align-items: center;
+  }
+
+  .gap-0\.5 {
+    gap: .125rem;
+  }
+
+  .gap-1\.5 {
+    gap: .375rem;
+  }
+
+  .gap-3 {
+    gap: .75rem;
+  }
+
+  .gap-4 {
+    gap: 1rem;
+  }
+
+  .self-start {
+    align-self: flex-start;
+  }
+
+  .truncate {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .overflow-y-auto {
+    overflow-y: auto;
+  }
+
+  .overscroll-contain {
+    overscroll-behavior: contain;
+  }
+
+  .rounded-control {
+    border-radius: var(--rk-radius-control);
+  }
+
+  .bg-surface-band {
+    background-color: var(--rk-surface-band);
+  }
+
+  .px-3 {
+    padding-inline: .75rem;
+  }
+
+  .px-5 {
+    padding-inline: 1.25rem;
+  }
+
+  .py-1 {
+    padding-block: .25rem;
+  }
+
+  .py-2 {
+    padding-block: .5rem;
+  }
+
+  .ps-5 {
+    padding-inline-start: 1.25rem;
+  }
+
+  .pe-4 {
+    padding-inline-end: 1rem;
+  }
+
+  .pt-3 {
+    padding-top: .75rem;
+  }
+
+  .pt-4 {
+    padding-top: 1rem;
+  }
+
+  .pb-6 {
+    padding-bottom: 1.5rem;
+  }
+
+  .text-body {
+    font-size: var(--rk-type-body-size);
+    line-height: var(--tw-leading, var(--rk-type-body-lh));
+    font-weight: var(--tw-font-weight, 400);
+  }
+
+  .text-meta {
+    font-size: var(--rk-type-meta-size);
+    line-height: var(--tw-leading, 1.4);
+    font-weight: var(--tw-font-weight, 400);
+  }
+
+  .font-medium {
+    --tw-font-weight: 500;
+    font-weight: 500;
+  }
+
+  .text-text-link {
+    color: var(--rk-text-link);
+  }
+
+  .text-text-muted {
+    color: var(--rk-text-muted);
+  }
+
+  .text-text-title {
+    color: var(--rk-text-title);
+  }
+
+  .no-underline {
+    text-decoration-line: none;
+  }
+
+  .hover\:text-text-link-hover:hover {
+    color: var(--rk-text-link-hover);
+  }
+}
+
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false
+}

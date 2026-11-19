@@ -67,6 +67,30 @@ Redmine Kit Help (`redmine_kit_help`) は、Redmine のヘッダーの「ヘル�
 
 Redmine にはサイドパネルがありません。サイドパネルの内容は、本体の部品で組み立てています。サイドバーの色と余白、`.contextual` と `.icon-only` のリンク、本体のアイコン (`sprite_icon`)、本文の `div.wiki`、`dl#search-results` です。本体にないものだけを `assets/stylesheets/help_panel.css` に書いています。サイドパネルの枠と位置 (ウィンドウの端に重ねて固定、高さいっぱい、本文をスクロールしてもヘッダーは残す)、境界 (Redmine のドロップダウンと同じ境界線と薄い影)、重なり順 (Redmine のチケットのスティッキーヘッダーやドロップダウンより上、Redmine のモーダルダイアログを開いている間はその下)、Redmine のレスポンシブレイアウトのブレークポイントでウィンドウ全体を覆う表示、サイドパネルの中の `[hidden]` (本体の `.icon` は `display: inline-flex` なので、そのままでは最初のページで「戻る」が表示されます) です。色は本体の CSS 変数 (`--oc-gray-0`、`--oc-gray-4`、`--oc-black-rgb`) なので、これらを設定するテーマは、サイドバーと同じくサイドパネルにも反映されます。パターンは [Redmine Design Guide](https://redmine-kit.github.io/design-guide/ja/side-panel.html) にあります。
 
+<a id="the-new-ui"></a>
+
+## 新しい UI
+
+[Redmine Kit UI](https://github.com/redmine-kit/redmine_kit_ui) の新しい UI は、自分の画面を描きます。そのために、同じ
+ヘルプを JSON でも返します。また、プラグインは新しい UI のモジュール (`frontend/`。`assets/javascripts/kit/help.js` と
+`assets/stylesheets/kit/help.css` にビルド) を持ち、サイドパネル (`HelpPanel`) とヘルプページ (`HelpPage`) があります。
+
+| リクエスト | 応答 |
+| --- | --- |
+| `GET /help.json` | 目次: 章 (運用者のもの、ガイドのもの、プラグインのものの順) とそのトピック |
+| `GET /help/<トピック>.json?anchor=` | ユーザーの言語 (なければ英語) のトピック。Markdown で、リンクを `/help/<トピック>#<アンカー>` に、画像を `/help/assets/…` に書き換えたもの。アンカーの一覧、指定したアンカー (トピックの言語のもの)、運用者の囲み、章 |
+| `GET /help/search.json?q=` | すべての語を含むトピックと、その抜粋 |
+| `GET /help/context.json?screen=&tab=` | 新しい UI の画面 (Redmine Kit UI のルート表での名前とタブ) のトピックとアンカー。タブに専用のトピックがあれば `follow`。`config/kit_screens.yml` が各画面に、その画面が作り直した Redmine の画面 (`ProjectSettings: projects#settings`) を対応付けるので、同じ `map.yml` で両方の UI に対応します |
+
+JSON を使えるユーザーは、ページと同じです ([アクセス](#access))。モジュールは、まだ Redmine Kit UI に宣言していません
+(`config/kit_ui.yml` はありません)。新しい UI の拡張 API で、プラグインのパネルがヘッダーの「ヘルプ」の代わりになり、
+匿名ユーザーにも開け、アプリからトピックを指定して開ける (`?` キー、エディターのヘルプ) ようになるまでは、新しい UI は
+自分のヘルプを表示します。
+
+モジュールのソースは、まだ公開していない `@redmine-kit/ui` と `@redmine-kit/plugin` に対してビルドします。`bin/setup` には、
+このリポジトリの隣に ui-mock のチェックアウトが必要です。ビルドしたファイルはコミットしてあるので、プラグインの
+インストールにビルドは要りません。
+
 <a id="access"></a>
 
 ## アクセス権限

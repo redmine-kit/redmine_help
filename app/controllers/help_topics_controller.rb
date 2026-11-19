@@ -6,13 +6,21 @@
 # With panel=1, context, show and search render the same content without
 # Redmine's layout, for the side panel that the header's Help link opens
 # (assets/javascripts/help_panel.js).
+#
+# With .json, index, show, search and context answer the same help as JSON
+# for the new UI's panel and pages (RedmineKit::Help::Json; Redmine Kit UI's
+# kit requests of the session). context.json takes the new UI's screen
+# (?screen=, ?tab=) instead of Redmine's controller and action.
 class HelpTopicsController < ApplicationController
+  Json = RedmineKit::Help::Json
   before_action :set_help_language
   helper :help_topics
   helper_method :panel?
 
   # The topic for the screen the Help link was clicked on.
   def context
+    return render(json: Json.context(library, @language, params[:screen], params[:tab])) if json?
+
     key, (id, anchor) = library.lookup(params[:c].to_s, params[:a].to_s, params.permit(*RedmineKit::Help::MAP_PARAMS).to_h)
     @topic = library.topic(id, @language) if id
     @anchor = library.anchor(id, @language, anchor).presence if @topic
@@ -28,18 +36,23 @@ class HelpTopicsController < ApplicationController
   end
 
   def index
+    return render(json: Json.contents(library, @language)) if json?
+
     render_index
   end
 
   def show
     @topic = library.topic(params[:topic].to_s, @language)
     return render_404 unless @topic
+    return render(json: Json.topic(library, @topic, @language, anchor: text_param(:anchor))) if json?
 
     render_topic
   end
 
   def search
-    @query = params[:q].to_s.strip.first(100)
+    @query = text_param(:q).strip.first(100)
+    return render(json: Json.search(library, @query, @language)) if json?
+
     @results = library.search(@query, @language)
     render_panel if panel?
   end
@@ -74,6 +87,15 @@ class HelpTopicsController < ApplicationController
 
   def panel?
     params[:panel] == '1'
+  end
+
+  def json?
+    request.format.json?
+  end
+
+  # A parameter that should be text: anything else (an array, a hash) is none.
+  def text_param(name)
+    params[name].is_a?(String) ? params[name] : ''
   end
 
   # ?lang=xx, else the user's language, else Redmine's default.

@@ -1,0 +1,62 @@
+# The new UI's screens (Redmine Kit UI's route table: `Main`, `ProjectSettings` …) as the Redmine screen each redesigns
+# (controller#action), so that the side panel of the new UI opens the same topic as Redmine's own screens do, from one
+# map: the sources' map.yml (docs/mapping.md). A screen's ?tab= is passed on as the map's parameter. A screen that isn't
+# here (a plugin's screen, `<plugin>:<component>`) opens the contents. Read by RedmineKit::Help::KitScreens.
+# Start, account and search
+Dashboard: my#page
+MyAccount: my#account
+MyAccountPasskeys: my
+NotificationSettings: my#account
+Search: search#index
+# Projects
+Projects: projects#index
+NewProject: projects#new
+ProjectOverview: projects#show
+ProjectSettings: projects#settings
+Activity: activities#index
+ProjectActivity: activities#index
+# Issues
+Main: issues#show
+Project: issues#show
+ProjectTable: issues#index
+NewIssue: issues#new
+IssueEdit: issues#edit
+IssueBulkEdit: issues#bulk_edit
+IssueImport: imports#new
+IssueSummary: reports#issue_report
+QueryNew: queries#new
+Roadmap: versions#index
+VersionDetail: versions#show
+# Planning and time
+Gantt: gantts#show
+Calendar: calendars#show
+TimeEntries: timelog#index
+TimeEntryNew: timelog#new
+TimeMine: timelog
+TimeSheet: timelog
+TimeMembers: timelog
+# Content
+News: news#index
+Documents: documents#index
+Files: files#index
+Forums: boards#index
+ProjectWiki: wiki#show
+WikiIndex: wiki#index
+WikiEdit: wiki#edit
+WikiHistory: wiki#history
+Repository: repositories#show
+RepositoryBrowse: repositories#browse
+RepositoryRevision: repositories#revision
+RepositoryStats: repositories#stats
+# People
+UserProfile: users#show
+GroupProfile: groups#show
+# Administration
+Admin: admin#index
+AdminUsers: users#index
+AdminGroups: groups#index
+AdminRoles: roles#index
+AdminWorkflow: workflows#edit
+AdminCustomFields: custom_fields#index
+AdminWebhooks: webhooks#index
+AdminSettings: settings#index

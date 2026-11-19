@@ -51,6 +51,27 @@ The panel uses Redmine's strings: Help (`label_help`), Back (`button_back`), Ope
 
 Redmine has no side panel. The panel's content is built from core's pieces: the sidebar's colors and padding, `.contextual` with `.icon-only` links and core's icons (`sprite_icon`), `div.wiki` for the text and `dl#search-results`. Only what core cannot give is in `assets/stylesheets/help_panel.css`: the panel's frame and position (laid over the end side, the full height, the header kept above the scrolling text), its edge (a border and a light shadow, as on Redmine's dropdowns), its stacking (above Redmine's sticky issue header and dropdowns, and under Redmine's modal dialogs while one is open), the full-window panel at Redmine's responsive breakpoint, and `[hidden]` inside the panel (core's `.icon` is `display: inline-flex`, which would show Back on the first page). The colors are core's variables (`--oc-gray-0`, `--oc-gray-4`, `--oc-black-rgb`), so themes that set them style the panel as they style the sidebar. The [Redmine Design Guide](https://redmine-kit.github.io/design-guide/side-panel.html) describes the pattern.
 
+## The new UI
+
+[Redmine Kit UI](https://github.com/redmine-kit/redmine_kit_ui)'s new UI draws its own screens. For it, the same help is
+also JSON, and the plugin has a module of the new UI (`frontend/`, built into `assets/javascripts/kit/help.js` and
+`assets/stylesheets/kit/help.css`) with the side panel (`HelpPanel`) and the help pages (`HelpPage`).
+
+| Request | Answer |
+| --- | --- |
+| `GET /help.json` | the contents: the sections (the operator's first, then the guide's, then the plugins') with their topics |
+| `GET /help/<topic>.json?anchor=` | the topic in the user's language (or English), as Markdown with its links rewritten to `/help/<topic>#<anchor>` and its images to `/help/assets/…`; its anchors; the anchor asked for, in the topic's language; the operator's blocks; its section |
+| `GET /help/search.json?q=` | the topics with every word, each with a snippet |
+| `GET /help/context.json?screen=&tab=` | the topic of a screen of the new UI (its name in Redmine Kit UI's route table, and its tab), at its anchor; `follow` when the tab has a topic of its own. `config/kit_screens.yml` gives each screen the Redmine screen it redesigns (`ProjectSettings: projects#settings`), so the same `map.yml` serves both UIs |
+
+The JSON is open to the same users as the pages ([Access](#access)). The module isn't declared to Redmine Kit UI yet (no
+`config/kit_ui.yml`): the new UI shows its own help until its extension API lets a plugin's panel take the place of the
+header's Help, open for anonymous users, and open at a topic from the app (the `?` key, the editors' help).
+
+The module's source is built against `@redmine-kit/ui` and `@redmine-kit/plugin`, which aren't published yet: `bin/setup`
+needs the ui-mock checkout next to this repository. The built files are committed, so installing the plugin needs no
+build.
+
 ## Access
 
 The help is open to whoever can see Redmine: signed-in users, and anonymous users when Redmine does not require login (Administration › Settings › Authentication › Authentication required).

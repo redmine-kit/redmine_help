@@ -1,0 +1,33 @@
+{
+  "name": "redmine-kit-help-frontend",
+  "private": true,
+  "type": "module",
+  "description": "The source of Redmine Kit Help's module for the new UI (../assets/javascripts/kit/help.js)",
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "vitest run",
+    "check:ui": "kit-check-ui",
+    "check": "npm run typecheck && npm test && npm run build && npm run check:ui"
+  },
+  "peerDependencies": {
+    "react": "19.3.1"
+  },
+  "devDependencies": {
+    "@redmine-kit/plugin": "file:../../ui-mock/packages/plugin",
+    "@redmine-kit/ui": "file:../../ui-mock/packages/ui",
+    "@tanstack/react-query": "5.107.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.10",
+    "@types/react": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "jsdom": "31.0.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-router": "8.5.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.8",
+    "vitest": "5.1.0"
+  }
+}
