@@ -107,8 +107,7 @@ module RedmineKit
         return [] if words.empty?
 
         topics(language).filter_map do |topic|
-          # The text as read: without the targets of links and images.
-          haystack = "#{topic.title}\n#{topic.body.gsub(/\]\([^)]*\)/, ']')}".downcase
+          haystack = "#{topic.title}\n#{readable(topic.body)}".downcase
           next unless words.all? { |word| haystack.include?(word) }
 
           [topic, snippet(topic.body, words.first)]
@@ -143,8 +142,14 @@ module RedmineKit
         nil
       end
 
+      # The text as read: without the targets of links and images. The search
+      # and its snippets read the same text.
+      def readable(text)
+        text.gsub(/\]\([^)]*\)/, ']')
+      end
+
       def snippet(text, word)
-        plain = text.gsub(/[#*_`>\[\]()|]/, ' ').squeeze(' ')
+        plain = readable(text).gsub(/[#*_`>\[\]()|]/, ' ').squeeze(' ')
         index = plain.downcase.index(word) || 0
         start = [index - 60, 0].max
         plain[start, 200].to_s.strip
