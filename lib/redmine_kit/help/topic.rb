@@ -18,6 +18,12 @@ module RedmineKit
         text.sub(/\A---\n.*?\n---\n/m, '')
       end
 
+      # The Markdown as read: without the targets of links and images. The
+      # search and its snippets read this.
+      def readable_body
+        body.gsub(/\]\([^)]*\)/, ']')
+      end
+
       # The headings' anchors in order, as Redmine makes them
       # (ApplicationHelper#parse_headings and #sanitize_anchor_name).
       def anchors
