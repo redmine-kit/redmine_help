@@ -147,17 +147,20 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
     end
   end
 
+  # With login required, Redmine's require_login answers a JSON request of an action without API authentication with
+  # 403 Forbidden (ApplicationController#require_login, Redmine 7.0.3), and nothing of the help.
   test 'anonymous users get the JSON unless login is required' do
     with_help do
       get :index, format: :json
       assert_response :success
       with_settings login_required: '1' do
         get :index, format: :json
-        assert_response :unauthorized
+        assert_response :forbidden
         get :show, params: { topic: 'user/issues' }, format: :json
-        assert_response :unauthorized
+        assert_response :forbidden
+        assert_not_includes response.body, 'Issue tracking'
         get :context, params: { syntax: 'wiki' }, format: :json
-        assert_response :unauthorized
+        assert_response :forbidden
       end
     end
   end
