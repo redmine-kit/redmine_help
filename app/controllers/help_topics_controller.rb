@@ -30,7 +30,7 @@ class HelpTopicsController < ApplicationController
   def context
     return render_context_json if json?
 
-    key, (id, anchor) = library.lookup(params[:c].to_s, params[:a].to_s, params.permit(*RedmineKit::Help::MAP_PARAMS).to_h)
+    key, (id, anchor) = library.lookup(params[:c].to_s, params[:a].to_s, map_params)
     @topic = library.topic(id, @language) if id
     @anchor = library.anchor(id, @language, anchor).presence if @topic
     if panel?
@@ -85,6 +85,11 @@ class HelpTopicsController < ApplicationController
 
   def library
     RedmineKit::Help.library
+  end
+
+  # The parameters of the screen that the map's keys may name (a tab).
+  def map_params
+    params.permit(*RedmineKit::Help::MAP_PARAMS).to_h
   end
 
   def render_index
