@@ -70,6 +70,7 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
       get :search, params: { q: 'issue update', lang: 'en' }, format: :json
       assert_equal %w[user/issues], json['results'].pluck('id')
       assert_includes json['results'].first['snippet'], 'Update'
+      assert_not_includes json['results'].first['snippet'], 'issue-list.md', 'the snippet reads the text, not the links'
       get :search, params: { q: { a: 'issue' }, lang: 'en' }, format: :json
       assert_response :success
       assert_equal [], json['results']
