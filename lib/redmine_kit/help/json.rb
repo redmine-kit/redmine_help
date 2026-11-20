@@ -58,8 +58,8 @@ module RedmineKit
       # help pages, or none (the contents) for another value or a topic the
       # library doesn't have.
       def syntax(library, language, value)
-        id = value.is_a?(String) && SYNTAX_TOPICS[value]&.call
-        topic = id && library.topic(id, language)
+        id = SYNTAX_TOPICS[value]&.call if value.is_a?(String)
+        topic = library.topic(id, language) if id
         { help: { topic: topic&.id, anchor: nil, follow: false } }
       end
 
