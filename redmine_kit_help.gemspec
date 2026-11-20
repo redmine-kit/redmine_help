@@ -7,7 +7,7 @@
 Gem::Specification.new do |spec|
   spec.name = 'redmine_kit_help'
   spec.version = File.read(File.join(__dir__, 'lib/redmine_kit/help.rb'))[/VERSION = '([^']+)'/, 1]
-  spec.summary = "Opens help for the current Redmine screen in the user's language"
+  spec.summary = 'Help for the current screen'
   spec.authors = ['Redmine Kit']
   spec.license = 'GPL-2.0-or-later'
   spec.homepage = 'https://github.com/redmine-kit/redmine_help'
