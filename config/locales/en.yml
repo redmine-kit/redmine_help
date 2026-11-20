@@ -1,4 +1,7 @@
 en:
+  # The plugin's name and description (Administration › Plugins; redmine_kit_ui's docs/plugin-names.md)
+  plugin_name_redmine_kit_help: Redmine Kit Help
+  plugin_description_redmine_kit_help: Help for the current screen
   label_help_back: Back to help
   button_help_panel_close: Close
   text_help_load_failed: The help could not be loaded.

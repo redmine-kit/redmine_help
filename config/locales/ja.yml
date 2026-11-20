@@ -1,4 +1,7 @@
 ja:
+  # The plugin's name and description (Administration › Plugins; redmine_kit_ui's docs/plugin-names.md)
+  plugin_name_redmine_kit_help: Redmine Kit Help
+  plugin_description_redmine_kit_help: 開いている画面のヘルプを表示
   label_help_back: ヘルプに戻る
   button_help_panel_close: 閉じる
   text_help_load_failed: ヘルプを読み込めませんでした。

@@ -5,7 +5,7 @@ require_relative 'lib/redmine_kit/help'
 Redmine::Plugin.register :redmine_kit_help do
   name 'Redmine Kit Help'
   author 'Redmine Kit'
-  description "Opens help for the current screen in the user's language, from Markdown files"
+  description 'Help for the current screen'
   version RedmineKit::Help::VERSION
   url 'https://github.com/redmine-kit/redmine_help'
   author_url 'https://github.com/redmine-kit'
