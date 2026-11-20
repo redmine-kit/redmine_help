@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEve
 import { ScreenSidebar, useExtensionContext, useKitNavigate, useKitQuery, useT } from '@redmine-kit/plugin';
 import { Card, CardBody, CardHeader, NavRow, PageToc, Pane, Panes, SearchInput, SectionHeading, TitleBlock } from '@redmine-kit/ui';
 import { contextView, helpHref, helpPaths, type HelpContentsJson, type HelpContextJson, type HelpSyntax, type HelpView } from './api';
-import { HelpLoadError, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCapture } from './HelpContent';
+import { HelpGuideMissing, HelpLoadError, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCapture } from './HelpContent';
 
 // HelpPage: the help pages (Redmine Kit Help's /help, /help/<topic>, /help/search), opened by the panel's 全画面で表示
 // and shared by URL. Moved from ui-mock (screens/Help.tsx), on the plugin's JSON:
@@ -140,6 +140,11 @@ function Contents({ data, failed }: { data: HelpContentsJson | undefined; failed
   if (!data) return <HelpTextSkeleton />;
   return (
     <nav aria-label={t('label_table_of_contents')} className="grid grid-cols-fill-240 items-start gap-x-8 gap-y-section-gap">
+      {!data.help.guide && (
+        <div className="col-span-full">
+          <HelpGuideMissing />
+        </div>
+      )}
       {data.help.sections.map((section) => (
         <section key={section.id} aria-label={section.title} className="flex flex-col gap-0.5">
           <SectionHeading heading={section.title} count={section.topics.length} />

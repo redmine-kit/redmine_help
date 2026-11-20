@@ -22,6 +22,9 @@ module RedmineKit
         sources.any?
       end
 
+      # Whether the guide is installed: without it the contents say so (docs/setup.md).
+      def guide? = sources.any? { |source| source.kind == :guide }
+
       def languages
         sources.flat_map(&:languages).uniq.sort
       end

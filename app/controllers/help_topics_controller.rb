@@ -94,6 +94,7 @@ class HelpTopicsController < ApplicationController
 
   def render_index
     @sections = library.sections(@language)
+    @guide = library.guide?
     panel? ? render_panel : render(:index)
   end
 

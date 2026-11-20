@@ -5,3 +5,4 @@ en:
   label_help_back: Back to help
   button_help_panel_close: Close
   text_help_load_failed: The help could not be loaded.
+  text_help_guide_missing: The Redmine guide is not installed. Ask your administrator to install it.

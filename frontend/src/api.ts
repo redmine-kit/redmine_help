@@ -8,9 +8,10 @@ export interface HelpSectionJson {
   topics: { id: string; title: string }[];
 }
 
-/** GET /help.json: the sections of the contents (the operator's first, then the guide's, then the plugins'). */
+/** GET /help.json: the sections of the contents (the operator's first, then the guide's, then the plugins'), and whether
+ * the Redmine guide is installed (without it the contents say so first: docs/setup.md). */
 export interface HelpContentsJson {
-  help: { language: string; sections: HelpSectionJson[] };
+  help: { language: string; guide: boolean; sections: HelpSectionJson[] };
 }
 
 /** GET /help/<topic>.json[?anchor=]: the topic in the user's language (or English), the operator's blocks under it. */

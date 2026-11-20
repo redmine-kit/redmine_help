@@ -13,12 +13,16 @@ import { renderKit } from './test/render';
 const CONTENTS = {
   help: {
     language: 'ja',
+    guide: true,
     sections: [
       { id: 'support', title: 'サポート', topics: [{ id: 'support/contact', title: '問い合わせ先' }] },
       { id: 'user', title: 'ユーザーガイド', topics: [{ id: 'user/issues', title: 'チケットトラッキング' }, { id: 'user/issue-list', title: 'チケットの一覧' }] },
     ],
   },
 };
+// without the guide (docs/setup.md): the operator's section only
+const NO_GUIDE = { help: { language: 'ja', guide: false, sections: [CONTENTS.help.sections[0]] } };
+const GUIDE_MISSING = 'Redmine のガイドがインストールされていません。システム管理者にインストールを依頼してください。';
 const topic = (id: string, title: string, body: string) => ({
   help: { topic: { id, title, language: 'ja', anchors: [], body: `# ${title}\n\n${body}`, anchor: null }, support: ['**ヘルプデスク:** 内線 1234'], section: null },
 });
@@ -96,6 +100,14 @@ describe('the help panel', () => {
     expect(screen.getByText('…Redmine の中心です。')).toBeInTheDocument();
   });
 
+  // docs/setup.md: without the guide, the contents say that no guide is installed (they were an empty 目次)
+  it('without the guide, the contents say so', async () => {
+    renderKit(<InPanel />, { context: { plugin: 'redmine_kit_help', panel, screen: { name: 'News', tab: null } }, responses: { ...RESPONSES, 'GET /help.json': NO_GUIDE } });
+    const contents = await screen.findByRole('navigation', { name: '目次' });
+    expect(contents).toHaveTextContent(GUIDE_MISSING);
+    expect(screen.getByRole('link', { name: '問い合わせ先' })).toBeInTheDocument();
+  });
+
   it('a failed load is a notice, never the error', async () => {
     renderKit(<InPanel />, { context: { plugin: 'redmine_kit_help', panel, screen: { name: 'Main', tab: null } }, responses: { 'GET /help/context.json?screen=Main': new Error('boom') } });
     expect(await screen.findByText('ヘルプを読み込めませんでした。')).toBeInTheDocument();
@@ -152,6 +164,17 @@ describe('the help page', () => {
     wiki.unmount();
     renderKit(<HelpCodeHighlighting />, { context: { plugin: 'redmine_kit_help' }, responses: RESPONSES });
     expect(await screen.findByText('Ruby を使えます。')).toBeInTheDocument();
+  });
+
+  it('without the guide, the contents say so first; with no other help, only that', async () => {
+    const page = renderKit(<HelpPage />, { context: { plugin: 'redmine_kit_help' }, responses: { ...RESPONSES, 'GET /help.json': NO_GUIDE } });
+    expect(await screen.findByRole('navigation', { name: '目次' })).toHaveTextContent(GUIDE_MISSING);
+    expect(screen.getByRole('link', { name: '問い合わせ先' })).toBeInTheDocument();
+    page.unmount();
+    renderKit(<HelpPage />, { context: { plugin: 'redmine_kit_help' }, responses: { ...RESPONSES, 'GET /help.json': { help: { language: 'ja', guide: false, sections: [] } } } });
+    const contents = await screen.findByRole('navigation', { name: '目次' });
+    expect(contents).toHaveTextContent(GUIDE_MISSING);
+    expect(contents.querySelectorAll('section')).toHaveLength(0);
   });
 
   it("Redmine's help page whose topic fails to load: a notice", async () => {

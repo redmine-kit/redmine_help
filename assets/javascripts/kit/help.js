@@ -161,15 +161,23 @@ function HelpResults({ q }) {
 		})]
 	});
 }
+/** Without the Redmine guide (docs/setup.md, "The guide"): the contents say so first, as Redmine's page of the plugin does. */
+function HelpGuideMissing() {
+	const t = useT();
+	return /* @__PURE__ */ jsx(EmptyState, {
+		variant: "block",
+		text: t("text_help_guide_missing")
+	});
+}
 function HelpContents({ current }) {
 	const t = useT();
 	const query = useKitQuery(helpPaths.contents);
 	if (query.isPending) return /* @__PURE__ */ jsx(HelpTextSkeleton, {});
 	if (query.isError) return /* @__PURE__ */ jsx(HelpLoadError, {});
-	return /* @__PURE__ */ jsx("nav", {
+	return /* @__PURE__ */ jsxs("nav", {
 		"aria-label": t("label_table_of_contents"),
 		className: "flex flex-col gap-4",
-		children: query.data.help.sections.map((section) => /* @__PURE__ */ jsxs("div", {
+		children: [!query.data.help.guide && /* @__PURE__ */ jsx(HelpGuideMissing, {}), query.data.help.sections.map((section) => /* @__PURE__ */ jsxs("div", {
 			className: "flex flex-col gap-0.5",
 			children: [/* @__PURE__ */ jsx(SectionHeading, {
 				heading: section.title,
@@ -183,7 +191,7 @@ function HelpContents({ current }) {
 				className: cn("truncate py-1 text-body no-underline hover:text-text-link-hover", topic.id === current ? "font-medium text-text-title" : "text-text-link"),
 				children: topic.title
 			}, topic.id))]
-		}, section.id))
+		}, section.id))]
 	});
 }
 // src/HelpPanel.tsx
@@ -483,10 +491,13 @@ function Contents({ data, failed }) {
 	const t = useT();
 	if (failed) return /* @__PURE__ */ jsx(HelpLoadError, {});
 	if (!data) return /* @__PURE__ */ jsx(HelpTextSkeleton, {});
-	return /* @__PURE__ */ jsx("nav", {
+	return /* @__PURE__ */ jsxs("nav", {
 		"aria-label": t("label_table_of_contents"),
 		className: "grid grid-cols-fill-240 items-start gap-x-8 gap-y-section-gap",
-		children: data.help.sections.map((section) => /* @__PURE__ */ jsxs("section", {
+		children: [!data.help.guide && /* @__PURE__ */ jsx("div", {
+			className: "col-span-full",
+			children: /* @__PURE__ */ jsx(HelpGuideMissing, {})
+		}), data.help.sections.map((section) => /* @__PURE__ */ jsxs("section", {
 			"aria-label": section.title,
 			className: "flex flex-col gap-0.5",
 			children: [/* @__PURE__ */ jsx(SectionHeading, {
@@ -500,7 +511,7 @@ function Contents({ data, failed }) {
 				className: "-mx-2.25",
 				children: topic.title
 			}, topic.id))]
-		}, section.id))
+		}, section.id))]
 	});
 }
 function TopicPage({ id, anchor, search }) {

@@ -22,10 +22,20 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
       assert_response :success
       assert_equal 'application/json', response.media_type
       assert_equal %w[support user admin], json['sections'].pluck('id')
+      assert json['guide']
       user = json['sections'][1]
       assert_equal 'User guide', user['title']
       assert_equal [['user/issues', 'Issue tracking'], ['user/issue-list', 'The issue list']],
                    user['topics'].map(&:values)
+    end
+  end
+
+  test 'the contents without the guide say so: guide is false, the other help still listed' do
+    with_help(guide: false, plugin: true) do
+      get :index, params: { lang: 'en' }, format: :json
+      assert_response :success
+      assert_equal false, json['guide']
+      assert_not_empty json['sections']
     end
   end
 

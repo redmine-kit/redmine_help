@@ -10,13 +10,14 @@ module RedmineKit
     module Json
       module_function
 
-      # GET /help.json: the sections of the sidebar, each with its topics.
+      # GET /help.json: the sections of the sidebar, each with its topics, and
+      # whether the guide is installed (without it the contents say so).
       def contents(library, language)
         sections = library.sections(language).map do |section|
           { id: section.id, title: section.title(language),
             topics: section.topics.map { |topic| { id: topic.id, title: section.topic_title(topic, language) } } }
         end
-        { help: { language: language, sections: sections } }
+        { help: { language: language, guide: library.guide?, sections: sections } }
       end
 
       # GET /help/<topic>.json: the topic in the language (or the fallback),

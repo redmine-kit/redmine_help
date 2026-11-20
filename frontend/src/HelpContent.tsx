@@ -9,7 +9,7 @@ import { helpBody, helpHref, helpPaths, helpViewOf, type HelpContentsJson, type 
 // - HelpTopicView: the topic's text (Prose, without its # title) and the operator's blocks under it (_support.md: every
 //   page, then this topic). Opens at the view's heading (its anchor, in the topic's language: the JSON's).
 // - HelpResults: 結果 (N), each topic's title and a snippet; 表示するデータがありません when nothing matches.
-// - HelpContents: the sections (the operator's first) with their topics.
+// - HelpContents: the sections (the operator's first) with their topics; without the guide, HelpGuideMissing first.
 // Links between topics (/help/<topic>) call `onGo` when given (the panel keeps them inside itself); without it they are
 // links of this server (the page).
 
@@ -121,6 +121,12 @@ export function HelpResults({ q }: { q: string }) {
   );
 }
 
+/** Without the Redmine guide (docs/setup.md, "The guide"): the contents say so first, as Redmine's page of the plugin does. */
+export function HelpGuideMissing() {
+  const t = useT();
+  return <EmptyState variant="block" text={t('text_help_guide_missing')} />;
+}
+
 export function HelpContents({ current }: { current?: string }) {
   const t = useT();
   const query = useKitQuery<HelpContentsJson>(helpPaths.contents);
@@ -128,6 +134,7 @@ export function HelpContents({ current }: { current?: string }) {
   if (query.isError) return <HelpLoadError />;
   return (
     <nav aria-label={t('label_table_of_contents')} className="flex flex-col gap-4">
+      {!query.data.help.guide && <HelpGuideMissing />}
       {query.data.help.sections.map((section) => (
         <div key={section.id} className="flex flex-col gap-0.5">
           <SectionHeading heading={section.title} level={3} />

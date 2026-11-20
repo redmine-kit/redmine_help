@@ -86,7 +86,23 @@ class HelpTopicsControllerTest < Redmine::ControllerTest
     end
     with_help(guide: false) do
       get :index
-      assert_select 'p.nodata'
+      assert_select 'p.nodata', text: ::I18n.t(:text_help_guide_missing)
+    end
+  end
+
+  # docs/setup.md: without the guide, the contents say that no guide is installed (they said 「表示するデータがありません」),
+  # first, with the other plugins' help after it; the panel's contents too
+  test 'without the guide, the contents say so before the other help' do
+    with_help(guide: false, plugin: true) do
+      get :index, params: { lang: 'ja' }
+      assert_select 'p.nodata', text: ::I18n.t(:text_help_guide_missing)
+      assert_select 'p.nodata + h3'
+      get :index, params: { panel: 1, lang: 'ja' }
+      assert_select 'p.nodata', text: ::I18n.t(:text_help_guide_missing)
+    end
+    with_help do
+      get :index, params: { lang: 'ja' }
+      assert_select 'p.nodata', 0
     end
   end
 
