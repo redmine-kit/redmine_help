@@ -5,7 +5,7 @@ import { contextView, helpHref, helpPaths, type HelpContentsJson, type HelpConte
 import { HelpGuideMissing, HelpLoadError, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCapture } from './HelpContent';
 
 // HelpPage: the help pages (Redmine Kit Help's /help, /help/<topic>, /help/search), opened by the panel's 全画面で表示
-// and shared by URL. Moved from ui-mock (screens/Help.tsx), on the plugin's JSON:
+// and shared by URL. Moved from ui (screens/Help.tsx), on the plugin's JSON:
 // - /help                the contents: every section and its topics, side by side as far as the card is wide;
 // - /help/<topic>#<a>    a topic (config/kit_ui.yml's /help/*topic: `params.topic`): its title (TitleBlock, no path line:
 //                        the sidebar lists the sections), the text (Prose, reading width) with the operator's blocks,

@@ -81,7 +81,7 @@ Kit UI (its docs/plugins-kit.md):
   front of Redmine (a reverse proxy, AWS WAF).
 
 The module's source is built against `@redmine-kit/ui` and `@redmine-kit/plugin`, which aren't published yet: `bin/setup`
-needs the ui-mock checkout next to this repository. The built files are committed, so installing the plugin needs no
+needs the ui checkout next to this repository. The built files are committed, so installing the plugin needs no
 build.
 
 ## Access

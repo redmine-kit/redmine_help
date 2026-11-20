@@ -4,7 +4,7 @@ import { EmptyState, Icon, Notice, Prose, SectionHeading, Skeleton, SkeletonRegi
 import { helpBody, helpHref, helpPaths, helpViewOf, type HelpContentsJson, type HelpSearchJson, type HelpTopicJson, type HelpView } from './api';
 
 // The help's content, shared by the help panel (HelpPanel) and the help page (HelpPage), as Redmine's help panel and pages
-// share their partials (_topic, _results, _contents). Moved from ui-mock (screens/help-parts/HelpContent.tsx), on the
+// share their partials (_topic, _results, _contents). Moved from ui (screens/help-parts/HelpContent.tsx), on the
 // plugin's JSON instead of the app's sample guide.
 // - HelpTopicView: the topic's text (Prose, without its # title) and the operator's blocks under it (_support.md: every
 //   page, then this topic). Opens at the view's heading (its anchor, in the topic's language: the JSON's).

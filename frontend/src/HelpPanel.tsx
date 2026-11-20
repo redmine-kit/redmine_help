@@ -6,7 +6,7 @@ import { HelpContents, HelpLoadError, HelpResults, HelpTextSkeleton, HelpTopicVi
 
 // HelpPanel: the help for the current screen in the app's panel at the right (the slot topbar.panel; the app draws the
 // panel, its title ヘルプ and ✕), the new UI's form of Redmine Kit Help's side panel (docs/README.md "Side panel"). Moved
-// from ui-mock (screens/help-parts/HelpPanelHost.tsx), on the plugin's JSON:
+// from ui (screens/help-parts/HelpPanelHost.tsx), on the plugin's JSON:
 // - It shows the topic the map gives the app's screen (useExtensionContext().screen → /help/context.json, the same map.yml
 //   as Redmine's own screens: config/kit_screens.yml), at the mapped heading; a screen without one shows the contents.
 // - Links between topics and the search stay in the panel, and 戻る returns to the page before (with its scroll).
