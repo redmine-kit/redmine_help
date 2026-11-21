@@ -8,7 +8,7 @@ import { HelpCodeHighlighting, HelpPage, HelpWikiSyntax } from './HelpPage';
 const meta = {
   title: 'Screens/HelpPage',
   component: HelpPage,
-  ...screenStory({ path: '/help', responses: helpResponses }),
+  ...screenStory({ sidebar: true, path: '/help', responses: helpResponses }),
 } satisfies Meta<typeof HelpPage>;
 
 export default meta;
