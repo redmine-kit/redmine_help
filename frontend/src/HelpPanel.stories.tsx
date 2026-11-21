@@ -9,7 +9,8 @@ import { HelpPanel } from './HelpPanel';
 // with the panel's header (its title, the subtitle and actions the plugin puts there). Open to anonymous visitors too: no
 // permission, so no 403.
 
-/** The app's panel: its width, its header with the title and the places for the plugin's subtitle and actions. */
+/** The app's panel: its width, its header with the title and the places for the plugin's subtitle and actions. Kept
+ *  here: the shared setup has no frame for a topbar panel's header. */
 const InPanel: Decorator = (Story) => {
   const t = useT();
   const [subtitle, setSubtitle] = useState<HTMLElement | null>(null);
