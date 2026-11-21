@@ -29,6 +29,7 @@ The organization's translation rules apply to this plugin's locale files and doc
 ## Documentation
 
 - **Two languages.** English is the source (`README.md`, `docs/`); the Japanese translation is `README.ja.md` and `docs/ja/`, with the same file names. Change both together.
+- **One language per document.** The English documents are in English only and name the UI with the English locale's strings (Redmine's and this plugin's `config/locales/en.yml`); Japanese appears only in the link to the translation, a strings table's `ja` column or a value an example must match (`../AGENTS.md` › Writing › Translations).
 - **Anchors in Japanese.** Put `<a id="..."></a>` with the English heading's anchor before each Japanese heading.
 - **Commands** to run go in `sh` blocks with a lead sentence, not inside a sentence.
 - **Facts.** State only what has been checked, with the date and the source.

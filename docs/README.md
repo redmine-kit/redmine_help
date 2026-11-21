@@ -45,7 +45,7 @@ The Help link is a button with `aria-expanded` and `aria-controls`, and the pane
 
 ### Strings
 
-The panel uses Redmine's strings: Help (`label_help`), Back (`button_back`), Open in full view (`label_open_in_full_view`), Table of contents (`label_table_of_contents`) and Search (`label_search`). Close is the plugin's own string (`button_help_panel_close`: Close, 閉じる), since Redmine's Close (`button_close`) is the action that closes a project (終了 in Japanese).
+The panel uses Redmine's strings: Help (`label_help`), Back (`button_back`), Open in full view (`label_open_in_full_view`), Table of contents (`label_table_of_contents`) and Search (`label_search`). Close is the plugin's own string (`button_help_panel_close`: Close, 閉じる), since Redmine's Close (`button_close`) is the action that closes a project (終了 in Japanese). <!-- ja-ok: the Japanese strings are the subject -->
 
 ### Stylesheet
 

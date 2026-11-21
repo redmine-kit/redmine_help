@@ -12,8 +12,8 @@ Redmine Kit Help (`redmine_kit_help`) is a Redmine plugin that turns the Help li
 
 ## Documentation
 
-- Website: https://redmine-kit.github.io/redmine_help/ (日本語: https://redmine-kit.github.io/redmine_help/ja/)
-- Markdown: [docs/README.md](docs/README.md) (日本語: [docs/ja/README.md](docs/ja/README.md))
+- Website: https://redmine-kit.github.io/redmine_help/ ([日本語](https://redmine-kit.github.io/redmine_help/ja/))
+- Markdown: [docs/README.md](docs/README.md) ([日本語](docs/ja/README.md))
 
 ## Sponsors
 

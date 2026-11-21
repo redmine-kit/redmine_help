@@ -18,6 +18,7 @@ images/            # images the topics show, by relative links
 
 `index.yml` lists sections and their topics. A topic is its id, or an id with a label for the sidebar, used while the topic is not translated into the user's language (a translated topic shows its own heading):
 
+<!-- ja-ok-block: an index.yml with titles in two languages -->
 ```yaml
 sections:
   - id: support
