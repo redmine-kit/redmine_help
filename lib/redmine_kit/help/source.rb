@@ -4,6 +4,12 @@ module RedmineKit
   module Help
     # A directory of help: <language>/<topic>.md, index.yml (the sections of
     # the sidebar) and map.yml (screens to topics). See docs/extending.md.
+    #
+    # Its files are read once, on first use, and kept as long as the library
+    # (RedmineKit::Help.library makes new sources when it goes stale): the
+    # languages, the topics and support blocks of a language, index.yml and
+    # map.yml. The cache holds only what is on disk (the language directories
+    # and their files), frozen, in a map that the server's threads share.
     class Source
       attr_reader :id, :root, :kind
 
@@ -11,6 +17,7 @@ module RedmineKit
         @id = id
         @root = Pathname(root)
         @kind = kind
+        @cache = Concurrent::Map.new
       end
 
       # In order of precedence: the operator's directory, the plugins, the guide.
@@ -46,35 +53,51 @@ module RedmineKit
       end
 
       def languages
-        Dir.children(root).select { |name| name.match?(/\A[a-z]{2}(-[a-z0-9]+)?\z/i) && root.join(name).directory? }
-      end
-
-      # Topics of a language: "user/issues" => path.
-      def topics(language)
-        dir = root.join(language)
-        return {} unless dir.directory?
-
-        Dir.glob('**/*.md', base: dir).each_with_object({}) do |file, topics|
-          next if File.basename(file).start_with?('_')
-
-          topics[file.delete_suffix('.md')] = dir.join(file)
+        cached(:languages) do
+          Dir.children(root).select { |name| name.match?(/\A[a-z]{2}(-[a-z0-9]+)?\z/i) && root.join(name).directory? }
         end
       end
 
-      # Blocks added to pages: <language>/_support.md (every page) and
-      # <language>/_support/<topic>.md (one topic).
+      # Topics of a language: "user/issues" => Topic.
+      def topics(language)
+        return {} unless languages.include?(language)
+
+        cached(:topics, language) do
+          dir = root.join(language)
+          Dir.glob('**/*.md', base: dir).each_with_object({}) do |file, topics|
+            next if File.basename(file).start_with?('_')
+
+            id = file.delete_suffix('.md')
+            topics[id] = Topic.new(id: id, language: language, path: dir.join(file), source: self)
+          end
+        end
+      end
+
+      # Blocks added to pages, as Markdown: <language>/_support.md (every page)
+      # and <language>/_support/<topic>.md (one topic).
       def support(language, topic)
-        [root.join(language, '_support.md'), root.join(language, '_support', "#{topic}.md")].select(&:file?)
+        return [] unless languages.include?(language)
+
+        every, per_topic = cached(:support, language) do
+          dir = root.join(language)
+          blocks = Dir.glob('**/*.md', base: dir.join('_support')).to_h do |file|
+            [file.delete_suffix('.md'), read_text(dir.join('_support', file))]
+          end
+          [dir.join('_support.md').file? ? read_text(dir.join('_support.md')) : nil, blocks.freeze]
+        end
+        [every, per_topic[topic]].compact
       end
 
       # The sidebar's sections: a list of mappings, anything else left out.
       def index
-        sections = read_yaml('index.yml')['sections']
-        sections.is_a?(Array) ? sections.grep(Hash) : []
+        cached(:index) do
+          sections = read_yaml('index.yml')['sections']
+          sections.is_a?(Array) ? sections.grep(Hash) : []
+        end
       end
 
       def map
-        read_yaml('map.yml')
+        cached(:map) { read_yaml('map.yml') }
       end
 
       # Images and other files next to the topics (e.g. images/...).
@@ -91,6 +114,14 @@ module RedmineKit
       end
 
       private
+
+      def cached(*key)
+        @cache.compute_if_absent(key) { yield.freeze }
+      end
+
+      def read_text(file)
+        File.read(file, encoding: 'UTF-8').freeze
+      end
 
       # A YAML file of the source as a mapping, or {} when it is missing, is
       # not valid YAML (or has aliases, tags or classes) or is not a mapping:

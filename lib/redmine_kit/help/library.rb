@@ -4,7 +4,8 @@ module RedmineKit
   module Help
     # All help in one place: the topics of every source, in order of
     # precedence (an earlier source's topic replaces a later one's), the
-    # sidebar's sections and the map from screens to topics.
+    # sidebar's sections and the map from screens to topics. The sources keep
+    # what they read (Source), so a request reads no file but an image.
     class Library
       attr_reader :sources
 
@@ -63,12 +64,13 @@ module RedmineKit
         ids.filter_map { |id| topic(id, language) }
       end
 
-      # Blocks for the page: the operator's every-page block, then the topic's.
+      # Blocks for the page, as Markdown: the operator's every-page block, then
+      # the topic's.
       def support(topic_id, language)
         sources.select { |source| source.kind == :extra }.flat_map do |source|
-          files = source.support(language, topic_id)
-          files = source.support(FALLBACK_LANGUAGE, topic_id) if files.empty? && language != FALLBACK_LANGUAGE
-          files.map { |file| File.read(file, encoding: 'UTF-8') }
+          blocks = source.support(language, topic_id)
+          blocks = source.support(FALLBACK_LANGUAGE, topic_id) if blocks.empty? && language != FALLBACK_LANGUAGE
+          blocks
         end
       end
 
@@ -139,8 +141,8 @@ module RedmineKit
 
       def find(id, language)
         sources.each do |source|
-          path = source.topics(language)[id]
-          return Topic.new(id: id, language: language, path: path, source: source) if path
+          topic = source.topics(language)[id]
+          return topic if topic
         end
         nil
       end

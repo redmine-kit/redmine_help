@@ -30,7 +30,7 @@ sections:
 
 A topic missing in the user's language is shown in English, with a note.
 
-An `index.yml` or `map.yml` that is not valid YAML, or not a mapping, is left out, with a warning in Redmine's log that names the file; the other files and directories still work.
+The plugin reads these files once, the first time the help needs them, and keeps them in memory: restart Redmine after changing them (in development, a changed file is read again). An `index.yml` or `map.yml` that is not valid YAML, or not a mapping, is left out, with a warning in Redmine's log that names the file; the other files and directories still work.
 
 ## Plugins
 

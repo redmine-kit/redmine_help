@@ -106,6 +106,45 @@ module RedmineKit
           YAML.unstub(:safe_load_file)
         end
       end
+
+      test 'the files are read once: a second lookup reads nothing from the disk' do
+        with_help(extra: true, plugin: true) do
+          library = RedmineKit::Help.library
+          lookups = lambda do
+            [library.languages, library.resolve('issues', 'index'), library.topic('user/issues', 'ja'),
+             library.topic('user/issue-list', 'ja'), library.support('user/issues', 'ja'),
+             library.sections('ja'), library.search('issues', 'en'), library.anchor('user/issues', 'ja', 'Filters')]
+          end
+          first = lookups.call
+          File.expects(:read).never
+          YAML.expects(:safe_load_file).never
+          Dir.expects(:glob).never
+          Dir.expects(:children).never
+          second = lookups.call
+          assert_equal first.map(&:to_s), second.map(&:to_s)
+          assert_same first[2], second[2]
+        end
+      end
+
+      test 'the topics, the map and the support blocks are kept frozen' do
+        with_help(extra: true) do
+          source = RedmineKit::Help.library.sources.first
+          assert_predicate source.topics('en'), :frozen?
+          assert_predicate source.topics('en')['admin/settings'], :frozen?
+          assert_predicate source.topics('en')['admin/settings'].text, :frozen?
+          assert_predicate source.map, :frozen?
+          assert(source.support('en', 'user/issues').all?(&:frozen?))
+        end
+      end
+
+      test 'a language without a directory is not kept' do
+        with_help do
+          source = RedmineKit::Help.library.sources.first
+          assert_equal({}, source.topics('xx'))
+          assert_equal [], source.support('xx', 'user/issues')
+          assert_nil source.instance_variable_get(:@cache)[[:topics, 'xx']]
+        end
+      end
     end
   end
 end
