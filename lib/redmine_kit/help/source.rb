@@ -67,8 +67,10 @@ module RedmineKit
         [root.join(language, '_support.md'), root.join(language, '_support', "#{topic}.md")].select(&:file?)
       end
 
+      # The sidebar's sections: a list of mappings, anything else left out.
       def index
-        read_yaml('index.yml')['sections'] || []
+        sections = read_yaml('index.yml')['sections']
+        sections.is_a?(Array) ? sections.grep(Hash) : []
       end
 
       def map
@@ -90,9 +92,22 @@ module RedmineKit
 
       private
 
+      # A YAML file of the source as a mapping, or {} when it is missing, is
+      # not valid YAML (or has aliases, tags or classes) or is not a mapping:
+      # one bad file leaves the source's other files, and the other sources,
+      # working. The log names the file, not the error.
       def read_yaml(name)
         file = root.join(name)
-        file.file? ? (YAML.safe_load_file(file) || {}) : {}
+        return {} unless file.file?
+
+        data = YAML.safe_load_file(file, freeze: true)
+        return data if data.is_a?(Hash)
+
+        Rails.logger.warn("redmine_kit_help: #{file} is not a mapping; ignored") unless data.nil?
+        {}
+      rescue Psych::Exception, SystemStackError
+        Rails.logger.warn("redmine_kit_help: #{file} is not valid YAML; ignored")
+        {}
       end
     end
   end
