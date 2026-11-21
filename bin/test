@@ -6,6 +6,7 @@
 #   bin/test <files>      # some files of the plugin's tests
 #   REDMINE_BRANCH=master bin/test   # on Redmine's master branch
 #   COVERAGE=1 bin/test   # with the plugin's coverage in coverage/coverage.xml, as the CI does
+# bin/test-gem checks the plugin installed as a gem.
 # Commands that run inside the container are in single quotes on purpose.
 # shellcheck disable=SC2016
 set -euo pipefail

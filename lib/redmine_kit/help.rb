@@ -4,6 +4,10 @@
 # (docs/README.md). The header's Help link opens the topic mapped to the
 # screen; the topics come from the Redmine guide, from other plugins' help/
 # directories, and from an operator's directory (REDMINE_KIT_HELP_EXTRA_PATH).
+#
+# RedmineKit, the organization's namespace, belongs to no plugin: no plugin has
+# lib/redmine_kit.rb, and Rails' code loader (Zeitwerk) makes it from the
+# plugins' lib/redmine_kit/ folders. This plugin owns RedmineKit::Help only.
 module RedmineKit
   module Help
     VERSION = '0.2.1'
@@ -17,16 +21,12 @@ module RedmineKit
 
     module_function
 
+    # Called from init.rb, again on each reload: the header's Help link and
+    # the side panel's hook. The other files are loaded by Rails' code loader
+    # (Zeitwerk) when they are first used.
     def setup
-      require_relative 'help/source'
-      require_relative 'help/topic'
-      require_relative 'help/library'
-      require_relative 'help/menu'
-      require_relative 'help/hooks'
-      require_relative 'help/kit_screens'
-      require_relative 'help/markdown_links'
-      require_relative 'help/json'
       Menu.install
+      Hooks.instance
     end
 
     # The help, read again when the files change (in development) or once.

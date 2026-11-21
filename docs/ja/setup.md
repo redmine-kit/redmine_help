@@ -15,7 +15,7 @@
 
 ### gem
 
-バージョンのタグごとに、プラグインを gem として GitHub Packages (`https://rubygems.pkg.github.com/redmine-kit`) に公開しています。GitHub Packages からインストールするには、公開のパッケージでも、`read:packages` のある GitHub のトークンが要ります。プラグインとガイドを `Gemfile.local` に追加してインストールし、プラグインを `plugins/` にリンクします。
+プラグインは gem としてインストールするか (推奨)、`plugins/` にフォルダーとして置きます。バージョンのタグごとに、プラグインを gem として GitHub Packages (`https://rubygems.pkg.github.com/redmine-kit`) に公開しています。GitHub Packages からインストールするには、公開のパッケージでも、`read:packages` のある GitHub のトークンが要ります。プラグインとガイドを Redmine の `Gemfile.local` に追加します。
 
 ```ruby
 source 'https://rubygems.pkg.github.com/redmine-kit' do
@@ -24,12 +24,13 @@ source 'https://rubygems.pkg.github.com/redmine-kit' do
 end
 ```
 
+次に、インストールします。
+
 ```sh
 bundle install
-ln -s "$(bundle info --path redmine_kit_help)" plugins/redmine_kit_help
 ```
 
-Redmine を再起動します。マイグレーションはありません。
+Redmine を再起動します。Redmine は gem のフォルダーからプラグインを読み込むので、`plugins/` には何も置きません。マイグレーションはありません。`plugins/redmine_kit_help` にプラグインのチェックアウトがあるときは、gem ではなくそちらを使います。
 
 <a id="without-the-gem"></a>
 
@@ -74,6 +75,7 @@ export REDMINE_KIT_HELP_GUIDE_PATH=/srv/redmine-guide
 ```sh
 bin/test              # プラグインのテスト
 bin/test --redmine    # プラグインをインストールした状態で、Redmine のすべてのテストも
+bin/test-gem          # gem としてインストールしたプラグイン: gem のフォルダーから、次に plugins/ のチェックアウトから
 REDMINE_BRANCH=master bin/test
 COVERAGE=1 bin/test   # カバレッジを coverage/coverage.xml に出力する
 bin/services --down   # PostgreSQL と Chromium を止める

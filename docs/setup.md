@@ -9,7 +9,7 @@
 
 ### gem
 
-Each version tag publishes the plugin as a gem to GitHub Packages (`https://rubygems.pkg.github.com/redmine-kit`). Installing from GitHub Packages needs a GitHub token with `read:packages`, even for a public package. Add the plugin and the guide to `Gemfile.local`, install them, and link the plugin into `plugins/`:
+The plugin is installed as a gem (first choice) or as a folder in `plugins/`. Each version tag publishes the plugin as a gem to GitHub Packages (`https://rubygems.pkg.github.com/redmine-kit`). Installing from GitHub Packages needs a GitHub token with `read:packages`, even for a public package. Add the plugin and the guide to Redmine's `Gemfile.local`:
 
 ```ruby
 source 'https://rubygems.pkg.github.com/redmine-kit' do
@@ -18,12 +18,13 @@ source 'https://rubygems.pkg.github.com/redmine-kit' do
 end
 ```
 
+Then install them:
+
 ```sh
 bundle install
-ln -s "$(bundle info --path redmine_kit_help)" plugins/redmine_kit_help
 ```
 
-Restart Redmine. The plugin has no migrations.
+Restart Redmine. Redmine loads the plugin from the gem's folder; nothing goes into `plugins/`. The plugin has no migrations. A checkout of the plugin in `plugins/redmine_kit_help` takes the place of the gem.
 
 ### Without the gem
 
@@ -60,6 +61,7 @@ The tests run in a container with Redmine 7.0.3 and PostgreSQL 16 ([Apple contai
 ```sh
 bin/test              # the plugin's tests
 bin/test --redmine    # also every Redmine test, with the plugin installed
+bin/test-gem          # the plugin installed as a gem: from the gem's folder, then a checkout in plugins/
 REDMINE_BRANCH=master bin/test
 COVERAGE=1 bin/test   # with the coverage in coverage/coverage.xml
 bin/services --down   # stops PostgreSQL and Chromium
