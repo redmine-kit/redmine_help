@@ -154,6 +154,16 @@ describe('the help page', () => {
     expect(await screen.findByRole('navigation', { name: '目次' })).toBeInTheDocument();
   });
 
+  it('a topic: one scroll, 目次 a sticky side column (ui forms.md "One scroll per form")', async () => {
+    renderKit(<HelpWikiSyntax />, { context: { plugin: 'redmine_kit_help', params: { type: 'detailed' } }, responses: RESPONSES });
+    await screen.findByText('太字にします。');
+    const toc = screen.getByRole('complementary', { name: /目次|label_table_of_contents/ });
+    expect(toc).toHaveAttribute('data-sticky');
+    const article = screen.getByRole('article');
+    expect(article.className).not.toMatch(/overflow/);
+    expect(toc.className).not.toMatch(/overflow/);
+  });
+
   it("Redmine's help pages show the plugin's topic, with the table of its headings", async () => {
     const wiki = renderKit(<HelpWikiSyntax />, { context: { plugin: 'redmine_kit_help', params: { type: 'detailed' } }, responses: RESPONSES });
     expect(await screen.findByText('太字にします。')).toBeInTheDocument();

@@ -519,6 +519,10 @@ function TopicPage({ id, anchor, search }) {
 	const navigate = useKitNavigate();
 	const [title, setTitle] = useState("");
 	const article = useRef(null);
+	const scroller = useRef(null);
+	const panesRow = useCallback((row) => {
+		scroller.current = row?.parentElement ?? null;
+	}, []);
 	const [outline, setOutline] = useState([]);
 	useLayoutEffect(() => {
 		const box = article.current;
@@ -544,7 +548,7 @@ function TopicPage({ id, anchor, search }) {
 		});
 		return () => observer.disconnect();
 	}, [id]);
-	const spy = useHeadingInView(article, outline);
+	const spy = useHeadingInView(scroller, outline);
 	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(TitleBlock, {
 		title: title || t("label_help"),
 		actions: search,
@@ -552,24 +556,27 @@ function TopicPage({ id, anchor, search }) {
 		sidebarLabel: t("label_help"),
 		divider: true
 	}), /* @__PURE__ */ jsxs(Panes, {
-		className: "@max-5xl/app:flex-col @max-5xl/app:overflow-y-auto @max-5xl/app:overscroll-contain",
+		ref: panesRow,
+		dividers: true,
+		stacked: true,
 		children: [/* @__PURE__ */ jsx(Pane, {
 			as: "article",
 			ref: article,
 			"aria-label": title || t("label_help"),
 			onClickCapture: helpLinkCapture((next) => navigate(helpHref(next))),
-			className: "box-content flex-[999_1_520px] px-6 pt-5 pb-6 @max-5xl/app:flex-none @max-5xl/app:overflow-visible",
+			className: "box-content flex-[999_1_520px] px-6 pt-5 pb-6",
 			children: /* @__PURE__ */ jsx(HelpTopicView, {
 				id,
 				anchor,
-				scroller: article,
+				scroller,
 				reading: true,
 				onTitle: setTitle
 			}, id + (anchor ?? ""))
 		}), outline.length > 1 && /* @__PURE__ */ jsx(Pane, {
 			as: "aside",
+			sticky: true,
 			"aria-label": t("label_table_of_contents"),
-			className: "box-content flex min-w-50 flex-[0_1_244px] flex-col p-6 shadow-line-s @max-5xl/app:flex-none @max-5xl/app:overflow-visible @max-5xl/app:shadow-line-t",
+			className: "box-content flex min-w-50 flex-[0_1_244px] flex-col p-6",
 			children: /* @__PURE__ */ jsx(PageToc, {
 				items: outline.map((h) => ({
 					key: h.id,

@@ -166,6 +166,11 @@ function TopicPage({ id, anchor, search }: { id: string; anchor?: string; search
   const navigate = useKitNavigate();
   const [title, setTitle] = useState('');
   const article = useRef<HTMLElement>(null);
+  // the view's one scroller: Panes' (the parent of its row of panes), where the anchor is scrolled to and 目次 follows
+  const scroller = useRef<HTMLElement | null>(null);
+  const panesRow = useCallback((row: HTMLDivElement | null) => {
+    scroller.current = row?.parentElement ?? null;
+  }, []);
   // The headings (目次): h2 and h3 of the topic's text as it was rendered (its first child; the operator's blocks after it
   // are not part of the topic), so the outline shows what the reader sees. A heading without an id gets one.
   const [outline, setOutline] = useState<Heading[]>([]);
@@ -185,26 +190,24 @@ function TopicPage({ id, anchor, search }: { id: string; anchor?: string; search
     observer.observe(box, { childList: true, subtree: true, characterData: true });
     return () => observer.disconnect();
   }, [id]);
-  const spy = useHeadingInView(article, outline);
+  const spy = useHeadingInView(scroller, outline);
   return (
     <>
       <TitleBlock title={title || t('label_help')} actions={search} sidebarToggle sidebarLabel={t('label_help')} divider />
-      <Panes className="@max-5xl/app:flex-col @max-5xl/app:overflow-y-auto @max-5xl/app:overscroll-contain">
+      {/* one scroll (ui docs/decisions/forms.md "One scroll per form"): Panes is the scroller, 目次 a sticky side column;
+          below 1024px they stack */}
+      <Panes ref={panesRow} dividers stacked>
         <Pane
           as="article"
           ref={article}
           aria-label={title || t('label_help')}
           onClickCapture={helpLinkCapture((next) => navigate(helpHref(next)))}
-          className="box-content flex-[999_1_520px] px-6 pt-5 pb-6 @max-5xl/app:flex-none @max-5xl/app:overflow-visible"
+          className="box-content flex-[999_1_520px] px-6 pt-5 pb-6"
         >
-          <HelpTopicView key={id + (anchor ?? '')} id={id} anchor={anchor} scroller={article} reading onTitle={setTitle} />
+          <HelpTopicView key={id + (anchor ?? '')} id={id} anchor={anchor} scroller={scroller} reading onTitle={setTitle} />
         </Pane>
         {outline.length > 1 && (
-          <Pane
-            as="aside"
-            aria-label={t('label_table_of_contents')}
-            className="box-content flex min-w-50 flex-[0_1_244px] flex-col p-6 shadow-line-s @max-5xl/app:flex-none @max-5xl/app:overflow-visible @max-5xl/app:shadow-line-t"
-          >
+          <Pane as="aside" sticky aria-label={t('label_table_of_contents')} className="box-content flex min-w-50 flex-[0_1_244px] flex-col p-6">
             <PageToc items={outline.map((h) => ({ key: h.id, level: h.level, text: h.text, href: '#' + h.id }))} active={spy.active} onSelect={spy.jump} />
           </Pane>
         )}
