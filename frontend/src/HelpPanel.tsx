@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { AppLink, ExtensionPanelHeader, useExtensionContext, useKitQuery, useT } from '@redmine-kit/plugin';
-import { IconButton, SearchInput } from '@redmine-kit/ui';
+import { IconButton, RequestErrorState, SearchInput, useListSearch } from '@redmine-kit/ui';
 import { KEYBOARD_TOPIC, contextView, helpHref, helpPaths, type HelpContextJson, type HelpView } from './api';
-import { HelpContents, HelpLoadError, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCapture } from './HelpContent';
+import { HelpContents, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCapture } from './HelpContent';
 
 // HelpPanel: the help for the current screen in the app's panel at the right (the slot topbar.panel; the app draws the
 // panel, its title ヘルプ and ✕), the new UI's form of Redmine Kit Help's side panel (docs/README.md "Side panel"). Moved
@@ -25,8 +25,6 @@ type Entry = { view: HelpView; scroll?: number };
 
 /** Outside the app's panel (a test without one): the screen's topic. */
 const NO_REQUEST = { target: 'context', key: 0 } as const;
-/** The pause after the last key before the panel searches: the app's lists' (LIST_SEARCH_DELAY_MS). */
-export const SEARCH_DELAY_MS = 300;
 
 export function HelpPanel() {
   const t = useT();
@@ -38,7 +36,10 @@ export function HelpPanel() {
   const syntax = useKitQuery<HelpContextJson>(request.target === 'wiki_syntax' ? helpPaths.syntax('wiki') : null);
   const [current, setCurrent] = useState<Entry | null>(null);
   const [trail, setTrail] = useState<Entry[]>([]);
-  const [q, setQ] = useState('');
+  // the search's text as typed, and the text it asks for after the pause (useListSearch: the app's lists' delay)
+  const search = useListSearch();
+  const q = search.text;
+  const setQ = search.setText;
   const [title, setTitle] = useState('');
   const body = useRef<HTMLDivElement>(null);
 
@@ -95,22 +96,21 @@ export function HelpPanel() {
     setCurrent(prev);
     setQ(prev.view.kind === 'search' ? prev.view.q : '');
   };
-  // the search: results as the user types, SEARCH_DELAY_MS after the last key (one request per pause, not per key);
-  // clearing it returns to the page before at once
+  // the search: results as the user types, after the pause (one request per pause, not per key); clearing it returns to
+  // the page before at once
   const onSearch = (value: string) => {
     setQ(value);
     if (!value.trim() && current?.view.kind === 'search') back();
   };
+  const searched = search.searched;
   useEffect(() => {
-    const text = q.trim();
     const shown = currentRef.current?.view;
-    if (!text || (shown?.kind === 'search' && shown.q === text)) return;
-    const timer = window.setTimeout(() => {
-      if (currentRef.current?.view.kind === 'search') setCurrent({ view: { kind: 'search', q: text } });
-      else go({ kind: 'search', q: text });
-    }, SEARCH_DELAY_MS);
-    return () => window.clearTimeout(timer);
-  }, [q, go]);
+    // the text the field shows now (a 戻る or another page may have changed it during the pause)
+    if (!searched || searched !== q.trim() || (shown?.kind === 'search' && shown.q === searched)) return;
+    if (shown?.kind === 'search') setCurrent({ view: { kind: 'search', q: searched } });
+    else go({ kind: 'search', q: searched });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searched]);
   const onSubmit = (e: FormEvent) => e.preventDefault();
 
   const view = current?.view;
@@ -134,7 +134,7 @@ export function HelpPanel() {
       </form>
       <div ref={body} onClickCapture={helpLinkCapture(go)} className="min-h-0 flex-1 overflow-y-auto overscroll-contain ps-5 pe-4 pt-4 pb-6">
         {context.isError || syntax.isError ? (
-          <HelpLoadError />
+          <RequestErrorState error={context.error ?? syntax.error} onRetry={() => void (context.isError ? context.refetch() : syntax.refetch())} />
         ) : !view ? (
           <HelpTextSkeleton />
         ) : view.kind === 'topic' ? (

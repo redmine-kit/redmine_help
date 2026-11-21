@@ -1,6 +1,6 @@
-import { useEffect, useRef, type MouseEvent, type ReactNode, type RefObject } from 'react';
-import { ApiError, AppLink, useKitQuery, useT } from '@redmine-kit/plugin';
-import { EmptyState, Icon, NavRow, Notice, Prose, SectionHeading, Skeleton, SkeletonRegion, cn } from '@redmine-kit/ui';
+import { useEffect, useRef, type MouseEvent, type RefObject } from 'react';
+import { AppLink, useKitQuery, useT } from '@redmine-kit/plugin';
+import { EmptyState, Icon, NavRow, Prose, RequestErrorState, SectionHeading, Skeleton, SkeletonRegion, cn } from '@redmine-kit/ui';
 import { helpBody, helpHref, helpPaths, helpViewOf, type HelpContentsJson, type HelpSearchJson, type HelpTopicJson, type HelpView } from './api';
 
 // The help's content, shared by the help panel (HelpPanel) and the help page (HelpPage), as Redmine's help panel and pages
@@ -27,11 +27,6 @@ export function helpLinkCapture(onGo?: (view: HelpView) => void) {
   };
 }
 
-export function HelpLoadError() {
-  const t = useT();
-  return <Notice tone="warning" inset={0} text={t('text_help_load_failed')} />;
-}
-
 /** The lines of a loading topic or list, where the text will be. */
 export function HelpTextSkeleton() {
   const t = useT();
@@ -56,12 +51,9 @@ export interface HelpTopicViewProps {
   reading?: boolean;
   /** the topic's title, once it is known (the panel's subtitle, the page's heading) */
   onTitle?: (title: string) => void;
-  /** what a topic the server doesn't have (404) shows: the page, Redmine's 404; by default (the panel) a notice in its place */
-  notFound?: ReactNode;
 }
 
-export function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle, notFound }: HelpTopicViewProps) {
-  const t = useT();
+export function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle }: HelpTopicViewProps) {
   const query = useKitQuery<HelpTopicJson>(helpPaths.topic(id, anchor));
   const prose = useRef<HTMLDivElement>(null);
   const data = query.data?.help;
@@ -82,10 +74,8 @@ export function HelpTopicView({ id, anchor, scroller, restore, reading = false, 
     box.scrollTop = target ? target.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop - 12 : 0;
   }, [data, restore, scroller]);
   if (query.isPending) return <HelpTextSkeleton />;
-  if (query.isError) {
-    if (query.error instanceof ApiError && query.error.status === 404) return notFound ?? <Notice tone="warning" inset={0} text={t('notice_file_not_found')} />;
-    return <HelpLoadError />;
-  }
+  // a topic the server doesn't have (a link to a removed topic) is Redmine's 404
+  if (query.isError) return <RequestErrorState error={query.error} onRetry={() => void query.refetch()} retrying={query.isFetching} />;
   return (
     <>
       <Prose ref={prose} text={helpBody(data!.topic.body)} reading={reading} />
@@ -103,7 +93,7 @@ export function HelpResults({ q }: { q: string }) {
   const t = useT();
   const query = useKitQuery<HelpSearchJson>(helpPaths.search(q));
   if (query.isPending) return <HelpTextSkeleton />;
-  if (query.isError) return <HelpLoadError />;
+  if (query.isError) return <RequestErrorState error={query.error} onRetry={() => void query.refetch()} retrying={query.isFetching} />;
   const results = query.data.help.results;
   return (
     <section aria-label={t('label_result_plural')} className="flex flex-col">
@@ -137,7 +127,7 @@ export function HelpContents({ current }: { current?: string }) {
   const t = useT();
   const query = useKitQuery<HelpContentsJson>(helpPaths.contents);
   if (query.isPending) return <HelpTextSkeleton />;
-  if (query.isError) return <HelpLoadError />;
+  if (query.isError) return <RequestErrorState error={query.error} onRetry={() => void query.refetch()} retrying={query.isFetching} />;
   return (
     <nav aria-label={t('label_table_of_contents')} className="flex flex-col gap-4">
       {!query.data.help.guide && <HelpGuideMissing />}

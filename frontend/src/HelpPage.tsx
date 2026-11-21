@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode, type RefObject } from 'react';
 import { ScreenSidebar, useExtensionContext, useKitNavigate, useKitQuery, useT } from '@redmine-kit/plugin';
-import { Card, CardBody, CardHeader, ErrorState, NavRow, PageToc, Pane, Panes, SearchInput, SectionHeading, TitleBlock } from '@redmine-kit/ui';
+import { Card, CardBody, CardHeader, NavRow, PageToc, Pane, Panes, RequestErrorState, SearchInput, SectionHeading, TitleBlock } from '@redmine-kit/ui';
 import { contextView, helpHref, helpPaths, type HelpContentsJson, type HelpContextJson, type HelpSyntax, type HelpView } from './api';
-import { HelpGuideMissing, HelpLoadError, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCapture } from './HelpContent';
+import { HelpGuideMissing, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCapture } from './HelpContent';
 
 // HelpPage: the help pages (Redmine Kit Help's /help, /help/<topic>, /help/search), opened by the panel's 全画面で表示
 // and shared by URL. Moved from ui (screens/Help.tsx), on the plugin's JSON:
@@ -76,7 +76,7 @@ export function HelpPage({ syntax }: { syntax?: HelpSyntax }) {
     body = (
       <>
         <CardHeader title={t('label_help')} actions={search} sidebarToggle sidebarLabel={t('label_help')} divider />
-        <CardBody padded>{resolved.isError ? <HelpLoadError /> : <HelpTextSkeleton />}</CardBody>
+        <CardBody padded>{resolved.isError ? <RequestErrorState error={resolved.error} onRetry={() => void resolved.refetch()} /> : <HelpTextSkeleton />}</CardBody>
       </>
     );
   } else if (view.kind === 'topic') {
@@ -95,7 +95,7 @@ export function HelpPage({ syntax }: { syntax?: HelpSyntax }) {
       <>
         <CardHeader title={t('label_help')} actions={search} sidebarToggle sidebarLabel={t('label_help')} divider />
         <CardBody padded>
-          <Contents data={contents.data} failed={contents.isError} />
+          <Contents data={contents.data} error={contents.error} onRetry={() => void contents.refetch()} />
         </CardBody>
       </>
     );
@@ -134,9 +134,9 @@ export function HelpCodeHighlighting() {
 }
 
 // The contents: each section's topics, side by side as far as the card is wide (groups with no line between them).
-function Contents({ data, failed }: { data: HelpContentsJson | undefined; failed: boolean }) {
+function Contents({ data, error, onRetry }: { data: HelpContentsJson | undefined; error: unknown; onRetry: () => void }) {
   const t = useT();
-  if (failed) return <HelpLoadError />;
+  if (error) return <RequestErrorState error={error} onRetry={onRetry} />;
   if (!data) return <HelpTextSkeleton />;
   return (
     <nav aria-label={t('label_table_of_contents')} className="grid grid-cols-fill-240 items-start gap-x-8 gap-y-section-gap">
@@ -211,7 +211,6 @@ function TopicPage({ id, anchor, search }: { id: string; anchor?: string; search
             scroller={scroller}
             reading
             onTitle={setTitle}
-            notFound={<ErrorState status={404} title={t('notice_file_not_found')} />}
           />
         </Pane>
         {outline.length > 1 && (

@@ -1,8 +1,8 @@
 // Redmine Kit Help: the plugin's module for the new UI, built from frontend/src by `npm run build` (frontend/vite.config.js).
 // Edit the source, not this file. React, @redmine-kit/ui and @redmine-kit/plugin come from the app (the shell's import map).
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ApiError, AppLink, ExtensionPanelHeader, ScreenSidebar, useExtensionContext, useKitNavigate, useKitQuery, useT } from "@redmine-kit/plugin";
-import { Card, CardBody, CardHeader, EmptyState, ErrorState, Icon, IconButton, NavRow, Notice, PageToc, Pane, Panes, Prose, SearchInput, SectionHeading, Skeleton, SkeletonRegion, TitleBlock, cn } from "@redmine-kit/ui";
+import { AppLink, ExtensionPanelHeader, ScreenSidebar, useExtensionContext, useKitNavigate, useKitQuery, useT } from "@redmine-kit/plugin";
+import { Card, CardBody, CardHeader, EmptyState, Icon, IconButton, NavRow, PageToc, Pane, Panes, Prose, RequestErrorState, SearchInput, SectionHeading, Skeleton, SkeletonRegion, TitleBlock, cn, useListSearch } from "@redmine-kit/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/api.ts
 var enc = (id) => id.split("/").map(encodeURIComponent).join("/");
@@ -67,14 +67,6 @@ function helpLinkCapture(onGo) {
 		onGo(view);
 	};
 }
-function HelpLoadError() {
-	const t = useT();
-	return /* @__PURE__ */ jsx(Notice, {
-		tone: "warning",
-		inset: 0,
-		text: t("text_help_load_failed")
-	});
-}
 /** The lines of a loading topic or list, where the text will be. */
 function HelpTextSkeleton() {
 	const t = useT();
@@ -89,8 +81,7 @@ function HelpTextSkeleton() {
 		]
 	});
 }
-function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle, notFound }) {
-	const t = useT();
+function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle }) {
 	const query = useKitQuery(helpPaths.topic(id, anchor));
 	const prose = useRef(null);
 	const data = query.data?.help;
@@ -113,14 +104,11 @@ function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle
 		scroller
 	]);
 	if (query.isPending) return /* @__PURE__ */ jsx(HelpTextSkeleton, {});
-	if (query.isError) {
-		if (query.error instanceof ApiError && query.error.status === 404) return notFound ?? /* @__PURE__ */ jsx(Notice, {
-			tone: "warning",
-			inset: 0,
-			text: t("notice_file_not_found")
-		});
-		return /* @__PURE__ */ jsx(HelpLoadError, {});
-	}
+	if (query.isError) return /* @__PURE__ */ jsx(RequestErrorState, {
+		error: query.error,
+		onRetry: () => void query.refetch(),
+		retrying: query.isFetching
+	});
 	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(Prose, {
 		ref: prose,
 		text: helpBody(data.topic.body),
@@ -134,7 +122,11 @@ function HelpResults({ q }) {
 	const t = useT();
 	const query = useKitQuery(helpPaths.search(q));
 	if (query.isPending) return /* @__PURE__ */ jsx(HelpTextSkeleton, {});
-	if (query.isError) return /* @__PURE__ */ jsx(HelpLoadError, {});
+	if (query.isError) return /* @__PURE__ */ jsx(RequestErrorState, {
+		error: query.error,
+		onRetry: () => void query.refetch(),
+		retrying: query.isFetching
+	});
 	const results = query.data.help.results;
 	return /* @__PURE__ */ jsxs("section", {
 		"aria-label": t("label_result_plural"),
@@ -181,7 +173,11 @@ function HelpContents({ current }) {
 	const t = useT();
 	const query = useKitQuery(helpPaths.contents);
 	if (query.isPending) return /* @__PURE__ */ jsx(HelpTextSkeleton, {});
-	if (query.isError) return /* @__PURE__ */ jsx(HelpLoadError, {});
+	if (query.isError) return /* @__PURE__ */ jsx(RequestErrorState, {
+		error: query.error,
+		onRetry: () => void query.refetch(),
+		retrying: query.isFetching
+	});
 	return /* @__PURE__ */ jsxs("nav", {
 		"aria-label": t("label_table_of_contents"),
 		className: "flex flex-col gap-4",
@@ -218,7 +214,9 @@ function HelpPanel() {
 	const syntax = useKitQuery(request.target === "wiki_syntax" ? helpPaths.syntax("wiki") : null);
 	const [current, setCurrent] = useState(null);
 	const [trail, setTrail] = useState([]);
-	const [q, setQ] = useState("");
+	const search = useListSearch();
+	const q = search.text;
+	const setQ = search.setText;
 	const [title, setTitle] = useState("");
 	const body = useRef(null);
 	const screenView = !name ? { kind: "contents" } : context.data ? context.data.help.topic ? {
@@ -289,22 +287,19 @@ function HelpPanel() {
 		setQ(value);
 		if (!value.trim() && current?.view.kind === "search") back();
 	};
+	const searched = search.searched;
 	useEffect(() => {
-		const text = q.trim();
 		const shown = currentRef.current?.view;
-		if (!text || shown?.kind === "search" && shown.q === text) return;
-		const timer = window.setTimeout(() => {
-			if (currentRef.current?.view.kind === "search") setCurrent({ view: {
-				kind: "search",
-				q: text
-			} });
-			else go({
-				kind: "search",
-				q: text
-			});
-		}, 300);
-		return () => window.clearTimeout(timer);
-	}, [q, go]);
+		if (!searched || searched !== q.trim() || shown?.kind === "search" && shown.q === searched) return;
+		if (shown?.kind === "search") setCurrent({ view: {
+			kind: "search",
+			q: searched
+		} });
+		else go({
+			kind: "search",
+			q: searched
+		});
+	}, [searched]);
 	const onSubmit = (e) => e.preventDefault();
 	const view = current?.view;
 	const subtitle = view?.kind === "topic" ? title : view?.kind === "search" ? t("label_search") : t("label_table_of_contents");
@@ -350,7 +345,10 @@ function HelpPanel() {
 				ref: body,
 				onClickCapture: helpLinkCapture(go),
 				className: "min-h-0 flex-1 overflow-y-auto overscroll-contain ps-5 pe-4 pt-4 pb-6",
-				children: context.isError || syntax.isError ? /* @__PURE__ */ jsx(HelpLoadError, {}) : !view ? /* @__PURE__ */ jsx(HelpTextSkeleton, {}) : view.kind === "topic" ? /* @__PURE__ */ jsx(HelpTopicView, {
+				children: context.isError || syntax.isError ? /* @__PURE__ */ jsx(RequestErrorState, {
+					error: context.error ?? syntax.error,
+					onRetry: () => void (context.isError ? context.refetch() : syntax.refetch())
+				}) : !view ? /* @__PURE__ */ jsx(HelpTextSkeleton, {}) : view.kind === "topic" ? /* @__PURE__ */ jsx(HelpTopicView, {
 					id: view.id,
 					anchor: view.anchor,
 					scroller: body,
@@ -436,7 +434,10 @@ function HelpPage({ syntax }) {
 		divider: true
 	}), /* @__PURE__ */ jsx(CardBody, {
 		padded: true,
-		children: resolved.isError ? /* @__PURE__ */ jsx(HelpLoadError, {}) : /* @__PURE__ */ jsx(HelpTextSkeleton, {})
+		children: resolved.isError ? /* @__PURE__ */ jsx(RequestErrorState, {
+			error: resolved.error,
+			onRetry: () => void resolved.refetch()
+		}) : /* @__PURE__ */ jsx(HelpTextSkeleton, {})
 	})] });
 	else if (view.kind === "topic") body = /* @__PURE__ */ jsx(TopicPage, {
 		id: view.id,
@@ -467,7 +468,8 @@ function HelpPage({ syntax }) {
 		padded: true,
 		children: /* @__PURE__ */ jsx(Contents, {
 			data: contents.data,
-			failed: contents.isError
+			error: contents.error,
+			onRetry: () => void contents.refetch()
 		})
 	})] });
 	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(ScreenSidebar, {
@@ -499,9 +501,12 @@ function HelpWikiSyntax() {
 function HelpCodeHighlighting() {
 	return /* @__PURE__ */ jsx(HelpPage, { syntax: "code" });
 }
-function Contents({ data, failed }) {
+function Contents({ data, error, onRetry }) {
 	const t = useT();
-	if (failed) return /* @__PURE__ */ jsx(HelpLoadError, {});
+	if (error) return /* @__PURE__ */ jsx(RequestErrorState, {
+		error,
+		onRetry
+	});
 	if (!data) return /* @__PURE__ */ jsx(HelpTextSkeleton, {});
 	return /* @__PURE__ */ jsxs("nav", {
 		"aria-label": t("label_table_of_contents"),
@@ -582,11 +587,7 @@ function TopicPage({ id, anchor, search }) {
 				anchor,
 				scroller,
 				reading: true,
-				onTitle: setTitle,
-				notFound: /* @__PURE__ */ jsx(ErrorState, {
-					status: 404,
-					title: t("notice_file_not_found")
-				})
+				onTitle: setTitle
 			}, id + (anchor ?? ""))
 		}), outline.length > 1 && /* @__PURE__ */ jsx(Pane, {
 			as: "aside",

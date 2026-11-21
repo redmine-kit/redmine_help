@@ -4,5 +4,4 @@ ja:
   plugin_description_redmine_kit_help: 開いている画面のヘルプを表示
   label_help_back: ヘルプに戻る
   button_help_panel_close: 閉じる
-  text_help_load_failed: ヘルプを読み込めませんでした。
   text_help_guide_missing: Redmine のガイドがインストールされていません。システム管理者にインストールを依頼してください。

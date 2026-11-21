@@ -126,9 +126,10 @@ describe('the help panel', () => {
     expect(screen.getByRole('link', { name: '問い合わせ先' })).toBeInTheDocument();
   });
 
-  it('a failed load is a notice, never the error', async () => {
+  it('a failed load is the app’s failed-read state with 再読み込み, never the error', async () => {
     renderKit(<InPanel />, { context: { plugin: 'redmine_kit_help', panel, screen: { name: 'Main', tab: null } }, responses: { 'GET /help/context.json?screen=Main': new Error('boom') } });
-    expect(await screen.findByText('ヘルプを読み込めませんでした。')).toBeInTheDocument();
+    expect(await screen.findByText('データを読み込めませんでした。しばらくしてから、もう一度開いてください。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '再読み込み' })).toBeInTheDocument();
     expect(screen.queryByText('boom')).toBeNull();
   });
 });
@@ -211,8 +212,9 @@ describe('the help page', () => {
     expect(contents.querySelectorAll('section')).toHaveLength(0);
   });
 
-  it("Redmine's help page whose topic fails to load: a notice", async () => {
+  it("Redmine's help page whose topic fails to load: the failed-read state with 再読み込み", async () => {
     renderKit(<HelpWikiSyntax />, { context: { plugin: 'redmine_kit_help' }, responses: { ...RESPONSES, 'GET /help/context.json?syntax=wiki': new Error('boom') } });
-    expect(await screen.findByText('ヘルプを読み込めませんでした。')).toBeInTheDocument();
+    expect(await screen.findByText('データを読み込めませんでした。しばらくしてから、もう一度開いてください。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '再読み込み' })).toBeInTheDocument();
   });
 });
