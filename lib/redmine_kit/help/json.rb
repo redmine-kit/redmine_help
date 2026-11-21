@@ -44,8 +44,8 @@ module RedmineKit
         { help: { q: query, results: results } }
       end
 
-      # Redmine's help pages as the guide's topics (G53 of Redmine Kit UI's
-      # plan): the text formatting's (help#show_wiki_syntax) is the topic of
+      # Redmine's help pages as the guide's topics: the text formatting's
+      # (help#show_wiki_syntax) is the topic of
       # the server's formatting, Textile's or else Markdown's; the code
       # highlighting's (help#show_code_highlighting) its languages.
       SYNTAX_TOPICS = {

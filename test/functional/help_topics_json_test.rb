@@ -110,7 +110,7 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
   end
 
   # Redmine's help pages (help#show_wiki_syntax, #show_code_highlighting) as the guide's topics: the new UI draws the
-  # topic at Redmine's address (G53). syntax => [text formatting, topic]
+  # topic at Redmine's address. syntax => [text formatting, topic]
   SYNTAXES = {
     'wiki' => [['markdown', 'user/text-formatting-markdown'], ['common_mark', 'user/text-formatting-markdown'],
                ['textile', 'user/text-formatting-textile'], ['', 'user/text-formatting-markdown']],
