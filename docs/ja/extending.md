@@ -10,7 +10,7 @@
 index.yml          # サイドバーの章
 map.yml            # 画面とトピックの対応 (mapping.md)
 en/                # 言語ごとのディレクトリ
-  <topic>.md       # トピック。1 行目の # の見出しがタイトル
+  <topic>.md       # トピック。最初の # の見出しがタイトル
   _support.md      # (運用者だけ) すべてのページに出す囲み
   _support/<topic>.md  # (運用者だけ) 1 つのトピックに出す囲み
 ja/

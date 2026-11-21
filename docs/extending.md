@@ -8,7 +8,7 @@ The guide, a plugin's help and the operator's directory have the same layout:
 index.yml          # sections of the sidebar
 map.yml            # screens to topics (mapping.md)
 en/                # one directory per language
-  <topic>.md       # a topic; a # heading on the first line is its title
+  <topic>.md       # a topic; its first # heading is its title
   _support.md      # (operator only) a block shown on every page
   _support/<topic>.md  # (operator only) a block shown on one topic
 ja/
