@@ -10,32 +10,28 @@
 # shellcheck disable=SC2016
 set -euo pipefail
 cd "$(dirname "$0")/.."
-image=redmine-kit-help-test${REDMINE_BRANCH:+-$REDMINE_BRANCH}
 source bin/container_cli
+name=redmine-kit-help-test
+plugin=redmine_kit_help
 bin/services >/dev/null
+source bin/test_image
 address() { container inspect "$1" | sed -n 's/.*"ipv4Address" : "\([0-9.]*\)\/.*/\1/p' | head -1; }
 if [[ "$cli" == docker ]]; then
   # The services by their names on the network of test/compose.yml; Chromium
   # opens this container's test server by its network alias.
-  opts=(--network redmine-kit-help-test_default --network-alias redmine-test)
+  opts=(--network redmine-kit-help-test_default "${mounts[@]}" --network-alias redmine-test)
   selenium=http://chrome:4444
   app_host='http://redmine-test:3001'
   chrome_args=--headless=new
-  docker buildx build --load -q -t "$image" --build-arg REDMINE_BRANCH="${REDMINE_BRANCH:-}" -f test/Dockerfile . >/dev/null
 else
   # Apple container (bin/services): the services by their addresses, since
   # containers don't find each other by name on a network of their own, and
   # the test server by this container's own address. More memory than the
   # 1 GB a container gets by default, for the parallel workers.
-  opts=(--network "$kit_test_network" -m 4G -e TEST_DATABASE_HOST="$(address redmine-kit-help-test-postgres)")
+  opts=(--network "$kit_test_network" -m 4G "${mounts[@]}" -e TEST_DATABASE_HOST="$(address redmine-kit-help-test-postgres)")
   selenium="http://$(address redmine-kit-help-test-chrome):4444"
   app_host='http://$(ruby -rsocket -e "print Socket.ip_address_list.find(&:ipv4_private?).ip_address"):3001'
   chrome_args=--headless=new,--disable-dev-shm-usage
-  # The build's log only when it fails (`container build -q` doesn't return).
-  log=$(mktemp)
-  container build --progress plain -t "$image" --build-arg REDMINE_BRANCH="${REDMINE_BRANCH:-}" -f test/Dockerfile . >"$log" 2>&1 ||
-    { cat "$log" >&2; exit 1; }
-  rm -f "$log"
 fi
 # A database of this run's own (test/database.yml reads TEST_DATABASE): runs at
 # the same time share the PostgreSQL container. Dropped when the tests end.
