@@ -194,7 +194,7 @@ function TopicPage({ id, anchor, search }: { id: string; anchor?: string; search
   return (
     <>
       <TitleBlock title={title || t('label_help')} actions={search} sidebarToggle sidebarLabel={t('label_help')} divider />
-      {/* one scroll (ui docs/decisions/forms.md "One scroll per form"): Panes is the scroller, 目次 a sticky side column;
+      {/* one scroll (ui docs/components/forms.md "One scroll per form"): Panes is the scroller, 目次 a sticky side column;
           below 1024px they stack */}
       <Panes ref={panesRow} dividers stacked>
         <Pane
