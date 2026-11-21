@@ -11,7 +11,8 @@ Gem::Specification.new do |spec|
   spec.authors = ['Redmine Kit']
   spec.license = 'GPL-2.0-or-later'
   spec.homepage = 'https://github.com/redmine-kit/redmine_help'
-  spec.required_ruby_version = '>= 4.0'
+  # The Ruby versions of Redmine 7.0 (its Gemfile: ruby '>= 3.2.0', '< 4.1.0').
+  spec.required_ruby_version = ['>= 3.2', '< 4.1']
   spec.files = Dir['{init.rb,LICENSE}', '{app,assets,config,lib}/**/*']
   # RubyGems needs a require path: lib (the default), as in
   # redmine_aws_s3. Bundler may then require lib/redmine_kit/help.rb before

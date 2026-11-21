@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Redmine 7.0 or later (checked with 7.0.3)
+- Redmine 7.0 or later (checked with 7.0.3), on Ruby 3.2 to 4.0
 - Redmine's CommonMark formatter (`commonmarker`, in Redmine's Gemfile); the help is Markdown whatever text formatting Redmine is set to
 
 ## Installation

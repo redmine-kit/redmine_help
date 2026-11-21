@@ -4,7 +4,7 @@
 
 ## 前提
 
-- Redmine 7.0 以降 (7.0.3 で確認)
+- Redmine 7.0 以降 (7.0.3 で確認)、Ruby 3.2〜4.0
 - Redmine の CommonMark のフォーマッター (Redmine の Gemfile にある `commonmarker`)。Redmine のテキストの書式の設定によらず、ヘルプは Markdown です
 
 <a id="installation"></a>
