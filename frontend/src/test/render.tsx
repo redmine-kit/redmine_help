@@ -36,6 +36,7 @@ const REDMINE_JA: Record<string, string> = {
   label_open_in_full_view: '全画面で表示',
   label_no_data: '表示するデータがありません',
   button_back: '戻る',
+  notice_file_not_found: 'アクセスしようとしたページは存在しないか削除されています。',
 };
 const REDMINE_EN: Record<string, string> = { label_help: 'Help', label_search: 'Search', label_table_of_contents: 'Table of contents' };
 

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
+import type { KitTestRequest } from '@redmine-kit/plugin/testing';
+import { ApiError } from '@redmine-kit/plugin';
 import { ExtensionContext, PanelHeaderContext } from '@redmine-kit/plugin/host'; // check-ui-ok: a test; the app's panel gives its header's places and its requests
 import type { ExtensionPanelTarget } from '@redmine-kit/plugin';
 import { Button } from '@redmine-kit/ui';
@@ -96,8 +98,24 @@ describe('the help panel', () => {
     expect(await screen.findByRole('navigation', { name: '目次' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '問い合わせ先' })).toHaveAttribute('href', '/help/support/contact');
     await user.type(screen.getByRole('searchbox', { name: '検索' }), '中心');
-    expect(await screen.findByRole('link', { name: 'チケットトラッキング' })).toBeInTheDocument();
-    expect(screen.getByText('…Redmine の中心です。')).toBeInTheDocument();
+    expect(await screen.findByText('…Redmine の中心です。')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'チケットトラッキング' })).toBeInTheDocument();
+  });
+
+  it('the search asks once the user pauses (SEARCH_DELAY_MS), not on every key', async () => {
+    const user = userEvent.setup();
+    const requests: KitTestRequest[] = [];
+    renderKit(<InPanel />, { context: { plugin: 'redmine_kit_help', panel, screen: { name: 'News', tab: null } }, responses: RESPONSES, requests });
+    await screen.findByRole('navigation', { name: '目次' });
+    await user.type(screen.getByRole('searchbox', { name: '検索' }), '中心');
+    expect(await screen.findByText('…Redmine の中心です。')).toBeInTheDocument();
+    expect(requests.filter((r) => r.path.startsWith('/help/search')).map((r) => r.path)).toEqual(['/help/search.json?q=%E4%B8%AD%E5%BF%83']);
+  });
+
+  it('a topic the server doesn’t have: Redmine’s words in its place', async () => {
+    const missing = { 'GET /help/context.json?screen=Gone': { help: { topic: 'user/gone', anchor: null, follow: false } }, 'GET /help/user/gone.json': new ApiError(404, []) };
+    renderKit(<InPanel />, { context: { plugin: 'redmine_kit_help', panel, screen: { name: 'Gone', tab: null } }, responses: { ...RESPONSES, ...missing } });
+    expect(await screen.findByText('アクセスしようとしたページは存在しないか削除されています。')).toBeInTheDocument();
   });
 
   // docs/setup.md: without the guide, the contents say that no guide is installed (they were an empty 目次)
@@ -141,6 +159,12 @@ describe('the help page', () => {
     renderKit(<HelpPage />, { context: { plugin: 'redmine_kit_help', params: { topic: 'user/issues' } }, responses: RESPONSES });
     expect(await screen.findByRole('heading', { name: 'チケットトラッキング' })).toBeInTheDocument();
     expect(screen.getByText('チケットは Redmine の中心です。')).toBeInTheDocument();
+  });
+
+  it('a topic the server doesn’t have (a link to a removed topic): Redmine’s 404', async () => {
+    renderKit(<HelpPage />, { context: { plugin: 'redmine_kit_help', params: { topic: 'user/gone' } }, responses: { ...RESPONSES, 'GET /help/user/gone.json': new ApiError(404, []) } });
+    expect(await screen.findByRole('heading', { name: 'アクセスしようとしたページは存在しないか削除されています。' })).toBeInTheDocument();
+    expect(screen.getByText('404')).toBeInTheDocument();
   });
 
   it('the contents as sections of topics; the search in place, with 戻る to the contents', async () => {

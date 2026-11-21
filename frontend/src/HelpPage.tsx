@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode, type RefObject } from 'react';
 import { ScreenSidebar, useExtensionContext, useKitNavigate, useKitQuery, useT } from '@redmine-kit/plugin';
-import { Card, CardBody, CardHeader, NavRow, PageToc, Pane, Panes, SearchInput, SectionHeading, TitleBlock } from '@redmine-kit/ui';
+import { Card, CardBody, CardHeader, ErrorState, NavRow, PageToc, Pane, Panes, SearchInput, SectionHeading, TitleBlock } from '@redmine-kit/ui';
 import { contextView, helpHref, helpPaths, type HelpContentsJson, type HelpContextJson, type HelpSyntax, type HelpView } from './api';
 import { HelpGuideMissing, HelpLoadError, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCapture } from './HelpContent';
 
@@ -204,7 +204,15 @@ function TopicPage({ id, anchor, search }: { id: string; anchor?: string; search
           onClickCapture={helpLinkCapture((next) => navigate(helpHref(next)))}
           className="box-content flex-[999_1_520px] px-6 pt-5 pb-6"
         >
-          <HelpTopicView key={id + (anchor ?? '')} id={id} anchor={anchor} scroller={scroller} reading onTitle={setTitle} />
+          <HelpTopicView
+            key={id + (anchor ?? '')}
+            id={id}
+            anchor={anchor}
+            scroller={scroller}
+            reading
+            onTitle={setTitle}
+            notFound={<ErrorState status={404} title={t('notice_file_not_found')} />}
+          />
         </Pane>
         {outline.length > 1 && (
           <Pane as="aside" sticky aria-label={t('label_table_of_contents')} className="box-content flex min-w-50 flex-[0_1_244px] flex-col p-6">

@@ -1,6 +1,6 @@
-import { useEffect, useRef, type MouseEvent, type RefObject } from 'react';
-import { AppLink, useKitQuery, useT } from '@redmine-kit/plugin';
-import { EmptyState, Icon, Notice, Prose, SectionHeading, Skeleton, SkeletonRegion, cn } from '@redmine-kit/ui';
+import { useEffect, useRef, type MouseEvent, type ReactNode, type RefObject } from 'react';
+import { ApiError, AppLink, useKitQuery, useT } from '@redmine-kit/plugin';
+import { EmptyState, Icon, NavRow, Notice, Prose, SectionHeading, Skeleton, SkeletonRegion, cn } from '@redmine-kit/ui';
 import { helpBody, helpHref, helpPaths, helpViewOf, type HelpContentsJson, type HelpSearchJson, type HelpTopicJson, type HelpView } from './api';
 
 // The help's content, shared by the help panel (HelpPanel) and the help page (HelpPage), as Redmine's help panel and pages
@@ -56,9 +56,12 @@ export interface HelpTopicViewProps {
   reading?: boolean;
   /** the topic's title, once it is known (the panel's subtitle, the page's heading) */
   onTitle?: (title: string) => void;
+  /** what a topic the server doesn't have (404) shows: the page, Redmine's 404; by default (the panel) a notice in its place */
+  notFound?: ReactNode;
 }
 
-export function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle }: HelpTopicViewProps) {
+export function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle, notFound }: HelpTopicViewProps) {
+  const t = useT();
   const query = useKitQuery<HelpTopicJson>(helpPaths.topic(id, anchor));
   const prose = useRef<HTMLDivElement>(null);
   const data = query.data?.help;
@@ -79,7 +82,10 @@ export function HelpTopicView({ id, anchor, scroller, restore, reading = false, 
     box.scrollTop = target ? target.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop - 12 : 0;
   }, [data, restore, scroller]);
   if (query.isPending) return <HelpTextSkeleton />;
-  if (query.isError) return <HelpLoadError />;
+  if (query.isError) {
+    if (query.error instanceof ApiError && query.error.status === 404) return notFound ?? <Notice tone="warning" inset={0} text={t('notice_file_not_found')} />;
+    return <HelpLoadError />;
+  }
   return (
     <>
       <Prose ref={prose} text={helpBody(data!.topic.body)} reading={reading} />
@@ -138,15 +144,12 @@ export function HelpContents({ current }: { current?: string }) {
       {query.data.help.sections.map((section) => (
         <div key={section.id} className="flex flex-col gap-0.5">
           <SectionHeading heading={section.title} level={3} />
+          {/* the same rows as the help page's contents (NavRow), the current topic selected; the text lines up with the
+              heading's */}
           {section.topics.map((topic) => (
-            <AppLink
-              key={topic.id}
-              href={helpHref({ kind: 'topic', id: topic.id })}
-              aria-current={topic.id === current ? 'page' : undefined}
-              className={cn('truncate py-1 text-body no-underline hover:text-text-link-hover', topic.id === current ? 'font-medium text-text-title' : 'text-text-link')}
-            >
+            <NavRow key={topic.id} href={helpHref({ kind: 'topic', id: topic.id })} selected={topic.id === current} className="-mx-2.25">
               {topic.title}
-            </AppLink>
+            </NavRow>
           ))}
         </div>
       ))}

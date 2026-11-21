@@ -25,6 +25,8 @@ type Entry = { view: HelpView; scroll?: number };
 
 /** Outside the app's panel (a test without one): the screen's topic. */
 const NO_REQUEST = { target: 'context', key: 0 } as const;
+/** The pause after the last key before the panel searches: the app's lists' (LIST_SEARCH_DELAY_MS). */
+export const SEARCH_DELAY_MS = 300;
 
 export function HelpPanel() {
   const t = useT();
@@ -93,17 +95,22 @@ export function HelpPanel() {
     setCurrent(prev);
     setQ(prev.view.kind === 'search' ? prev.view.q : '');
   };
-  // the search: results as the user types; clearing it returns to the page before
+  // the search: results as the user types, SEARCH_DELAY_MS after the last key (one request per pause, not per key);
+  // clearing it returns to the page before at once
   const onSearch = (value: string) => {
     setQ(value);
-    const text = value.trim();
-    if (!text) {
-      if (current?.view.kind === 'search') back();
-      return;
-    }
-    if (current?.view.kind === 'search') setCurrent({ view: { kind: 'search', q: text } });
-    else go({ kind: 'search', q: text });
+    if (!value.trim() && current?.view.kind === 'search') back();
   };
+  useEffect(() => {
+    const text = q.trim();
+    const shown = currentRef.current?.view;
+    if (!text || (shown?.kind === 'search' && shown.q === text)) return;
+    const timer = window.setTimeout(() => {
+      if (currentRef.current?.view.kind === 'search') setCurrent({ view: { kind: 'search', q: text } });
+      else go({ kind: 'search', q: text });
+    }, SEARCH_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [q, go]);
   const onSubmit = (e: FormEvent) => e.preventDefault();
 
   const view = current?.view;

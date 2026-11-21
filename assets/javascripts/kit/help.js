@@ -1,8 +1,8 @@
 // Redmine Kit Help: the plugin's module for the new UI, built from frontend/src by `npm run build` (frontend/vite.config.js).
 // Edit the source, not this file. React, @redmine-kit/ui and @redmine-kit/plugin come from the app (the shell's import map).
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { AppLink, ExtensionPanelHeader, ScreenSidebar, useExtensionContext, useKitNavigate, useKitQuery, useT } from "@redmine-kit/plugin";
-import { Card, CardBody, CardHeader, EmptyState, Icon, IconButton, NavRow, Notice, PageToc, Pane, Panes, Prose, SearchInput, SectionHeading, Skeleton, SkeletonRegion, TitleBlock, cn } from "@redmine-kit/ui";
+import { ApiError, AppLink, ExtensionPanelHeader, ScreenSidebar, useExtensionContext, useKitNavigate, useKitQuery, useT } from "@redmine-kit/plugin";
+import { Card, CardBody, CardHeader, EmptyState, ErrorState, Icon, IconButton, NavRow, Notice, PageToc, Pane, Panes, Prose, SearchInput, SectionHeading, Skeleton, SkeletonRegion, TitleBlock, cn } from "@redmine-kit/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/api.ts
 var enc = (id) => id.split("/").map(encodeURIComponent).join("/");
@@ -89,7 +89,8 @@ function HelpTextSkeleton() {
 		]
 	});
 }
-function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle }) {
+function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle, notFound }) {
+	const t = useT();
 	const query = useKitQuery(helpPaths.topic(id, anchor));
 	const prose = useRef(null);
 	const data = query.data?.help;
@@ -112,7 +113,14 @@ function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle
 		scroller
 	]);
 	if (query.isPending) return /* @__PURE__ */ jsx(HelpTextSkeleton, {});
-	if (query.isError) return /* @__PURE__ */ jsx(HelpLoadError, {});
+	if (query.isError) {
+		if (query.error instanceof ApiError && query.error.status === 404) return notFound ?? /* @__PURE__ */ jsx(Notice, {
+			tone: "warning",
+			inset: 0,
+			text: t("notice_file_not_found")
+		});
+		return /* @__PURE__ */ jsx(HelpLoadError, {});
+	}
 	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(Prose, {
 		ref: prose,
 		text: helpBody(data.topic.body),
@@ -182,13 +190,13 @@ function HelpContents({ current }) {
 			children: [/* @__PURE__ */ jsx(SectionHeading, {
 				heading: section.title,
 				level: 3
-			}), section.topics.map((topic) => /* @__PURE__ */ jsx(AppLink, {
+			}), section.topics.map((topic) => /* @__PURE__ */ jsx(NavRow, {
 				href: helpHref({
 					kind: "topic",
 					id: topic.id
 				}),
-				"aria-current": topic.id === current ? "page" : void 0,
-				className: cn("truncate py-1 text-body no-underline hover:text-text-link-hover", topic.id === current ? "font-medium text-text-title" : "text-text-link"),
+				selected: topic.id === current,
+				className: "-mx-2.25",
 				children: topic.title
 			}, topic.id))]
 		}, section.id))]
@@ -279,20 +287,24 @@ function HelpPanel() {
 	};
 	const onSearch = (value) => {
 		setQ(value);
-		const text = value.trim();
-		if (!text) {
-			if (current?.view.kind === "search") back();
-			return;
-		}
-		if (current?.view.kind === "search") setCurrent({ view: {
-			kind: "search",
-			q: text
-		} });
-		else go({
-			kind: "search",
-			q: text
-		});
+		if (!value.trim() && current?.view.kind === "search") back();
 	};
+	useEffect(() => {
+		const text = q.trim();
+		const shown = currentRef.current?.view;
+		if (!text || shown?.kind === "search" && shown.q === text) return;
+		const timer = window.setTimeout(() => {
+			if (currentRef.current?.view.kind === "search") setCurrent({ view: {
+				kind: "search",
+				q: text
+			} });
+			else go({
+				kind: "search",
+				q: text
+			});
+		}, 300);
+		return () => window.clearTimeout(timer);
+	}, [q, go]);
 	const onSubmit = (e) => e.preventDefault();
 	const view = current?.view;
 	const subtitle = view?.kind === "topic" ? title : view?.kind === "search" ? t("label_search") : t("label_table_of_contents");
@@ -570,7 +582,11 @@ function TopicPage({ id, anchor, search }) {
 				anchor,
 				scroller,
 				reading: true,
-				onTitle: setTitle
+				onTitle: setTitle,
+				notFound: /* @__PURE__ */ jsx(ErrorState, {
+					status: 404,
+					title: t("notice_file_not_found")
+				})
 			}, id + (anchor ?? ""))
 		}), outline.length > 1 && /* @__PURE__ */ jsx(Pane, {
 			as: "aside",
