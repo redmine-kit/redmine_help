@@ -189,6 +189,14 @@ describe('the help page', () => {
     expect(screen.getByText('チケットは Redmine の中心です。')).toBeInTheDocument();
   });
 
+  it("shows the help's own images (/help/assets/…), not a link 「画像 (画像)」", async () => {
+    const body = '一覧です。\n\n![](/help/assets/images/ja/RedmineProjects/project_list@2x.png)\n\n## コピー\n\nコピーします。';
+    renderKit(<HelpPage />, { context: { plugin: 'redmine_kit_help', params: { topic: 'admin/projects' } }, responses: { ...RESPONSES, 'GET /help/admin/projects.json': topic('admin/projects', 'プロジェクト', body) } });
+    expect(await screen.findByText('一覧です。')).toBeInTheDocument();
+    expect(document.querySelector('article img')).toHaveAttribute('src', '/help/assets/images/ja/RedmineProjects/project_list@2x.png');
+    expect(screen.queryByText('画像 (画像)')).toBeNull();
+  });
+
   it('a topic the server doesn’t have (a link to a removed topic): Redmine’s 404', async () => {
     renderKit(<HelpPage />, { context: { plugin: 'redmine_kit_help', params: { topic: 'user/gone' } }, responses: { ...RESPONSES, 'GET /help/user/gone.json': new ApiError(404, []) } });
     expect(await screen.findByRole('heading', { name: 'アクセスしようとしたページは存在しないか削除されています。' })).toBeInTheDocument();

@@ -78,15 +78,29 @@ export function HelpTopicView({ id, anchor, scroller, restore, reading = false, 
   if (query.isError) return <RequestErrorState error={query.error} onRetry={() => void query.refetch()} retrying={query.isFetching} />;
   return (
     <>
-      <Prose ref={prose} text={helpBody(data!.topic.body)} reading={reading} />
+      <Prose ref={prose} text={helpBody(data!.topic.body)} reading={reading} attachments={helpImages(data!.topic.body)} />
       {data!.support.map((text, i) => (
         // the operator's block (_support.md): the band fill of Prose's own blocks, so it reads as a note under the text
         <div key={i} className={cn('mt-4 rounded-control bg-surface-band px-3 py-2', reading && 'max-w-190')}>
-          <Prose text={text} />
+          <Prose text={text} attachments={helpImages(text)} />
         </div>
       ))}
     </>
   );
+}
+
+/** The help's own images in a topic's Markdown (`/help/assets/…`, as the JSON rewrites them), as Prose's attachments:
+ *  Prose shows a local image only when it knows the file (else a link 「画像 (画像)」). */
+export function helpImages(markdown: string) {
+  return Array.from(markdown.matchAll(/!\[[^\]\n]*\]\((\/help\/assets\/[^\s)]+)/g), ([, src]) => ({ name: decodeSafe(src), url: src }));
+}
+
+function decodeSafe(src: string) {
+  try {
+    return decodeURIComponent(src);
+  } catch {
+    return src;
+  }
 }
 
 export function HelpResults({ q }: { q: string }) {
