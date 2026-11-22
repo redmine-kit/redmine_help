@@ -10,8 +10,10 @@ import { HelpContents, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCap
 // - It shows the topic the map gives the app's screen (useExtensionContext().screen → /help/context.json, the same map.yml
 //   as Redmine's own screens: config/kit_screens.yml), at the mapped heading; a screen without one shows the contents.
 // - Links between topics and the search stay in the panel, and 戻る returns to the page before (with its scroll).
-// - The header's subtitle is the topic's title (or 検索, 目次); its actions: 戻る (when there is a page before), 目次 and
-//   全画面で表示 (the help page of what is shown). Under it the search (live: results as the user types).
+// - The header's toolbar row (ExtensionPanelHeader): the search filling the row (live: results as the user types; it
+//   shrinks on a phone, the icons staying in view), then 戻る (when there is a page before), 目次 and 全画面で表示 (the
+//   help page of what is shown) before the app's ✕; under it the title ヘルプ and the subtitle, the topic's title (or 検索,
+//   目次). The panel's heading takes the focus as it opens, not the search (the app: a phone's keyboard would open).
 // - It stays open while the user moves between screens and then shows the new screen's topic; a change of the screen's
 //   tab moves it only when the map has a topic for that tab (`follow`).
 // - The app's requests (`panel.request`, a new key per opening): `context` the screen's topic (the TopBar's ヘルプ, and the
@@ -119,6 +121,11 @@ export function HelpPanel() {
     <div className="flex min-h-0 flex-1 flex-col">
       <ExtensionPanelHeader
         subtitle={view ? subtitle : undefined}
+        search={
+          <form role="search" onSubmit={onSubmit} className="flex min-w-0">
+            <SearchInput size={28} className="min-w-0 flex-1" aria-label={t('label_search')} placeholder={t('label_search')} value={q} onChange={(e) => onSearch(e.target.value)} onClear={() => onSearch('')} />
+          </form>
+        }
         actions={
           <>
             {trail.length > 0 && <IconButton icon="chevron-left" aria-label={t('button_back')} onClick={back} />}
@@ -129,9 +136,6 @@ export function HelpPanel() {
           </>
         }
       />
-      <form role="search" onSubmit={onSubmit} className="flex-none px-5 pt-3">
-        <SearchInput size={28} aria-label={t('label_search')} placeholder={t('label_search')} value={q} onChange={(e) => onSearch(e.target.value)} onClear={() => onSearch('')} />
-      </form>
       <div ref={body} onClickCapture={helpLinkCapture(go)} className="min-h-0 flex-1 overflow-y-auto overscroll-contain ps-5 pe-4 pt-4 pb-6">
         {context.isError || syntax.isError ? (
           <RequestErrorState error={context.error ?? syntax.error} onRetry={() => void (context.isError ? context.refetch() : syntax.refetch())} />

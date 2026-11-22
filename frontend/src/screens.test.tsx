@@ -59,17 +59,21 @@ function Requested() {
   );
 }
 
-/** The panel as the app draws it: its header with the places for the subtitle and the actions. */
+/** The panel as the app draws it: its header with the places for the search, the actions and the subtitle. */
 function InPanel() {
   const [subtitle, setSubtitle] = useState<HTMLElement | null>(null);
+  const [search, setSearch] = useState<HTMLElement | null>(null);
   const [actions, setActions] = useState<HTMLElement | null>(null);
   return (
     <>
       <header>
+        <div data-testid="toolbar">
+          <span ref={setSearch} data-testid="search" />
+          <span ref={setActions} data-testid="actions" />
+        </div>
         <div ref={setSubtitle} data-testid="subtitle" />
-        <span ref={setActions} />
       </header>
-      <PanelHeaderContext.Provider value={{ subtitle, actions }}>
+      <PanelHeaderContext.Provider value={{ subtitle, search, actions }}>
         <HelpPanel />
       </PanelHeaderContext.Provider>
     </>
@@ -90,6 +94,17 @@ describe('the help panel', () => {
     expect(await screen.findByText('チケットは Redmine の中心です。')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '戻る' }));
     expect(await screen.findByText('を開きます。', { exact: false })).toBeInTheDocument();
+  });
+
+  it("puts the search in the header's toolbar row before the actions, not in the panel's body", async () => {
+    renderKit(<InPanel />, { context: { plugin: 'redmine_kit_help', panel, screen: { name: 'ProjectTable', tab: null } }, responses: RESPONSES });
+    await screen.findByText('を開きます。', { exact: false });
+    const field = screen.getByRole('searchbox', { name: '検索' });
+    expect(screen.getByTestId('search')).toContainElement(field);
+    expect(screen.getByRole('search')).toContainElement(field);
+    expect(screen.getByTestId('actions')).toContainElement(screen.getByRole('button', { name: '目次' }));
+    // the panel's body starts with the text: no search row above it
+    expect(screen.getByText('を開きます。', { exact: false }).closest('[class*="overflow-y-auto"]')!.previousElementSibling).toBeNull();
   });
 
   it('a screen without a topic shows the contents; the search shows results as the user types', async () => {

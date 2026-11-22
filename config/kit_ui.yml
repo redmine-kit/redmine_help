@@ -17,7 +17,8 @@ screens:
 slots:
   # the TopBar's ヘルプ (Redmine's top_menu :help, which RedmineKit::Help::Menu replaces on the server): the panel of the
   # current screen's topic, open across the tab's moves and reloads, for whoever may open Redmine's pages (anonymous
-  # visitors too unless Redmine requires a login: the JSON answers them as the pages do)
+  # visitors too unless Redmine requires a login: the JSON answers them as the pages do); its search and actions in the
+  # header's toolbar row, drawn from the first paint (`actions`)
   - slot: topbar.panel
     component: HelpPanel
     title: label_help
@@ -25,3 +26,4 @@ slots:
     replaces: help
     persist: true
     anonymous: true
+    actions: true

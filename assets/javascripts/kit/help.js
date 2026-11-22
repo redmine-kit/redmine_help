@@ -305,35 +305,15 @@ function HelpPanel() {
 	const subtitle = view?.kind === "topic" ? title : view?.kind === "search" ? t("label_search") : t("label_table_of_contents");
 	return /* @__PURE__ */ jsxs("div", {
 		className: "flex min-h-0 flex-1 flex-col",
-		children: [
-			/* @__PURE__ */ jsx(ExtensionPanelHeader, {
-				subtitle: view ? subtitle : void 0,
-				actions: /* @__PURE__ */ jsxs(Fragment, { children: [
-					trail.length > 0 && /* @__PURE__ */ jsx(IconButton, {
-						icon: "chevron-left",
-						"aria-label": t("button_back"),
-						onClick: back
-					}),
-					/* @__PURE__ */ jsx(IconButton, {
-						icon: "list-bullet",
-						"aria-label": t("label_table_of_contents"),
-						pressed: view?.kind === "contents",
-						onClick: () => view?.kind !== "contents" && go({ kind: "contents" })
-					}),
-					/* @__PURE__ */ jsx(IconButton, {
-						asChild: true,
-						icon: "expand",
-						"aria-label": t("label_open_in_full_view"),
-						children: /* @__PURE__ */ jsx(AppLink, { href: helpHref(view ?? { kind: "contents" }) })
-					})
-				] })
-			}),
-			/* @__PURE__ */ jsx("form", {
+		children: [/* @__PURE__ */ jsx(ExtensionPanelHeader, {
+			subtitle: view ? subtitle : void 0,
+			search: /* @__PURE__ */ jsx("form", {
 				role: "search",
 				onSubmit,
-				className: "flex-none px-5 pt-3",
+				className: "flex min-w-0",
 				children: /* @__PURE__ */ jsx(SearchInput, {
 					size: 28,
+					className: "min-w-0 flex-1",
 					"aria-label": t("label_search"),
 					placeholder: t("label_search"),
 					value: q,
@@ -341,22 +321,40 @@ function HelpPanel() {
 					onClear: () => onSearch("")
 				})
 			}),
-			/* @__PURE__ */ jsx("div", {
-				ref: body,
-				onClickCapture: helpLinkCapture(go),
-				className: "min-h-0 flex-1 overflow-y-auto overscroll-contain ps-5 pe-4 pt-4 pb-6",
-				children: context.isError || syntax.isError ? /* @__PURE__ */ jsx(RequestErrorState, {
-					error: context.error ?? syntax.error,
-					onRetry: () => void (context.isError ? context.refetch() : syntax.refetch())
-				}) : !view ? /* @__PURE__ */ jsx(HelpTextSkeleton, {}) : view.kind === "topic" ? /* @__PURE__ */ jsx(HelpTopicView, {
-					id: view.id,
-					anchor: view.anchor,
-					scroller: body,
-					restore: current?.scroll,
-					onTitle: setTitle
-				}, view.id + (view.anchor ?? "")) : view.kind === "search" ? /* @__PURE__ */ jsx(HelpResults, { q: view.q }) : /* @__PURE__ */ jsx(HelpContents, {})
-			})
-		]
+			actions: /* @__PURE__ */ jsxs(Fragment, { children: [
+				trail.length > 0 && /* @__PURE__ */ jsx(IconButton, {
+					icon: "chevron-left",
+					"aria-label": t("button_back"),
+					onClick: back
+				}),
+				/* @__PURE__ */ jsx(IconButton, {
+					icon: "list-bullet",
+					"aria-label": t("label_table_of_contents"),
+					pressed: view?.kind === "contents",
+					onClick: () => view?.kind !== "contents" && go({ kind: "contents" })
+				}),
+				/* @__PURE__ */ jsx(IconButton, {
+					asChild: true,
+					icon: "expand",
+					"aria-label": t("label_open_in_full_view"),
+					children: /* @__PURE__ */ jsx(AppLink, { href: helpHref(view ?? { kind: "contents" }) })
+				})
+			] })
+		}), /* @__PURE__ */ jsx("div", {
+			ref: body,
+			onClickCapture: helpLinkCapture(go),
+			className: "min-h-0 flex-1 overflow-y-auto overscroll-contain ps-5 pe-4 pt-4 pb-6",
+			children: context.isError || syntax.isError ? /* @__PURE__ */ jsx(RequestErrorState, {
+				error: context.error ?? syntax.error,
+				onRetry: () => void (context.isError ? context.refetch() : syntax.refetch())
+			}) : !view ? /* @__PURE__ */ jsx(HelpTextSkeleton, {}) : view.kind === "topic" ? /* @__PURE__ */ jsx(HelpTopicView, {
+				id: view.id,
+				anchor: view.anchor,
+				scroller: body,
+				restore: current?.scroll,
+				onTitle: setTitle
+			}, view.id + (view.anchor ?? "")) : view.kind === "search" ? /* @__PURE__ */ jsx(HelpResults, { q: view.q }) : /* @__PURE__ */ jsx(HelpContents, {})
+		})]
 	});
 }
 // src/HelpPage.tsx

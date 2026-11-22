@@ -72,6 +72,11 @@ Kit UI (its docs/plugins-kit.md):
   menu `:help` on the server too, which Redmine Kit UI checks) and `persist: true` (it stays open in the browser's tab
   across moves and reloads). The app opens it at the screen's topic, at the keyboard's topic (the `?` key) and at the
   text formatting's (an editor's help › all the syntax).
+- **The panel's header** is the app's (Redmine Kit UI's `ExtensionPanelHeader`): its top row has the search field,
+  filling the row, then Back (when there is a page before), Table of contents, Open in full view and Close; under it
+  the title Help and the topic's title (or Search, Table of contents). On a phone's width the field narrows and the
+  buttons stay in view. Opening the panel moves the focus to its title, not to the search, so that a phone's keyboard
+  doesn't open. The slot says `actions: true`, so the top row is there before the module loads.
 - **The help pages are screens:** `/help`, `/help/search` and `/help/*topic` (`HelpPage`), and Redmine's help pages,
   `/help/wiki_syntax[/detailed]` (`HelpWikiSyntax`) and `/help/code_highlighting` (`HelpCodeHighlighting`), which show
   the plugin's topic of each at Redmine's address. Without this plugin the new UI shows Redmine's own pages there.

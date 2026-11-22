@@ -116,6 +116,10 @@
     max-width: 47.5rem;
   }
 
+  .min-w-0 {
+    min-width: 0;
+  }
+
   .min-w-50 {
     min-width: 12.5rem;
   }
@@ -204,10 +208,6 @@
     padding-inline: .75rem;
   }
 
-  .px-5 {
-    padding-inline: 1.25rem;
-  }
-
   .px-6 {
     padding-inline: 1.5rem;
   }
@@ -222,10 +222,6 @@
 
   .pe-4 {
     padding-inline-end: 1rem;
-  }
-
-  .pt-3 {
-    padding-top: .75rem;
   }
 
   .pt-4 {
