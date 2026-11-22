@@ -45,7 +45,7 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
       assert_response :success
       topic = json['topic']
       assert_equal 'Issue tracking', topic['title']
-      assert_equal %w[Issue-tracking Updating-an-issue], topic['anchors']
+      assert_equal %w[Issue-tracking Updating-an-issue Closing-an-issue], topic['anchors']
       assert_equal 'Updating-an-issue', topic['anchor']
       assert_includes topic['body'], '[issue list](/help/user/issue-list#filters)'
       assert_includes topic['body'], '[settings](/help/admin/settings)'
@@ -63,6 +63,42 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
       assert_includes json.dig('topic', 'body'), '(/help/user/issues#チケットの更新)'
       get :show, params: { topic: 'user/issue-list', lang: 'ja' }, format: :json
       assert_equal 'en', json.dig('topic', 'language')
+    end
+  end
+
+  test "a topic with the plugins' sections: in the body and the anchors, each one's place, plugin and language" do
+    with_help(plugin: %w[another sample]) do
+      get :show, params: { topic: 'user/issues', lang: 'ja', anchor: 'Sample-items' }, format: :json
+      topic = json['topic']
+      assert_equal %w[チケットトラッキング チケットの更新 Another-plugins-part サンプルの項目 チケットの終了], topic['anchors']
+      assert_equal 'サンプルの項目', topic['anchor']
+      assert_includes topic['body'], "## サンプルの項目\n"
+      assert_equal [{ 'anchor' => 'Another-plugins-part', 'plugin' => 'another', 'name' => 'Another plugin',
+                      'language' => 'en', 'label' => 'Another plugin (English)' },
+                    { 'anchor' => 'サンプルの項目', 'plugin' => 'sample', 'name' => 'Sample plugin',
+                      'language' => 'ja', 'label' => 'Sample plugin' }],
+                   topic['insertions']
+      get :show, params: { topic: 'user/issue-list', lang: 'en' }, format: :json
+      assert_equal [], json.dig('topic', 'insertions')
+    end
+  end
+
+  test "a plugin's screen of the new UI opens its topic at its section, by the screen's Redmine route" do
+    RedmineKit::Help::KitScreens.stubs(:plugin_screen_paths).with('redmine_kit_sample', 'SampleScreen')
+                                .returns(['/projects/:project_id/sample/items'])
+    routes = Rails.application.routes
+    routes.stubs(:recognize_path).with('/projects/1/sample/items', method: :get)
+          .returns(controller: 'sample', action: 'items')
+    with_help(plugin: true) do
+      get :context, params: { screen: 'redmine_kit_sample:SampleScreen', lang: 'ja' }, format: :json
+      assert_equal ['user/issues', 'サンプルの項目', false], json.values_at('topic', 'anchor', 'follow')
+    end
+  end
+
+  test 'the search finds the text of an inserted section' do
+    with_help(plugin: true) do
+      get :search, params: { q: 'sample plugin items', lang: 'en' }, format: :json
+      assert_equal ['user/issues'], json['results'].pluck('id')
     end
   end
 

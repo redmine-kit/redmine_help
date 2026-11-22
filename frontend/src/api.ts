@@ -28,11 +28,23 @@ export interface HelpTopicJson {
       body: string;
       /** the asked anchor, in the topic's language (null: the top) */
       anchor: string | null;
+      /** the plugins' sections inserted in the text (docs/extending.md "Sections in the guide's topics"): their heading's
+       *  anchor, the plugin, its name, the section's language, and the label after the heading (the plugin's name, with
+       *  the section's language when it isn't the topic's) */
+      insertions: HelpInsertionJson[];
     };
     /** the operator's blocks: every page's, then this topic's (Markdown) */
     support: string[];
     section: { id: string; title: string } | null;
   };
+}
+
+export interface HelpInsertionJson {
+  anchor: string;
+  plugin: string;
+  name: string;
+  language: string;
+  label: string;
 }
 
 /** GET /help/search.json?q=: the topics with every word. */

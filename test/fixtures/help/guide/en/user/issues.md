@@ -13,3 +13,7 @@ Issues are the heart of Redmine. See the [issue list](issue-list.md#filters) and
 ## Updating an issue
 
 Update an issue from its page.
+
+## Closing an issue
+
+Close an issue by changing its status.

@@ -10,8 +10,9 @@
 # locales and views as for any plugin; the folder's lib/ and app/
 # go to Rails' code loader (Zeitwerk) as Redmine adds a plugin's
 # (PluginLoader.add_autoload_paths); its routes come after Redmine's, as
-# Redmine draws a plugin's. A plugin of the same id in plugins/ (a checkout or a
-# link) wins, and nothing is done.
+# Redmine draws a plugin's; its rake tasks (lib/tasks: the help's check) load
+# as Redmine loads plugins/*/lib/tasks. A plugin of the same id in plugins/ (a
+# checkout or a link) wins, and nothing is done.
 #
 # No constant is defined here: RedmineKit::Help comes from lib/ through the
 # code loader, as in plugins/, so that it reloads and Zeitwerk checks it.
@@ -31,5 +32,11 @@ ActiveSupport.on_load(:before_configuration, yield: true) do |app|
     end
     routes = File.join(dir, 'config/routes.rb')
     application.routes.append { instance_eval(File.read(routes), routes) } if File.file?(routes)
+  end
+  # Rake loads the tasks before the initializers run: plugins/ is looked at as
+  # Redmine's PluginLoader looks at it.
+  app.rake_tasks do
+    plugins = File.join(Rails.root.to_s, Rails.application.config.redmine_plugins_directory.to_s, 'redmine_kit_help')
+    Dir[File.join(dir, 'lib/tasks/**/*.rake')].each { |task| load task } unless File.directory?(plugins)
   end
 end

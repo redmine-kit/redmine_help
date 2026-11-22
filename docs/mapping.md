@@ -28,8 +28,14 @@ Within one key, the maps are tried in the order of precedence: the operator's di
 
 When a tab is switched in the page (without loading the page again), the side panel looks the screen up with the new tab, and moves only when a key with the tab (`controller#action?tab=value`) matches. A tab without its own key keeps the panel where it is.
 
+## The new UI
+
+The new UI's side panel asks `/help/context.json?screen=&tab=` with the name of its screen. A screen of Redmine's (`ProjectSettings`, `Main` …) is the Redmine screen it redesigns, from `config/kit_screens.yml` (`ProjectSettings: projects#settings`); a plugin's screen (`<plugin>:<component>`) is the Redmine route of the screen's path in the plugin's manifest (`redmine_kit_checklist:ChecklistScreen` is `/projects/:project_id/checklist`, `checklist_items#index`). Its tab is passed on as `tab`. Then the screen is looked up as above, in the same maps, so one `map.yml` serves both UIs; a plugin's screens need no line of their own. A plugin's tab of a project's settings is `ProjectSettings` with its tab in the new UI and `projects#settings?tab=<tab>` in Redmine's own UI, the same key of the map.
+
 ## Anchors
 
 An anchor is the anchor Redmine gives the heading: the heading's text with spaces turned into `-` (as in Redmine's wiki). `admin/settings#Authentication` opens the page at the heading "Authentication".
 
 Anchors are always the English page's. A translation keeps the English page's headings one for one (same count, levels and order), and the help finds the heading at the same position in the translation. The same goes for links between topics (`settings.md#Authentication`). A translation whose headings differ opens at the top.
+
+A section that a plugin inserts in a topic ([extending.md](extending.md#sections-in-the-guides-topics)) is part of the topic: an anchor of its heading opens the topic at the section (`user/issues#Checklist`), in a translation at the translated section's heading.

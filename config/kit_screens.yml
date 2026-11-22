@@ -1,7 +1,8 @@
 # The new UI's screens (Redmine Kit UI's route table: `Main`, `ProjectSettings` …) as the Redmine screen each redesigns
 # (controller#action), so that the side panel of the new UI opens the same topic as Redmine's own screens do, from one
-# map: the sources' map.yml (docs/mapping.md). A screen's ?tab= is passed on as the map's parameter. A screen that isn't
-# here (a plugin's screen, `<plugin>:<component>`) opens the contents. Read by RedmineKit::Help::KitScreens.
+# map: the sources' map.yml (docs/mapping.md). A screen's ?tab= is passed on as the map's parameter. A plugin's screen
+# (`<plugin>:<component>`) is the Redmine route of its path in the plugin's manifest, so it needs no line here; another
+# screen that isn't here opens the contents. Read by RedmineKit::Help::KitScreens.
 # Start, account and search
 Dashboard: my#page
 MyAccount: my#account

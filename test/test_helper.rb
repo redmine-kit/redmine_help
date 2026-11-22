@@ -38,9 +38,20 @@ module RedmineKit
         @saved_help_env = ENV.to_h.slice('REDMINE_KIT_HELP_GUIDE_PATH', 'REDMINE_KIT_HELP_EXTRA_PATH')
         ENV['REDMINE_KIT_HELP_GUIDE_PATH'] = guide ? File.join(FIXTURES, 'guide') : nil
         ENV['REDMINE_KIT_HELP_EXTRA_PATH'] = extra ? File.join(FIXTURES, 'extra') : nil
-        plugins = plugin ? [RedmineKit::Help::Source.new('sample', File.join(FIXTURES, 'plugin'), :plugin)] : []
+        plugins = plugin_sources(plugin == true ? %w[sample] : Array(plugin || nil))
         RedmineKit::Help::Source.stubs(:plugins).returns(plugins)
         RedmineKit::Help.reset!
+      end
+
+      # The fixtures' plugins, in the order given (Redmine's is by id):
+      # sample (fixtures/help/plugin), another, broken.
+      PLUGIN_DIRS = { 'sample' => 'plugin', 'another' => 'another', 'broken' => 'broken' }.freeze
+
+      def plugin_sources(ids)
+        ids.map do |id|
+          RedmineKit::Help::Source.new(id, File.join(FIXTURES, PLUGIN_DIRS.fetch(id)), :plugin,
+                                       name: "#{id.capitalize} plugin")
+        end
       end
 
       def restore_help

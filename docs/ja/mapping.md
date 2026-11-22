@@ -32,6 +32,12 @@ settings#index: admin/settings
 
 ページを読み込み直さずにタブを切り替えたときは、サイドパネルは新しいタブで画面を探し、タブを含むキー (`controller#action?tab=値`) が見つかったときだけ移ります。タブのキーがないときは、サイドパネルはそのままです。
 
+<a id="the-new-ui"></a>
+
+## 新しい UI
+
+新しい UI のサイドパネルは、画面の名前を付けて `/help/context.json?screen=&tab=` を呼びます。Redmine の画面 (`ProjectSettings`、`Main` など) は、`config/kit_screens.yml` でそれが作り直した Redmine の画面になります (`ProjectSettings: projects#settings`)。プラグインの画面 (`<plugin>:<component>`) は、プラグインのマニフェストにあるその画面のパスの Redmine のルートになります (`redmine_kit_checklist:ChecklistScreen` は `/projects/:project_id/checklist`、つまり `checklist_items#index`)。タブは `tab` として渡します。そのあとは上と同じく同じ対応表で画面を探すので、1 つの `map.yml` がどちらの UI にも使えます。プラグインの画面のための行は要りません。プラグインのプロジェクトの設定のタブは、新しい UI では `ProjectSettings` とそのタブ、Redmine の UI では `projects#settings?tab=<tab>` で、対応表では同じキーです。
+
 <a id="anchors"></a>
 
 ## アンカー
@@ -39,3 +45,5 @@ settings#index: admin/settings
 アンカーは、Redmine が見出しに付けるものと同じです。見出しの文字の空白を `-` にしたものです (Redmine の Wiki と同じ)。`admin/settings#Authentication` は、「Authentication」の見出しの位置でページを開きます。
 
 アンカーは常に英語のページのものを書きます。翻訳は英語のページと同じ数と階層の見出しを同じ順に持ち、ヘルプは翻訳の同じ位置の見出しを開きます。トピック間のリンク (`settings.md#Authentication`) も同じです。見出しが英語と違う翻訳は、ページの先頭で開きます。
+
+プラグインがトピックに挿入したセクション ([extending.md](extending.md#sections-in-the-guides-topics)) は、トピックの一部です。その見出しのアンカーで、トピックをそのセクションの位置で開けます (`user/issues#Checklist`)。翻訳では、翻訳したセクションの見出しの位置で開きます。

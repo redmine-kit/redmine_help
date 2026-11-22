@@ -1,8 +1,8 @@
 // Redmine Kit Help: the plugin's module for the new UI, built from frontend/src by `npm run build` (frontend/vite.config.js).
 // Edit the source, not this file. React, @redmine-kit/ui and @redmine-kit/plugin come from the app (the shell's import map).
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AppLink, ExtensionPanelHeader, ScreenSidebar, useExtensionContext, useKitNavigate, useKitQuery, useT } from "@redmine-kit/plugin";
-import { Card, CardBody, CardHeader, EmptyState, Icon, IconButton, NavRow, PageToc, Pane, Panes, Prose, RequestErrorState, SearchInput, SectionHeading, Skeleton, SkeletonRegion, TitleBlock, cn, useListSearch } from "@redmine-kit/ui";
+import { Badge, Card, CardBody, CardHeader, EmptyState, Icon, IconButton, NavRow, PageToc, Pane, Panes, Prose, RequestErrorState, SearchInput, SectionHeading, Skeleton, SkeletonRegion, TitleBlock, cn, useListSearch } from "@redmine-kit/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/api.ts
 var enc = (id) => id.split("/").map(encodeURIComponent).join("/");
@@ -86,6 +86,8 @@ function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle
 	const prose = useRef(null);
 	const data = query.data?.help;
 	const title = data?.topic.title;
+	const insertions = data?.topic.insertions;
+	const badges = useMemo(() => Object.fromEntries((insertions ?? []).map((insertion) => [insertion.anchor, /* @__PURE__ */ jsx(Badge, { children: insertion.label }, insertion.anchor)])), [insertions]);
 	useEffect(() => {
 		if (title) onTitle?.(title);
 	}, [title, onTitle]);
@@ -113,7 +115,8 @@ function HelpTopicView({ id, anchor, scroller, restore, reading = false, onTitle
 		ref: prose,
 		text: helpBody(data.topic.body),
 		reading,
-		attachments: helpImages(data.topic.body)
+		attachments: helpImages(data.topic.body),
+		headingBadges: badges
 	}), data.support.map((text, i) => /* @__PURE__ */ jsx("div", {
 		className: cn("mt-4 rounded-control bg-surface-band px-3 py-2", reading && "max-w-190"),
 		children: /* @__PURE__ */ jsx(Prose, {

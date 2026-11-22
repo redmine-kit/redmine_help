@@ -12,7 +12,7 @@ Redmine Kit Help (`redmine_kit_help`) turns the Help link in Redmine's header in
 - **In the user's language.** The help is shown in the user's language when it is translated, otherwise in English with a note. A switch in the sidebar shows the other languages.
 - **Inside Redmine.** The panel and the help pages look like Redmine's sidebar and wiki pages: the text with its table of contents, a search over the help, and on the help pages the guide's sections in the sidebar.
 - **The Redmine guide.** The guide of redmine.org, converted to Markdown and translated, comes from [redmine-guide](https://github.com/redmine-kit/redmine-guide), a separate repository and gem.
-- **Help of other plugins.** A plugin adds its own topics, sections and screens by shipping a `help/` directory ([extending.md](extending.md#plugins)).
+- **Help of other plugins.** A plugin adds its own topics, sections and screens by shipping a `help/` directory, its screens in both UIs open its topics, and it can insert sections into the guide's topics of the screens it changes, labelled with its name ([extending.md](extending.md#plugins)).
 - **The operator's pages.** An operator adds pages (whom to contact, the support of a hosted service), a block shown on every page or on some topics, and replacements of topics, from a directory set with `REDMINE_KIT_HELP_EXTRA_PATH` ([extending.md](extending.md#the-operators-directory)).
 
 ## Screen

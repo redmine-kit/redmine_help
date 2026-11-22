@@ -11,12 +11,15 @@ module RedmineKit
     # map.yml. The cache holds only what is on disk (the language directories
     # and their files), frozen, in a map that the server's threads share.
     class Source
-      attr_reader :id, :root, :kind
+      attr_reader :id, :root, :kind, :name
 
-      def initialize(id, root, kind)
+      # name: a plugin's name (Redmine::Plugin#name), the label of its
+      # sections in the guide's topics.
+      def initialize(id, root, kind, name: nil)
         @id = id
         @root = Pathname(root)
         @kind = kind
+        @name = name
         @cache = Concurrent::Map.new
       end
 
@@ -42,7 +45,9 @@ module RedmineKit
       def self.plugins
         Redmine::Plugin.all.filter_map do |plugin|
           dir = File.join(plugin.directory.to_s, 'help')
-          new(plugin.id.to_s, dir, :plugin) if plugin.id != :redmine_kit_help && File.directory?(dir)
+          next unless plugin.id != :redmine_kit_help && File.directory?(dir)
+
+          new(plugin.id.to_s, dir, :plugin, name: plugin.name)
         end
       end
 
@@ -65,7 +70,8 @@ module RedmineKit
         cached(:topics, language) do
           dir = root.join(language)
           Dir.glob('**/*.md', base: dir).each_with_object({}) do |file, topics|
-            next if File.basename(file).start_with?('_')
+            # _support.md, _support/ and _insertions/ are not topics
+            next if file.split('/').any? { |part| part.start_with?('_') }
 
             id = file.delete_suffix('.md')
             topics[id] = Topic.new(id: id, language: language, path: dir.join(file), source: self)
@@ -86,6 +92,14 @@ module RedmineKit
           [dir.join('_support.md').file? ? read_text(dir.join('_support.md')) : nil, blocks.freeze]
         end
         [every, per_topic[topic]].compact
+      end
+
+      # A plugin's sections for the guide's topics (Insertion), by name:
+      # <language>/_insertions/<name>.md. Only plugins insert sections.
+      def insertions(language)
+        return {} unless kind == :plugin && languages.include?(language)
+
+        cached(:insertions, language) { Insertion.all(self, language) }
       end
 
       # The sidebar's sections: a list of mappings, anything else left out.

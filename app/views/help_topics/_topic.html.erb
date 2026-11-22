@@ -1,5 +1,9 @@
+<%# help_panel.css: the plugins' labels on the sections they insert (the panel loads it on every page) %>
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'help_panel', plugin: 'redmine_kit_help' %>
+<% end unless panel? %>
 <div class="wiki wiki-page">
-  <%= help_to_html(@topic.body, @topic.id, panel: panel?) %>
+  <%= help_to_html(@topic.body, @topic.id, panel: panel?, insertions: @topic.insertions) %>
 </div>
 
 <% @support.each do |block| %>

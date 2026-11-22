@@ -27,11 +27,11 @@ export const contents: HelpContentsJson = {
 export const contentsWithoutGuide: HelpContentsJson = { help: { language: 'ja', guide: false, sections: [contents.help.sections[0]] } };
 
 /** GET /help/<topic>.json: a topic with its headings and the operator's block under it. */
-export function topic(id: string, title: string, body: string): HelpTopicJson {
+export function topic(id: string, title: string, body: string, insertions: HelpTopicJson['help']['topic']['insertions'] = []): HelpTopicJson {
   const anchors = [...body.matchAll(/^## (.+)$/gm)].map((heading) => heading[1]);
   return {
     help: {
-      topic: { id, title, language: 'ja', anchors: [title, ...anchors], body: `# ${title}\n\n${body}`, anchor: null },
+      topic: { id, title, language: 'ja', anchors: [title, ...anchors], body: `# ${title}\n\n${body}`, anchor: null, insertions },
       support: ['**ヘルプデスク:** 内線 1234 (平日 9:00〜18:00)'],
       section: { id: 'user', title: 'ユーザーガイド' },
     },
@@ -42,6 +42,18 @@ export const issuesTopic = topic(
   'user/issues',
   'チケットトラッキング',
   'チケットは Redmine の中心です。[チケットの一覧](/help/user/issue-list) から開きます。\n\n## 新しいチケット\n\n**新しいチケット** で作成します。\n\n## ステータス\n\nワークフローに沿って変更します。',
+);
+
+/** The issue topic with a plugin's section (redmine_kit_checklist's チェックリスト after 新しいチケット) and another's in
+ *  English (its label says the language). */
+export const issuesTopicWithSections = topic(
+  'user/issues',
+  'チケットトラッキング',
+  'チケットは Redmine の中心です。\n\n## 新しいチケット\n\n**新しいチケット** で作成します。\n\n## チェックリスト\n\nチケットのページに、プロジェクトのチェックリストの項目が表示されます。\n\n## Timer\n\nStart a timer from the issue.\n\n## ステータス\n\nワークフローに沿って変更します。',
+  [
+    { anchor: 'チェックリスト', plugin: 'redmine_kit_checklist', name: 'Redmine Kit Checklist', language: 'ja', label: 'Redmine Kit Checklist' },
+    { anchor: 'Timer', plugin: 'redmine_kit_timer', name: 'Redmine Kit Timer', language: 'en', label: 'Redmine Kit Timer (English)' },
+  ],
 );
 
 export const markdownTopic = topic('user/text-formatting-markdown', 'Markdown', '## 強調\n\n`**太字**` で太字にします。\n\n## リンク\n\n`[文字](URL)` でリンクを書きます。');

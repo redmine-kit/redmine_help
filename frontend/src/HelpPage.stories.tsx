@@ -1,5 +1,5 @@
 import { kitError, screenStory, type Meta, type StoryObj } from '@redmine-kit/plugin/storybook';
-import { contentsWithoutGuide, helpResponses } from './fixtures';
+import { contentsWithoutGuide, helpResponses, issuesTopicWithSections } from './fixtures';
 import { HelpCodeHighlighting, HelpPage, HelpWikiSyntax } from './HelpPage';
 
 // The help pages (the manifest's /help and /help/*topic) and Redmine's help pages the plugin's topics stand for
@@ -22,6 +22,14 @@ export const WithoutGuide: Story = screenStory({ responses: { ...helpResponses, 
 
 /** A topic (/help/user/issues): its title, its text, the table of contents and the operator's block. */
 export const Topic: Story = screenStory({ path: '/help/*topic', route: '/help/user/issues' });
+
+/** A topic with plugins' sections (docs/extending.md "Sections in the guide's topics"): each heading labelled with the
+ *  plugin's name, one in English in the Japanese topic. */
+export const TopicWithPluginSections: Story = screenStory({
+  path: '/help/*topic',
+  route: '/help/user/issues',
+  responses: { ...helpResponses, 'GET /help/user/issues.json': issuesTopicWithSections },
+});
 
 /** A topic that isn't there: Redmine's 404. */
 export const TopicNotFound: Story = screenStory({

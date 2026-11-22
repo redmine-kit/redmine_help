@@ -5,7 +5,9 @@ module RedmineKit
     # All help in one place: the topics of every source, in order of
     # precedence (an earlier source's topic replaces a later one's), the
     # sidebar's sections and the map from screens to topics. The sources keep
-    # what they read (Source), so a request reads no file but an image.
+    # what they read (Source), so a request reads no file but an image. A
+    # topic comes with the plugins' sections inserted (Insertions), merged
+    # once per topic and language and kept, read-only, as long as the library.
     class Library
       attr_reader :sources
 
@@ -40,9 +42,20 @@ module RedmineKit
         languages.include?(short) ? short : FALLBACK_LANGUAGE
       end
 
-      # The topic in the language, or in the fallback language.
+      # The topic in the language, or in the fallback language, with the
+      # plugins' sections (Insertions).
       def topic(id, language)
+        base = base_topic(id, language)
+        base && insertions.topic(base)
+      end
+
+      # The topic as its file has it, without the plugins' sections.
+      def base_topic(id, language)
         find(id, language) || (language == FALLBACK_LANGUAGE ? nil : find(id, FALLBACK_LANGUAGE))
+      end
+
+      def insertions
+        @insertions ||= Insertions.new(self)
       end
 
       # A translation keeps the English page's headings one for one, so an
@@ -51,9 +64,9 @@ module RedmineKit
       def anchor(id, language, anchor)
         return anchor if anchor.blank? || language == FALLBACK_LANGUAGE
 
-        english = find(id, FALLBACK_LANGUAGE)
-        translated = find(id, language)
-        return anchor unless english && translated && english.anchors.size == translated.anchors.size
+        english = topic(id, FALLBACK_LANGUAGE)
+        translated = topic(id, language)
+        return anchor unless parallel?(english, translated, language)
 
         index = english.anchors.index(anchor)
         index ? translated.anchors[index] : anchor
@@ -108,15 +121,7 @@ module RedmineKit
 
       # A simple search in the titles and texts of the language's topics.
       def search(query, language)
-        words = query.to_s.downcase.split.uniq.first(5)
-        return [] if words.empty?
-
-        topics(language).filter_map do |topic|
-          haystack = "#{topic.title}\n#{topic.readable_body}".downcase
-          next unless words.all? { |word| haystack.include?(word) }
-
-          [topic, snippet(topic.readable_body, words.first)]
-        end
+        Search.call(topics(language), query)
       end
 
       def asset(path)
@@ -128,6 +133,12 @@ module RedmineKit
       end
 
       private
+
+      # A translation in the language whose headings are the English topic's,
+      # one for one.
+      def parallel?(english, translated, language)
+        english && translated&.language == language && english.anchors.size == translated.anchors.size
+      end
 
       # A topic in index.yml is its id, or { id:, title: } with a label.
       def section(entry, language, listed)
@@ -145,13 +156,6 @@ module RedmineKit
           return topic if topic
         end
         nil
-      end
-
-      def snippet(text, word)
-        plain = text.gsub(/[#*_`>\[\]()|]/, ' ').squeeze(' ')
-        index = plain.downcase.index(word) || 0
-        start = [index - 60, 0].max
-        plain[start, 200].to_s.strip
       end
     end
   end

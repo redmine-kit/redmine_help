@@ -1,13 +1,14 @@
-import { useEffect, useRef, type MouseEvent, type RefObject } from 'react';
+import { useEffect, useMemo, useRef, type MouseEvent, type RefObject } from 'react';
 import { AppLink, useKitQuery, useT } from '@redmine-kit/plugin';
-import { EmptyState, Icon, NavRow, Prose, RequestErrorState, SectionHeading, Skeleton, SkeletonRegion, cn } from '@redmine-kit/ui';
+import { Badge, EmptyState, Icon, NavRow, Prose, RequestErrorState, SectionHeading, Skeleton, SkeletonRegion, cn } from '@redmine-kit/ui';
 import { helpBody, helpHref, helpPaths, helpViewOf, type HelpContentsJson, type HelpSearchJson, type HelpTopicJson, type HelpView } from './api';
 
 // The help's content, shared by the help panel (HelpPanel) and the help page (HelpPage), as Redmine's help panel and pages
 // share their partials (_topic, _results, _contents). Moved from ui (screens/help-parts/HelpContent.tsx), on the
 // plugin's JSON instead of the app's sample guide.
 // - HelpTopicView: the topic's text (Prose, without its # title) and the operator's blocks under it (_support.md: every
-//   page, then this topic). Opens at the view's heading (its anchor, in the topic's language: the JSON's).
+//   page, then this topic). Opens at the view's heading (its anchor, in the topic's language: the JSON's). A section a
+//   plugin inserted has the JSON's label (the plugin's name) as a Badge after its heading, as Redmine's page has .badge.
 // - HelpResults: 結果 (N), each topic's title and a snippet; 表示するデータがありません when nothing matches.
 // - HelpContents: the sections (the operator's first) with their topics; without the guide, HelpGuideMissing first.
 // Links between topics (/help/<topic>) call `onGo` when given (the panel keeps them inside itself); without it they are
@@ -58,6 +59,11 @@ export function HelpTopicView({ id, anchor, scroller, restore, reading = false, 
   const prose = useRef<HTMLDivElement>(null);
   const data = query.data?.help;
   const title = data?.topic.title;
+  const insertions = data?.topic.insertions;
+  const badges = useMemo(
+    () => Object.fromEntries((insertions ?? []).map((insertion) => [insertion.anchor, <Badge key={insertion.anchor}>{insertion.label}</Badge>])),
+    [insertions],
+  );
   useEffect(() => {
     if (title) onTitle?.(title);
   }, [title, onTitle]);
@@ -78,7 +84,7 @@ export function HelpTopicView({ id, anchor, scroller, restore, reading = false, 
   if (query.isError) return <RequestErrorState error={query.error} onRetry={() => void query.refetch()} retrying={query.isFetching} />;
   return (
     <>
-      <Prose ref={prose} text={helpBody(data!.topic.body)} reading={reading} attachments={helpImages(data!.topic.body)} />
+      <Prose ref={prose} text={helpBody(data!.topic.body)} reading={reading} attachments={helpImages(data!.topic.body)} headingBadges={badges} />
       {data!.support.map((text, i) => (
         // the operator's block (_support.md): the band fill of Prose's own blocks, so it reads as a note under the text
         <div key={i} className={cn('mt-4 rounded-control bg-surface-band px-3 py-2', reading && 'max-w-190')}>

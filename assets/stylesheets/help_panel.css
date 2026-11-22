@@ -69,3 +69,18 @@
     box-shadow: none;
   }
 }
+
+/*
+ * The label of a plugin's section in a guide's topic (docs/extending.md
+ * "Sections in the guide's topics"): core's .badge after the heading, in the
+ * gray of core's .badge-status-locked. Core's badges are upper case words of
+ * its own (PRIVATE); a plugin's name keeps its case. Loaded on the help pages
+ * too (_topic.html.erb).
+ */
+.wiki .badge.help-insertion-label {
+  color: var(--oc-gray-7);
+  border: 1px solid var(--oc-gray-7);
+  font-weight: normal;
+  text-transform: none;
+  white-space: nowrap;
+}

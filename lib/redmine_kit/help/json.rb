@@ -22,13 +22,17 @@ module RedmineKit
 
       # GET /help/<topic>.json: the topic in the language (or the fallback),
       # the operator's blocks under it, its section, and the anchor asked for
-      # (?anchor=, an English anchor) in the topic's language.
+      # (?anchor=, an English anchor) in the topic's language. The plugins'
+      # sections are in the body; `insertions` says where (their heading's
+      # anchor), whose (the plugin's id and name: the label) and in which
+      # language each is.
       def topic(library, topic, language, anchor: nil)
         section = library.sections(language).find { |s| s.topics.any? { |t| t.id == topic.id } }
         markdown = ->(text) { MarkdownLinks.rewrite(text, topic.id, language, library) }
         { help: {
           topic: { id: topic.id, title: topic.title, language: topic.language, anchors: topic.anchors,
-                   body: markdown.call(topic.body), anchor: library.anchor(topic.id, language, anchor).presence },
+                   body: markdown.call(topic.body), anchor: library.anchor(topic.id, language, anchor).presence,
+                   insertions: topic.insertions.select { |insertion| insertion[:anchor] } },
           support: library.support(topic.id, language).map(&markdown),
           section: section && { id: section.id, title: section.title(language) }
         } }
