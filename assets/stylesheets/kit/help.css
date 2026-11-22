@@ -100,6 +100,10 @@
     display: inline-flex;
   }
 
+  .table {
+    display: table;
+  }
+
   .min-h-0 {
     min-height: 0;
   }
