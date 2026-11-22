@@ -529,6 +529,13 @@ function Contents({ data, error, onRetry }) {
 		}, section.id))]
 	});
 }
+/** A heading's text as 目次 shows it: without Redmine's ¶ after it (Prose's a.wiki-anchor, a link to the section) and
+*  without the badge Prose may draw in it ([data-heading-badge]: the plugin of an inserted section). */
+function headingText(heading) {
+	const copy = heading.cloneNode(true);
+	copy.querySelectorAll("a.wiki-anchor, [data-heading-badge]").forEach((part) => part.remove());
+	return copy.textContent?.trim() ?? "";
+}
 function TopicPage({ id, anchor, search }) {
 	const t = useT();
 	const navigate = useKitNavigate();
@@ -548,7 +555,7 @@ function TopicPage({ id, anchor, search }) {
 				if (!el.id) el.id = `help-h-${i + 1}`;
 				return {
 					level: el.tagName === "H3" ? 3 : 2,
-					text: el.textContent?.trim() ?? "",
+					text: headingText(el),
 					id: el.id
 				};
 			});

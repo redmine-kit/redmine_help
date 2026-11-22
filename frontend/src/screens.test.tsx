@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import type { KitTestRequest } from '@redmine-kit/plugin/testing';
@@ -223,6 +223,9 @@ describe('the help page', () => {
     const toc = await screen.findByRole('complementary', { name: '目次' });
     expect(toc).toHaveTextContent('強調');
     expect(toc).toHaveTextContent('リンク');
+    // the headings' text without Redmine's ¶ (the heading's a.wiki-anchor)
+    expect(screen.getByRole('heading', { name: '強調' }).querySelector('a.wiki-anchor')).not.toBeNull();
+    expect(within(toc).getAllByRole('link').map((link) => link.textContent)).toEqual(['強調', 'リンク']);
     wiki.unmount();
     renderKit(<HelpCodeHighlighting />, { context: { plugin: 'redmine_kit_help' }, responses: RESPONSES });
     expect(await screen.findByText('Ruby を使えます。')).toBeInTheDocument();

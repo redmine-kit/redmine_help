@@ -161,6 +161,14 @@ function Contents({ data, error, onRetry }: { data: HelpContentsJson | undefined
 
 type Heading = { level: number; text: string; id: string };
 
+/** A heading's text as 目次 shows it: without Redmine's ¶ after it (Prose's a.wiki-anchor, a link to the section) and
+ *  without the badge Prose may draw in it ([data-heading-badge]: the plugin of an inserted section). */
+function headingText(heading: HTMLElement) {
+  const copy = heading.cloneNode(true) as HTMLElement;
+  copy.querySelectorAll('a.wiki-anchor, [data-heading-badge]').forEach((part) => part.remove());
+  return copy.textContent?.trim() ?? '';
+}
+
 function TopicPage({ id, anchor, search }: { id: string; anchor?: string; search: ReactNode }) {
   const t = useT();
   const navigate = useKitNavigate();
@@ -181,7 +189,7 @@ function TopicPage({ id, anchor, search }: { id: string; anchor?: string; search
       const root = box.firstElementChild;
       const next = Array.from(root?.querySelectorAll<HTMLElement>('h2, h3') ?? []).map((el, i) => {
         if (!el.id) el.id = `help-h-${i + 1}`;
-        return { level: el.tagName === 'H3' ? 3 : 2, text: el.textContent?.trim() ?? '', id: el.id };
+        return { level: el.tagName === 'H3' ? 3 : 2, text: headingText(el), id: el.id };
       });
       setOutline((now) => (JSON.stringify(now) === JSON.stringify(next) ? now : next));
     };
