@@ -95,6 +95,15 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
     end
   end
 
+  test "a plugin's settings of the new UI open the plugin's topic by its id" do
+    with_help(plugin: true) do
+      get :context, params: { screen: 'PluginSettings', id: 'sample', lang: 'en' }, format: :json
+      assert_equal ['sample/screen', nil, true], json.values_at('topic', 'anchor', 'follow')
+      get :context, params: { screen: 'PluginSettings', id: 'other', lang: 'en' }, format: :json
+      assert_nil json['topic']
+    end
+  end
+
   test 'the search finds the text of an inserted section' do
     with_help(plugin: true) do
       get :search, params: { q: 'sample plugin items', lang: 'en' }, format: :json

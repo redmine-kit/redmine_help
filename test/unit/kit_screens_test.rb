@@ -34,6 +34,13 @@ module RedmineKit
         assert_nil KitScreens.screen('redmine_kit_sample:sample')
       end
 
+      test "a plugin's settings is settings#plugin with the plugin as id; another shape of id is left out" do
+        assert_equal ['settings', 'plugin', { 'id' => 'redmine_kit_checklist' }],
+                     KitScreens.screen('PluginSettings', nil, 'redmine_kit_checklist')
+        assert_equal ['settings', 'plugin', {}], KitScreens.screen('PluginSettings', nil, '../x')
+        assert_equal ['settings', 'plugin', {}], KitScreens.screen('PluginSettings', nil, %w[a])
+      end
+
       test "a plugin's screen whose path is no route of Redmine's is none" do
         KitScreens.stubs(:plugin_screen_paths).returns(['/no/such/route/here'])
         assert_nil KitScreens.screen('redmine_kit_sample:SampleScreen')

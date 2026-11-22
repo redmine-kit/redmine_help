@@ -1,6 +1,6 @@
 # Mapping screens to topics
 
-The Help link in the header goes to `/help/context` with the screen it was clicked on: the controller, the action, and the parameters `tab` and `type` when the screen has them. The plugin looks the screen up in the maps and opens the topic. The side panel asks the same URL with `panel=1`, which renders the topic for the panel instead of redirecting to it; `show` and `search` take `panel=1` too.
+The Help link in the header goes to `/help/context` with the screen it was clicked on: the controller, the action, and the parameters `tab`, `type` and `id` when the screen has them. The plugin looks the screen up in the maps and opens the topic. The side panel asks the same URL with `panel=1`, which renders the topic for the panel instead of redirecting to it; `show` and `search` take `panel=1` too.
 
 ## The map
 
@@ -20,9 +20,11 @@ A topic is the path of its Markdown file without `.md`, from the language's dire
 
 For a screen, the keys are tried in this order, and the first key found in any map wins:
 
-1. `controller#action?tab=value` and `controller#action?type=value` (when the screen has the parameter)
+1. `controller#action?tab=value`, `controller#action?type=value` and `controller#action?id=value` (when the screen has the parameter; `settings#plugin?id=<plugin>` is a plugin's Administration › Plugins › Configure)
 2. `controller#action`
 3. `controller` (every action of the controller)
+
+A plugin's controller in a namespace is named by its whole path, `redmine_kit/holidays/non_working_dates`, in both UIs.
 
 Within one key, the maps are tried in the order of precedence: the operator's directory, then the plugins, then the guide. A screen with no key opens the contents (`/help`).
 
@@ -30,7 +32,7 @@ When a tab is switched in the page (without loading the page again), the side pa
 
 ## The new UI
 
-The new UI's side panel asks `/help/context.json?screen=&tab=` with the name of its screen. A screen of Redmine's (`ProjectSettings`, `Main` …) is the Redmine screen it redesigns, from `config/kit_screens.yml` (`ProjectSettings: projects#settings`); a plugin's screen (`<plugin>:<component>`) is the Redmine route of the screen's path in the plugin's manifest (`redmine_kit_checklist:ChecklistScreen` is `/projects/:project_id/checklist`, `checklist_items#index`). Its tab is passed on as `tab`. Then the screen is looked up as above, in the same maps, so one `map.yml` serves both UIs; a plugin's screens need no line of their own. A plugin's tab of a project's settings is `ProjectSettings` with its tab in the new UI and `projects#settings?tab=<tab>` in Redmine's own UI, the same key of the map.
+The new UI's side panel asks `/help/context.json?screen=&tab=&id=` with the name of its screen. A screen of Redmine's (`ProjectSettings`, `Main` …) is the Redmine screen it redesigns, from `config/kit_screens.yml` (`ProjectSettings: projects#settings`); a plugin's screen (`<plugin>:<component>`) is the Redmine route of the screen's path in the plugin's manifest (`redmine_kit_checklist:ChecklistScreen` is `/projects/:project_id/checklist`, `checklist_items#index`). Its tab is passed on as `tab`. A plugin's settings (Administration › Plugins › Configure, `PluginSettings`) is `settings#plugin` with the plugin as `id`, as in Redmine's own UI, so `settings#plugin?id=redmine_kit_checklist` in the plugin's map serves both. Then the screen is looked up as above, in the same maps, so one `map.yml` serves both UIs; a plugin's screens need no line of their own. A plugin's tab of a project's settings is `ProjectSettings` with its tab in the new UI and `projects#settings?tab=<tab>` in Redmine's own UI, the same key of the map.
 
 ## Anchors
 

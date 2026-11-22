@@ -61,3 +61,5 @@ AdminWorkflow: workflows#edit
 AdminCustomFields: custom_fields#index
 AdminWebhooks: webhooks#index
 AdminSettings: settings#index
+# Administration › Plugins › Configure: the plugin as the screen's id (settings#plugin?id=<plugin>)
+PluginSettings: settings#plugin

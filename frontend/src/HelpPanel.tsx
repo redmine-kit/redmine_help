@@ -33,8 +33,12 @@ export function HelpPanel() {
   const { screen, panel } = useExtensionContext();
   const name = screen?.name ?? null;
   const tab = screen?.tab ?? null;
+  // a plugin's settings (PluginSettings): the plugin, the map's settings#plugin?id=
+  const id = screen?.id;
+  // the screen the panel follows: another plugin's settings is another screen
+  const screenKey = name && id ? `${name}/${id}` : name;
   const request = panel?.request ?? NO_REQUEST;
-  const context = useKitQuery<HelpContextJson>(name ? helpPaths.context(name, tab) : null);
+  const context = useKitQuery<HelpContextJson>(name ? helpPaths.context(name, tab, id) : null);
   const syntax = useKitQuery<HelpContextJson>(request.target === 'wiki_syntax' ? helpPaths.syntax('wiki') : null);
   const [current, setCurrent] = useState<Entry | null>(null);
   const [trail, setTrail] = useState<Entry[]>([]);
@@ -62,7 +66,7 @@ export function HelpPanel() {
   useEffect(() => {
     if (!requested || answered.current === request.key) return;
     answered.current = request.key;
-    seen.current = { name, tab };
+    seen.current = { name: screenKey, tab };
     setCurrent({ view: requested });
     setTrail([]);
     setQ('');
@@ -72,16 +76,16 @@ export function HelpPanel() {
   useEffect(() => {
     if (!screenView || answered.current !== request.key) return;
     const prev = seen.current;
-    const moved = !prev || prev.name !== name;
-    const tabMoved = !!prev && prev.name === name && prev.tab !== tab && !!context.data?.help.follow;
-    seen.current = { name, tab };
+    const moved = !prev || prev.name !== screenKey;
+    const tabMoved = !!prev && prev.name === screenKey && prev.tab !== tab && !!context.data?.help.follow;
+    seen.current = { name: screenKey, tab };
     if (moved || tabMoved) {
       setCurrent({ view: screenView });
       setTrail([]);
       setQ('');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, tab, screenView?.kind, screenView && 'id' in screenView ? screenView.id : null]);
+  }, [screenKey, tab, screenView?.kind, screenView && 'id' in screenView ? screenView.id : null]);
 
   const currentRef = useRef(current);
   currentRef.current = current;

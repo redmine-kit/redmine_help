@@ -23,7 +23,10 @@ module RedmineKit
           # routes; the link is then Redmine's own.
           return Redmine::Info.help_url unless respond_to?(:help_context_path)
 
-          screen = { c: controller_name, a: action_name }
+          # controller_path: a plugin's namespaced controller by its whole path
+          # (redmine_kit/holidays/non_working_dates), as the new UI's routes
+          # name it (KitScreens), so one key of map.yml serves both UIs
+          screen = { c: controller_path, a: action_name }
           RedmineKit::Help::MAP_PARAMS.each { |name| screen[name.to_sym] = params[name] if params[name].is_a?(String) }
           help_context_path(screen)
         end

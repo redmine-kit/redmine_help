@@ -18,6 +18,9 @@ module RedmineKit
       NAME = /\A[A-Za-z][A-Za-z0-9]{0,63}\z/
       PLUGIN_SCREEN = /\A([a-z][a-z0-9_]{0,59}):([A-Z][A-Za-z0-9]{0,63})\z/
       TAB = /\A[a-z0-9_]{1,32}\z/
+      # the record a screen shows by Redmine's id parameter (a plugin's id:
+      # settings#plugin)
+      ID = /\A[a-z][a-z0-9_]{0,59}\z/
 
       module_function
 
@@ -26,15 +29,20 @@ module RedmineKit
       end
 
       # [controller, action, params] of a screen, or nil for a screen of
-      # another shape, or one that is neither Redmine's nor a plugin's.
-      def screen(name, tab = nil)
+      # another shape, or one that is neither Redmine's nor a plugin's. The
+      # tab and the id are the map's parameters when they have their shape.
+      def screen(name, tab = nil, id = nil)
         return unless name.is_a?(String)
 
         controller, action = (PLUGIN_SCREEN.match(name) ? plugin_route(name) : core_route(name))&.split('#', 2)
         return unless controller
 
-        params = tab.is_a?(String) && tab.match?(TAB) ? { 'tab' => tab } : {}
-        [controller, action.to_s, params]
+        [controller, action.to_s, map_params('tab' => [tab, TAB], 'id' => [id, ID])]
+      end
+
+      # The values that have their shape, by the map's parameter.
+      def map_params(values)
+        values.filter_map { |key, (value, shape)| [key, value] if value.is_a?(String) && value.match?(shape) }.to_h
       end
 
       def core_route(name)

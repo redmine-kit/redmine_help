@@ -68,12 +68,13 @@ module RedmineKit
         { help: { topic: topic&.id, anchor: nil, follow: false } }
       end
 
-      # GET /help/context.json?screen=&tab=: the topic of the new UI's screen
-      # (KitScreens), at its anchor in the language, or none (the contents);
+      # GET /help/context.json?screen=&tab=&id=: the topic of the new UI's
+      # screen (KitScreens; id: a plugin's settings, the plugin), at its anchor
+      # in the language, or none (the contents);
       # `follow`: the screen's tab has a topic of its own, so the panel moves
       # with a change of tab only then.
-      def context(library, language, screen, tab)
-        controller, action, params = KitScreens.screen(screen, tab)
+      def context(library, language, screen, tab, id = nil)
+        controller, action, params = KitScreens.screen(screen, tab, id)
         key, (id, anchor) = controller ? library.lookup(controller, action, params) : nil
         topic = id && library.topic(id, language)
         return { help: { topic: nil, anchor: nil, follow: false } } unless topic

@@ -19,6 +19,16 @@ module RedmineKit
         end
       end
 
+      test "a plugin's settings (Administration › Plugins › Configure) open the plugin's topic by its id" do
+        with_help(plugin: true) do
+          log_user('admin', 'admin')
+          get '/help/context?a=plugin&c=settings&id=sample'
+          assert_redirected_to '/help/sample/screen'
+          get '/help/context?a=plugin&c=settings&id=other'
+          assert_redirected_to '/help'
+        end
+      end
+
       test "without JavaScript the Help link opens the help page in a new tab, as Redmine's does" do
         with_help do
           log_user('admin', 'admin')

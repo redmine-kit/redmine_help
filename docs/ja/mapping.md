@@ -1,6 +1,6 @@
 # 画面とトピックの対応
 
-ヘッダーの「ヘルプ」は、押された画面の情報を付けて `/help/context` を開きます。画面の情報は、コントローラー、アクション、画面にあればパラメーターの `tab` と `type` です。プラグインは、対応表で画面を探してトピックを開きます。サイドパネルは同じ URL に `panel=1` を付けて呼び、リダイレクトの代わりにサイドパネル用のトピックを受け取ります。`show` と `search` も `panel=1` を受け付けます。
+ヘッダーの「ヘルプ」は、押された画面の情報を付けて `/help/context` を開きます。画面の情報は、コントローラー、アクション、画面にあればパラメーターの `tab`、`type`、`id` です。プラグインは、対応表で画面を探してトピックを開きます。サイドパネルは同じ URL に `panel=1` を付けて呼び、リダイレクトの代わりにサイドパネル用のトピックを受け取ります。`show` と `search` も `panel=1` を受け付けます。
 
 <a id="the-map"></a>
 
@@ -24,9 +24,11 @@ settings#index: admin/settings
 
 画面ごとに、次の順にキーを探し、どれかの対応表で最初に見つかったキーを使います。
 
-1. `controller#action?tab=値` と `controller#action?type=値` (画面にそのパラメーターがあるとき)
+1. `controller#action?tab=値`、`controller#action?type=値`、`controller#action?id=値` (画面にそのパラメーターがあるとき。`settings#plugin?id=<plugin>` は、プラグインの「管理」›「プラグイン」の「設定」)
 2. `controller#action`
 3. `controller` (そのコントローラーのすべてのアクション)
+
+名前空間の中にあるプラグインのコントローラーは、どちらの UI でもパス全体 (`redmine_kit/holidays/non_working_dates`) で表します。
 
 同じキーは、運用者のディレクトリ、プラグイン、ガイドの順に探します。どのキーもない画面では、目次 (`/help`) を開きます。
 
@@ -36,7 +38,7 @@ settings#index: admin/settings
 
 ## 新しい UI
 
-新しい UI のサイドパネルは、画面の名前を付けて `/help/context.json?screen=&tab=` を呼びます。Redmine の画面 (`ProjectSettings`、`Main` など) は、`config/kit_screens.yml` でそれが作り直した Redmine の画面になります (`ProjectSettings: projects#settings`)。プラグインの画面 (`<plugin>:<component>`) は、プラグインのマニフェストにあるその画面のパスの Redmine のルートになります (`redmine_kit_checklist:ChecklistScreen` は `/projects/:project_id/checklist`、つまり `checklist_items#index`)。タブは `tab` として渡します。そのあとは上と同じく同じ対応表で画面を探すので、1 つの `map.yml` がどちらの UI にも使えます。プラグインの画面のための行は要りません。プラグインのプロジェクトの設定のタブは、新しい UI では `ProjectSettings` とそのタブ、Redmine の UI では `projects#settings?tab=<tab>` で、対応表では同じキーです。
+新しい UI のサイドパネルは、画面の名前を付けて `/help/context.json?screen=&tab=&id=` を呼びます。Redmine の画面 (`ProjectSettings`、`Main` など) は、`config/kit_screens.yml` でそれが作り直した Redmine の画面になります (`ProjectSettings: projects#settings`)。プラグインの画面 (`<plugin>:<component>`) は、プラグインのマニフェストにあるその画面のパスの Redmine のルートになります (`redmine_kit_checklist:ChecklistScreen` は `/projects/:project_id/checklist`、つまり `checklist_items#index`)。タブは `tab` として渡します。プラグインの設定 (「管理」›「プラグイン」の「設定」、`PluginSettings`) は、Redmine の UI と同じく、プラグインを `id` とした `settings#plugin` です。プラグインの対応表の `settings#plugin?id=redmine_kit_checklist` がどちらの UI にも使えます。そのあとは上と同じく同じ対応表で画面を探すので、1 つの `map.yml` がどちらの UI にも使えます。プラグインの画面のための行は要りません。プラグインのプロジェクトの設定のタブは、新しい UI では `ProjectSettings` とそのタブ、Redmine の UI では `projects#settings?tab=<tab>` で、対応表では同じキーです。
 
 <a id="anchors"></a>
 

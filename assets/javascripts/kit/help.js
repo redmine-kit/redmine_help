@@ -10,7 +10,7 @@ var helpPaths = {
 	contents: "/help.json",
 	topic: (id, anchor) => `/help/${enc(id)}.json${anchor ? `?anchor=${encodeURIComponent(anchor)}` : ""}`,
 	search: (q) => `/help/search.json?q=${encodeURIComponent(q)}`,
-	context: (screen, tab) => `/help/context.json?screen=${encodeURIComponent(screen)}${tab ? `&tab=${encodeURIComponent(tab)}` : ""}`,
+	context: (screen, tab, id) => `/help/context.json?screen=${encodeURIComponent(screen)}${tab ? `&tab=${encodeURIComponent(tab)}` : ""}${id ? `&id=${encodeURIComponent(id)}` : ""}`,
 	/** the topic of Redmine's help page of the server's text formatting (wiki: help#show_wiki_syntax) or of the code
 	*  highlighting (code: help#show_code_highlighting) */
 	syntax: (syntax) => `/help/context.json?syntax=${syntax}`
@@ -231,8 +231,10 @@ function HelpPanel() {
 	const { screen, panel } = useExtensionContext();
 	const name = screen?.name ?? null;
 	const tab = screen?.tab ?? null;
+	const id = screen?.id;
+	const screenKey = name && id ? `${name}/${id}` : name;
 	const request = panel?.request ?? NO_REQUEST;
-	const context = useKitQuery(name ? helpPaths.context(name, tab) : null);
+	const context = useKitQuery(name ? helpPaths.context(name, tab, id) : null);
 	const syntax = useKitQuery(request.target === "wiki_syntax" ? helpPaths.syntax("wiki") : null);
 	const [current, setCurrent] = useState(null);
 	const [trail, setTrail] = useState([]);
@@ -256,7 +258,7 @@ function HelpPanel() {
 		if (!requested || answered.current === request.key) return;
 		answered.current = request.key;
 		seen.current = {
-			name,
+			name: screenKey,
 			tab
 		};
 		setCurrent({ view: requested });
@@ -270,10 +272,10 @@ function HelpPanel() {
 	useEffect(() => {
 		if (!screenView || answered.current !== request.key) return;
 		const prev = seen.current;
-		const moved = !prev || prev.name !== name;
-		const tabMoved = !!prev && prev.name === name && prev.tab !== tab && !!context.data?.help.follow;
+		const moved = !prev || prev.name !== screenKey;
+		const tabMoved = !!prev && prev.name === screenKey && prev.tab !== tab && !!context.data?.help.follow;
 		seen.current = {
-			name,
+			name: screenKey,
 			tab
 		};
 		if (moved || tabMoved) {
@@ -282,7 +284,7 @@ function HelpPanel() {
 			setQ("");
 		}
 	}, [
-		name,
+		screenKey,
 		tab,
 		screenView?.kind,
 		screenView && "id" in screenView ? screenView.id : null

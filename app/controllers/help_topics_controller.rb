@@ -80,7 +80,7 @@ class HelpTopicsController < ApplicationController
   def render_context_json
     return render(json: Json.syntax(library, @language, params[:syntax])) if params.key?(:syntax)
 
-    render(json: Json.context(library, @language, params[:screen], params[:tab]))
+    render(json: Json.context(library, @language, params[:screen], params[:tab], params[:id]))
   end
 
   def library

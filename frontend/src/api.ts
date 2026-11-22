@@ -52,7 +52,8 @@ export interface HelpSearchJson {
   help: { q: string; results: { id: string; title: string; snippet: string }[] };
 }
 
-/** GET /help/context.json?screen=&tab=: the topic of the app's screen, or none (the contents). */
+/** GET /help/context.json?screen=&tab=&id=: the topic of the app's screen (id: a plugin's settings, the plugin), or none
+ *  (the contents). */
 export interface HelpContextJson {
   help: { topic: string | null; anchor: string | null; follow: boolean };
 }
@@ -66,7 +67,8 @@ export const helpPaths = {
   contents: '/help.json',
   topic: (id: string, anchor?: string) => `/help/${enc(id)}.json${anchor ? `?anchor=${encodeURIComponent(anchor)}` : ''}`,
   search: (q: string) => `/help/search.json?q=${encodeURIComponent(q)}`,
-  context: (screen: string, tab: string | null) => `/help/context.json?screen=${encodeURIComponent(screen)}${tab ? `&tab=${encodeURIComponent(tab)}` : ''}`,
+  context: (screen: string, tab: string | null, id?: string) =>
+    `/help/context.json?screen=${encodeURIComponent(screen)}${tab ? `&tab=${encodeURIComponent(tab)}` : ''}${id ? `&id=${encodeURIComponent(id)}` : ''}`,
   /** the topic of Redmine's help page of the server's text formatting (wiki: help#show_wiki_syntax) or of the code
    *  highlighting (code: help#show_code_highlighting) */
   syntax: (syntax: HelpSyntax) => `/help/context.json?syntax=${syntax}`,

@@ -16,8 +16,9 @@ module RedmineKit
     FALLBACK_LANGUAGE = 'en'
 
     # Request parameters that can select a more precise topic in the map
-    # (e.g. "settings#index?tab=authentication").
-    MAP_PARAMS = %w[tab type].freeze
+    # (e.g. "settings#index?tab=authentication", a plugin's settings
+    # "settings#plugin?id=redmine_kit_checklist").
+    MAP_PARAMS = %w[tab type id].freeze
 
     module_function
 
