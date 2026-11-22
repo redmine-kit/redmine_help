@@ -1,8 +1,9 @@
 import { useRef } from 'react';
 import { screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { issuesTopicWithSections } from './fixtures';
+import { issuesTopicWithSections, topic } from './fixtures';
 import { HelpTopicView } from './HelpContent';
+import { HelpPage } from './HelpPage';
 import { HelpPanel } from './HelpPanel';
 import { renderKit } from './test/render';
 
@@ -49,5 +50,16 @@ describe("a plugin's section in a topic", () => {
     });
     const checklist = await screen.findByRole('heading', { level: 2, name: /チェックリスト/ });
     expect(within(checklist).getByText('Redmine Kit Checklist')).toBeInTheDocument();
+  });
+
+  it("lists a plugin's subsection of an h3 (an h4) in the help page's 目次, under that h3, without its label", async () => {
+    const body = '## チケットの表示\n\n表示します。\n\n### 関連するチケット\n\n関連付けます。\n\n#### 依存関係\n\n開始-開始の関連です。';
+    const withH4 = topic('user/issues', 'チケットトラッキング', body, [
+      { anchor: '依存関係', plugin: 'redmine_kit_dependencies', name: 'Redmine Kit Dependencies', language: 'ja', label: 'Redmine Kit Dependencies' },
+    ]);
+    renderKit(<HelpPage />, { context: { plugin: 'redmine_kit_help', params: { topic: 'user/issues' } }, responses: { 'GET /help.json': { help: { language: 'ja', guide: true, sections: [] } }, 'GET /help/user/issues.json': withH4 } });
+    const toc = await screen.findByRole('complementary', { name: '目次' });
+    expect(await within(toc).findByRole('link', { name: '依存関係' })).toHaveAttribute('href', '#依存関係');
+    expect(within(toc).getByRole('link', { name: '関連するチケット' })).toBeInTheDocument();
   });
 });

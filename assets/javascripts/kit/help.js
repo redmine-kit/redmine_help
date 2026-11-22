@@ -575,10 +575,10 @@ function TopicPage({ id, anchor, search }) {
 		if (!box) return;
 		const read = () => {
 			const root = box.firstElementChild;
-			const next = Array.from(root?.querySelectorAll("h2, h3") ?? []).map((el, i) => {
+			const next = Array.from(root?.querySelectorAll("h2, h3, h4") ?? []).map((el, i) => {
 				if (!el.id) el.id = `help-h-${i + 1}`;
 				return {
-					level: el.tagName === "H3" ? 3 : 2,
+					level: Number(el.tagName.slice(1)),
 					text: headingText(el),
 					id: el.id
 				};

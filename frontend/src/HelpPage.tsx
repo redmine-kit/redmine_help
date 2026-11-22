@@ -179,17 +179,18 @@ function TopicPage({ id, anchor, search }: { id: string; anchor?: string; search
   const panesRow = useCallback((row: HTMLDivElement | null) => {
     scroller.current = row?.parentElement ?? null;
   }, []);
-  // The headings (目次): h2 and h3 of the topic's text as it was rendered (its first child; the operator's blocks after it
-  // are not part of the topic), so the outline shows what the reader sees. A heading without an id gets one.
+  // The headings (目次): h2 to h4 of the topic's text as it was rendered (its first child; the operator's blocks after it
+  // are not part of the topic), so the outline shows what the reader sees, a plugin's subsection of an h3 included, as
+  // Redmine's table of contents lists it. A heading without an id gets one.
   const [outline, setOutline] = useState<Heading[]>([]);
   useLayoutEffect(() => {
     const box = article.current;
     if (!box) return;
     const read = () => {
       const root = box.firstElementChild;
-      const next = Array.from(root?.querySelectorAll<HTMLElement>('h2, h3') ?? []).map((el, i) => {
+      const next = Array.from(root?.querySelectorAll<HTMLElement>('h2, h3, h4') ?? []).map((el, i) => {
         if (!el.id) el.id = `help-h-${i + 1}`;
-        return { level: el.tagName === 'H3' ? 3 : 2, text: headingText(el), id: el.id };
+        return { level: Number(el.tagName.slice(1)), text: headingText(el), id: el.id };
       });
       setOutline((now) => (JSON.stringify(now) === JSON.stringify(next) ? now : next));
     };
