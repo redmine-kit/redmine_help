@@ -55,7 +55,13 @@ GroupProfile: groups#show
 # Administration
 Admin: admin#index
 AdminUsers: users#index
+# a user's and a group's page (the same screen as their list in the app; the panel names them apart): their tabs are
+# users#edit?tab= and groups#edit?tab=, as in Redmine's own UI
+AdminUserNew: users#new
+AdminUserEdit: users#edit
 AdminGroups: groups#index
+AdminGroupNew: groups#new
+AdminGroupEdit: groups#edit
 AdminRoles: roles#index
 AdminWorkflow: workflows#edit
 AdminCustomFields: custom_fields#index

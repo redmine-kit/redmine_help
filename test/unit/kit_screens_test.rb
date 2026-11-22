@@ -34,6 +34,15 @@ module RedmineKit
         assert_nil KitScreens.screen('redmine_kit_sample:sample')
       end
 
+      test "a user's and a group's page of Administration are users#edit and groups#edit, with a plugin's tab" do
+        assert_equal ['users', 'edit', { 'tab' => 'sessions' }], KitScreens.screen('AdminUserEdit', 'sessions')
+        assert_equal ['users', 'edit', { 'tab' => 'redmine_kit_avatars.avatar' }],
+                     KitScreens.screen('AdminUserEdit', 'redmine_kit_avatars.avatar')
+        assert_equal ['users', 'new', {}], KitScreens.screen('AdminUserNew')
+        assert_equal ['groups', 'edit', { 'tab' => 'users' }], KitScreens.screen('AdminGroupEdit', 'users')
+        assert_equal({}, KitScreens.screen('AdminUserEdit', 'a.b.c').last)
+      end
+
       test "a plugin's settings is settings#plugin with the plugin as id; another shape of id is left out" do
         assert_equal ['settings', 'plugin', { 'id' => 'redmine_kit_checklist' }],
                      KitScreens.screen('PluginSettings', nil, 'redmine_kit_checklist')

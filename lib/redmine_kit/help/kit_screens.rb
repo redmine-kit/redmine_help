@@ -17,7 +17,8 @@ module RedmineKit
       FILE = File.expand_path('../../../config/kit_screens.yml', __dir__)
       NAME = /\A[A-Za-z][A-Za-z0-9]{0,63}\z/
       PLUGIN_SCREEN = /\A([a-z][a-z0-9_]{0,59}):([A-Z][A-Za-z0-9]{0,63})\z/
-      TAB = /\A[a-z0-9_]{1,32}\z/
+      # a tab: Redmine's (members), or a plugin's tab of the new UI (<plugin>.<name>)
+      TAB = /\A[a-z0-9_]{1,60}(\.[a-z0-9_]{1,32})?\z/
       # the record a screen shows by Redmine's id parameter (a plugin's id:
       # settings#plugin)
       ID = /\A[a-z][a-z0-9_]{0,59}\z/

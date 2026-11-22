@@ -104,6 +104,15 @@ class HelpTopicsJsonTest < Redmine::ControllerTest
     end
   end
 
+  test "a plugin's tab of a user's page of the new UI opens the plugin's topic, as users#edit?tab= in Redmine's UI" do
+    with_help(plugin: true) do
+      get :context, params: { screen: 'AdminUserEdit', tab: 'redmine_kit_sample.items', lang: 'en' }, format: :json
+      assert_equal ['sample/screen', nil, true], json.values_at('topic', 'anchor', 'follow')
+      get :context, params: { screen: 'AdminUsers', tab: 'redmine_kit_sample.items', lang: 'en' }, format: :json
+      assert_nil json['topic']
+    end
+  end
+
   test 'the search finds the text of an inserted section' do
     with_help(plugin: true) do
       get :search, params: { q: 'sample plugin items', lang: 'en' }, format: :json
