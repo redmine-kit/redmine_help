@@ -12,6 +12,15 @@ module RedmineKit
         @library = library
       end
 
+      # The installed help with a plugin's help/ from a directory (a checkout
+      # not installed here) in place of the plugin's own, if any.
+      def self.library_with(plugin, dir)
+        sources = RedmineKit::Help::Source.all.reject { |source| source.kind == :plugin && source.id == plugin }
+        name = Redmine::Plugin.installed?(plugin) ? Redmine::Plugin.find(plugin).name : plugin
+        extra, rest = sources.partition { |source| source.kind == :extra }
+        Library.new([*extra, Source.new(plugin, dir, :plugin, name: name), *rest])
+      end
+
       # The problems of every plugin's help, or of one plugin's (its id).
       def problems(plugin = nil)
         sources = @library.sources.select { |source| source.kind == :plugin }
@@ -103,16 +112,19 @@ module RedmineKit
         heading_problems(insertion, topic, heading)
       end
 
-      # It starts with a heading of the level of the one it follows, whose
-      # anchor no heading of the topic has (else one of them would get -2).
+      # It starts with a heading of the level of the one it follows (a section
+      # after it) or one level below (a subsection at the end of its section),
+      # whose anchor no heading of the topic has (else one of them would get
+      # -2). Another level would end the heading's parent section early (an h2
+      # after an h3) or skip a level.
       def heading_problems(insertion, topic, heading)
         first = Headings.of(insertion.body).first
         return ["#{insertion.path}: starts with no heading"] unless first&.line&.zero?
 
         problems = []
-        if first.level != heading.level
-          problems << "#{insertion.path}: its heading is level #{first.level}, " \
-                      "#{insertion.after} level #{heading.level}"
+        unless [heading.level, heading.level + 1].include?(first.level)
+          problems << "#{insertion.path}: its heading is level #{first.level}; after #{insertion.after} " \
+                      "(level #{heading.level}) it is level #{heading.level} or #{heading.level + 1}"
         end
         if topic.anchors.include?(first.anchor)
           problems << "#{insertion.path}: #{insertion.topic} has a heading #{first.anchor} already"

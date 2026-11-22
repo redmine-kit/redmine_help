@@ -50,12 +50,13 @@ A plugin that changes one of Redmine's screens (an issue, a project's settings, 
 topic: user/issues
 after: Listing-of-the-issue
 ---
-## Checklist
+### Checklist
 
 The issue's page shows the project's checklist after the description …
 ```
 
-- **Where it goes:** at the end of the section of the `after` heading, before the next heading of the same or a higher level (after the heading's subsections). The section starts with a heading of the same level as that heading.
+- **Where it goes:** at the end of the section of the `after` heading, before the next heading of the same or a higher level (after the heading's subsections).
+- **Its level:** a section that describes part of what the heading describes (the checklist on the issue's page, under Listing of the issue) is its subsection: it starts with a heading one level below (`###` after a `##`), and the table of contents lists it under the heading. A section on a subject of its own next to the heading's starts with a heading of the same level. Any other level ends the heading's parent section early (a `##` after a `###` subsection) or skips a level; the check reports it.
 - **What it becomes:** part of the topic. Its headings are in the topic's table of contents and anchors, the search finds its text, and a screen's `map.yml` entry can open the topic at it (`checklist_items#index: user/issues#Checklist`). Its links and images are relative to the topic's directory (`../checklist/checklist.md`), as if it were written in the topic; its Markdown is rendered with the topic's, by the same formatter and sanitizer.
 - **The label:** its heading carries the plugin's name (`Redmine::Plugin#name`), on the help pages and in the panel of both UIs.
 - **Several plugins at one heading:** their sections come in the order of Administration › Plugins (by the plugin's id), then by file name.
@@ -65,13 +66,19 @@ The issue's page shows the project's checklist after the description …
 
 ### Checking a plugin's help
 
-The rake task checks the plugins' `help/` against the installed guide: every `map.yml` and `index.yml` topic and anchor exists, each translation has its English topic or section and the same number of headings, and each section has its topic and heading, starts with a heading of that heading's level, and repeats no heading of the topic. Each problem names its file. The task exits with status 1 when it finds a problem.
+The rake task checks the plugins' `help/` against the installed guide: every `map.yml` and `index.yml` topic and anchor exists, each translation has its English topic or section and the same number of headings, and each section has its topic and heading, starts with a heading of that heading's level or one below, and repeats no heading of the topic. Each problem names its file. The task exits with status 1 when it finds a problem.
 
 Run it from Redmine's folder, for every plugin or for one:
 
 ```sh
 bin/rails redmine_kit:help:check RAILS_ENV=production
 bin/rails redmine_kit:help:check PLUGIN=redmine_kit_checklist RAILS_ENV=production
+```
+
+A plugin's `help/` that isn't installed in this Redmine (a checkout being written) is checked with `DIR`, as the plugin `PLUGIN`:
+
+```sh
+bin/rails redmine_kit:help:check PLUGIN=redmine_kit_checklist DIR=/path/to/redmine_kit_checklist/help RAILS_ENV=production
 ```
 
 A plugin's test can assert the same, where Redmine Kit Help and the guide are installed:

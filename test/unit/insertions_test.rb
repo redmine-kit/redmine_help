@@ -81,6 +81,7 @@ module RedmineKit
           topic = RedmineKit::Help.library.topic('user/issues', 'en')
           RedmineKit::Help.library.topic('user/issues', 'ja')
           assert_equal ['Updating an issue', 'Closing an issue', 'Too deep'], headings(topic)
+          # placed all the same: the check says the level doesn't fit
         end
         broken = File.join(FIXTURES, 'broken/en/_insertions')
         assert_includes logged, "redmine_kit_help: #{broken}/no-topic.md: no topic user/nothing; ignored"

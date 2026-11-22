@@ -77,9 +77,12 @@ class HelpTopicsControllerTest < Redmine::ControllerTest
       get :show, params: { topic: 'user/issues', lang: 'en' }
       assert_select 'div.wiki.wiki-page ul.toc a[href="#Sample-items"]', text: 'Sample items'
       assert_select 'div.wiki.wiki-page ul.toc a[href="#Another-plugins-part"]', text: "Another plugin's part"
+      # a subsection (one level below the heading it follows) is listed under that heading
+      assert_select 'div.wiki.wiki-page ul.toc li ul a[href="#Another-plugins-part"]'
       assert_select 'div.wiki.wiki-page a[name="Sample-items"] + h2 span.badge.help-insertion-label',
                     text: 'Sample plugin'
-      assert_select 'div.wiki.wiki-page h2 span.badge.help-insertion-label', 2
+      assert_select 'div.wiki.wiki-page h2 span.badge.help-insertion-label', 1
+      assert_select 'div.wiki.wiki-page h3 span.badge.help-insertion-label', 1
       assert_select 'a[name="Updating-an-issue"] + h2 span.badge', 0
       # the section's links are the topic's: relative to the topic
       assert_select 'a[href="/help/sample/screen?lang=en"]', text: 'the sample screen'
@@ -95,7 +98,7 @@ class HelpTopicsControllerTest < Redmine::ControllerTest
       assert_select 'div.wiki-page h2', text: /サンプルの項目/ do
         assert_select 'span.help-insertion-label', text: 'Sample plugin'
       end
-      assert_select 'a[name="Another-plugins-part"] + h2 span.help-insertion-label', text: 'Another plugin (English)'
+      assert_select 'a[name="Another-plugins-part"] + h3 span.help-insertion-label', text: 'Another plugin (English)'
       get :context, params: { c: 'sample', a: 'items', panel: '1' }
       assert_select '.help-panel-header[data-anchor="サンプルの項目"]'
       assert_select '.help-panel-content div.wiki-page h2', text: /サンプルの項目/ do
