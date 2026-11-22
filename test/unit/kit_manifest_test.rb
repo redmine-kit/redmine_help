@@ -32,8 +32,11 @@ class KitManifestTest < ActiveSupport::TestCase
 
   test "the panel replaces the TopBar's Help, stays open in the tab and is anonymous visitors' too" do
     panel = manifest['slots'].sole
+    # actions and subtitle: the header's toolbar row (the search, the actions) and the subtitle's line from the first
+    # paint, so the header keeps one height while the module loads
     assert_equal({ 'slot' => 'topbar.panel', 'component' => 'HelpPanel', 'title' => 'label_help', 'icon' => 'help',
-                   'replaces' => 'help', 'persist' => true, 'anonymous' => true }, panel)
+                   'replaces' => 'help', 'persist' => true, 'anonymous' => true, 'actions' => true,
+                   'subtitle' => true }, panel)
     # Redmine's own Help is replaced on the server too, as redmine_kit_ui requires for `replaces: help`
     item = Redmine::MenuManager.items(:top_menu).detect { |menu_item| menu_item.name == :help }
     assert_not_equal Redmine::Info.help_url, item.url
