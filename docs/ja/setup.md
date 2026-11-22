@@ -72,6 +72,8 @@ export REDMINE_KIT_HELP_GUIDE_PATH=/srv/redmine-guide
 
 テストは、コンテナの中の Redmine 7.0.3 と PostgreSQL 16 で動かします。コンテナは、[Apple container](https://github.com/apple/container) がインストールされていて動いていればそれを、そうでなければ Docker を使います (`CONTAINER_CLI=container` か `CONTAINER_CLI=docker` で選べます)。サイドパネルのシステムテスト (`test/system`) は、ヘッドレスの Chromium で動かします。
 
+実行は、終わったときに (テストの成功、失敗、中断のいずれでも)、自分が起動したサービスのコンテナを停止します (削除はしません)。実行の前から動いていたコンテナと、このリポジトリの別の実行がまだ使っているコンテナは、そのまま動かしておきます。`KEEP_SERVICES=1` を指定すると、実行の後も動かしたままにします。
+
 ```sh
 bin/test              # プラグインのテスト
 bin/test --redmine    # プラグインをインストールした状態で、Redmine のすべてのテストも

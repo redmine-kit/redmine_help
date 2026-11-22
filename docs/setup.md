@@ -58,6 +58,8 @@ The Help link opens the side panel ([README.md](README.md#side-panel)). Without 
 
 The tests run in a container with Redmine 7.0.3 and PostgreSQL 16 ([Apple container](https://github.com/apple/container) when it is installed and running, else Docker; `CONTAINER_CLI=container` or `CONTAINER_CLI=docker` chooses); the system tests of the side panel (`test/system`) run in headless Chromium:
 
+A run stops the service containers it started (it doesn't remove them) when it ends, whether the tests pass, fail or are interrupted. Containers that were running before the run, or that another run of this repository still uses, are left running. `KEEP_SERVICES=1` keeps them running after the run.
+
 ```sh
 bin/test              # the plugin's tests
 bin/test --redmine    # also every Redmine test, with the plugin installed

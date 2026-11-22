@@ -20,6 +20,7 @@ name=redmine-kit-help-test
 # the plugin.
 route=/help
 source bin/container_cli
+stop_services_at_exit "$name"
 bin/services >/dev/null
 source bin/test_image
 # The network of the PostgreSQL container (bin/services) and the options to

@@ -14,6 +14,7 @@ cd "$(dirname "$0")/.."
 source bin/container_cli
 name=redmine-kit-help-test
 plugin=redmine_kit_help
+stop_services_at_exit "$name"
 bin/services >/dev/null
 source bin/test_image
 address() { container inspect "$1" | sed -n 's/.*"ipv4Address" : "\([0-9.]*\)\/.*/\1/p' | head -1; }
