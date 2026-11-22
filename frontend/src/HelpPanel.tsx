@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { AppLink, ExtensionPanelHeader, useExtensionContext, useKitQuery, useT } from '@redmine-kit/plugin';
-import { IconButton, RequestErrorState, SearchInput, useListSearch } from '@redmine-kit/ui';
+import { IconButton, RequestErrorState, SearchInput, Skeleton, useListSearch } from '@redmine-kit/ui';
 import { KEYBOARD_TOPIC, contextView, helpHref, helpPaths, type HelpContextJson, type HelpView } from './api';
 import { HelpContents, HelpResults, HelpTextSkeleton, HelpTopicView, helpLinkCapture } from './HelpContent';
 
@@ -116,11 +116,12 @@ export function HelpPanel() {
   const onSubmit = (e: FormEvent) => e.preventDefault();
 
   const view = current?.view;
-  const subtitle = view?.kind === 'topic' ? title : view?.kind === 'search' ? t('label_search') : t('label_table_of_contents');
+  // always a subtitle (config/kit_ui.yml `subtitle: true`): a skeleton while the view or the topic's title isn't known
+  const subtitle = !view ? '' : view.kind === 'topic' ? title : view.kind === 'search' ? t('label_search') : t('label_table_of_contents');
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <ExtensionPanelHeader
-        subtitle={view ? subtitle : undefined}
+        subtitle={subtitle || <Skeleton width={140} />}
         search={
           <form role="search" onSubmit={onSubmit} className="flex min-w-0">
             <SearchInput size={28} className="min-w-0 flex-1" aria-label={t('label_search')} placeholder={t('label_search')} value={q} onChange={(e) => onSearch(e.target.value)} onClear={() => onSearch('')} />

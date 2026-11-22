@@ -302,11 +302,11 @@ function HelpPanel() {
 	}, [searched]);
 	const onSubmit = (e) => e.preventDefault();
 	const view = current?.view;
-	const subtitle = view?.kind === "topic" ? title : view?.kind === "search" ? t("label_search") : t("label_table_of_contents");
+	const subtitle = !view ? "" : view.kind === "topic" ? title : view.kind === "search" ? t("label_search") : t("label_table_of_contents");
 	return /* @__PURE__ */ jsxs("div", {
 		className: "flex min-h-0 flex-1 flex-col",
 		children: [/* @__PURE__ */ jsx(ExtensionPanelHeader, {
-			subtitle: view ? subtitle : void 0,
+			subtitle: subtitle || /* @__PURE__ */ jsx(Skeleton, { width: 140 }),
 			search: /* @__PURE__ */ jsx("form", {
 				role: "search",
 				onSubmit,

@@ -96,6 +96,18 @@ describe('the help panel', () => {
     expect(await screen.findByText('を開きます。', { exact: false })).toBeInTheDocument();
   });
 
+  it('always gives a subtitle (kit_ui.yml `subtitle: true`): a skeleton while the topic is coming, then its title', async () => {
+    let answer: (value: unknown) => void = () => undefined;
+    const pending = new Promise((resolve) => (answer = resolve));
+    renderKit(<InPanel />, { context: { plugin: 'redmine_kit_help', panel, screen: { name: 'ProjectTable', tab: null } }, responses: { ...RESPONSES, 'GET /help/context.json?screen=ProjectTable': pending } });
+    await screen.findByRole('searchbox', { name: '検索' });
+    expect(screen.getByTestId('subtitle').querySelector('[data-skeleton]')).not.toBeNull();
+    answer(RESPONSES['GET /help/context.json?screen=ProjectTable']);
+    expect(await screen.findByText('を開きます。', { exact: false })).toBeInTheDocument();
+    expect(screen.getByTestId('subtitle')).toHaveTextContent('チケットの一覧');
+    expect(screen.getByTestId('subtitle').querySelector('[data-skeleton]')).toBeNull();
+  });
+
   it("puts the search in the header's toolbar row before the actions, not in the panel's body", async () => {
     renderKit(<InPanel />, { context: { plugin: 'redmine_kit_help', panel, screen: { name: 'ProjectTable', tab: null } }, responses: RESPONSES });
     await screen.findByText('を開きます。', { exact: false });
