@@ -181,7 +181,7 @@ function TopicPage({ id, anchor, search }: { id: string; anchor?: string; search
   }, []);
   // The headings (目次): h2 to h4 of the topic's text as it was rendered (its first child; the operator's blocks after it
   // are not part of the topic), so the outline shows what the reader sees, a plugin's subsection of an h3 included, as
-  // Redmine's table of contents lists it. A heading without an id gets one.
+  // Redmine's {{toc}} lists it. A heading without an id gets one.
   const [outline, setOutline] = useState<Heading[]>([]);
   useLayoutEffect(() => {
     const box = article.current;
