@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# The plugins this one requires (config/dependencies.yml): without one,
+# Redmine stops here and names it.
+load File.expand_path('config/dependencies.rb', __dir__)
+
 # Redmine Kit Help: the header's Help link opens help for the current screen
 # (README.md). It is installed as a gem (boot/redmine_kit_help.rb) or in
 # plugins/ (docs/setup.md, "Installation"); RedmineKit::Help comes from lib/

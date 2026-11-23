@@ -7,6 +7,20 @@
 - Redmine 7.0 以降 (7.0.3 で確認)、Ruby 3.2〜4.0
 - Redmine の CommonMark のフォーマッター (Redmine の Gemfile にある `commonmarker`)。Redmine のテキストの書式の設定によらず、ヘルプは Markdown です
 
+<a id="required-plugins"></a>
+
+### 必須プラグイン
+
+ありません。
+
+<a id="optional-plugins"></a>
+
+### オプションのプラグイン
+
+| プラグイン | 使える機能 |
+| --- | --- |
+| [Redmine Kit UI](https://github.com/redmine-kit/redmine_kit_ui) | 新しい UI のヘルプのパネル |
+
 <a id="installation"></a>
 
 ## インストール
@@ -15,7 +29,7 @@
 
 ### gem
 
-プラグインは gem としてインストールするか (推奨)、`plugins/` にフォルダーとして置きます。バージョンのタグごとに、プラグインを gem として GitHub Packages (`https://rubygems.pkg.github.com/redmine-kit`) に公開しています。GitHub Packages からインストールするには、公開のパッケージでも、`read:packages` のある GitHub のトークンが要ります。プラグインとガイドを Redmine の `Gemfile.local` に追加します。
+プラグインは gem としてインストールするか (推奨)、`plugins/` にフォルダーとして置きます。`bin/release` が、各バージョンのプラグインを gem として GitHub Packages (`https://rubygems.pkg.github.com/redmine-kit`。[リリース](#releasing)) に公開します。GitHub Packages からインストールするには、公開のパッケージでも、`read:packages` のある GitHub のトークンが要ります。プラグインとガイドを Redmine の `Gemfile.local` に追加します。
 
 ```ruby
 source 'https://rubygems.pkg.github.com/redmine-kit' do
@@ -87,3 +101,9 @@ bin/lint              # RuboCop (同じコンテナのツールで)
 `COVERAGE=1` を付けると、プラグインのテストは、プラグイン自身のファイルのカバレッジ (SimpleCov。Cobertura の XML の `coverage/coverage.xml`) も出力します。CI は Redmine 7.0.3 でこれを有効にし、レポートを `plugin` フラグで [Codecov](https://codecov.io/gh/redmine-kit/redmine_help) に送信します。送信の認証は OIDC (`id-token: write`) なので、トークンをシークレットに保存しません。Codecov のステータスは参考情報で、コミットや Pull Request を失敗にしません (`codecov.yml`)。
 
 テストは、redmine-guide ではなく、`test/fixtures/help` の小さなガイドを使います。この資料のスクリーンショットは `bin/screenshots` で作ります (今は Docker だけ)。
+
+<a id="releasing"></a>
+## リリース
+
+`bin/release` は、gemspec のバージョンの gem を GitHub Packages の Redmine Kit のレジストリに公開します。実行できるのは変更のない `main` からだけで、バージョンが最後のタグ `v<version>` より新しいこと、必須プラグインがレジストリから範囲どおりに解決できること (`config/dependencies.yml`)、`bin/lint`、`bin/test`、`bin/test-gem` が成功することが条件です。公開には `~/.gem/credentials` のキー `github` (`:github: Bearer <token>`。`write:packages` を持つトークン) を使い、レジストリの読み取りには `BUNDLE_RUBYGEMS__PKG__GITHUB__COM` を使います。トークンはリポジトリにも出力にも含めません。署名付きのタグ `v<version>` を作り、それをプッシュするコマンドを表示します。バージョンはセマンティックバージョニングに従います。このプラグインを使うプラグインが動かなくなる変更ではメジャーバージョン (1.0 より前はマイナーバージョン) を上げ、それを必要とするプラグインの範囲も変えます。
+

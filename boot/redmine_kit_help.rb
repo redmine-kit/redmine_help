@@ -17,6 +17,13 @@
 # No constant is defined here: RedmineKit::Help comes from lib/ through the
 # code loader, as in plugins/, so that it reloads and Zeitwerk checks it.
 require 'active_support/lazy_load_hooks'
+# The gems of the plugins it requires (config/dependencies.yml): Bundler
+# installs them with this one, and their boot files hand their folders to
+# Redmine's plugin loader too.
+require 'yaml'
+YAML.safe_load_file(File.expand_path('../config/dependencies.yml', __dir__))['requires'].each_key do |name|
+  require name
+end
 
 ActiveSupport.on_load(:before_configuration, yield: true) do |app|
   dir = File.expand_path('..', __dir__)
