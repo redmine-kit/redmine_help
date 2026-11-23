@@ -38,6 +38,6 @@ The new UI's side panel asks `/help/context.json?screen=&tab=&id=` with the name
 
 An anchor is the anchor Redmine gives the heading: the heading's text with spaces turned into `-` (as in Redmine's wiki). `admin/settings#Authentication` opens the page at the heading "Authentication".
 
-Anchors are always the English page's. A translation keeps the English page's headings one for one (same count, levels and order), and the help finds the heading at the same position in the translation. The same goes for links between topics (`settings.md#Authentication`). A translation whose headings differ opens at the top.
+Anchors are always the English page's. A translation keeps the English page's headings one for one (same count, levels and order), and the help finds the heading at the same position in the translation. The same goes for links between topics (`settings.md#Authentication`). A translation whose headings differ opens at the top. A translation needs no `<a id>` lines for the English anchors, and has none: the new UI shows raw HTML as text.
 
 A section that a plugin inserts in a topic ([extending.md](extending.md#sections-in-the-guides-topics)) is part of the topic: an anchor of its heading opens the topic at the section (`user/issues#Checklist`), in a translation at the translated section's heading.
